@@ -1953,6 +1953,11 @@ html[dir="ltr"] .whatsapp-float {
 }
 
 @media (max-width: 720px) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
   .topbar-inner {
     width: calc(100% - 20px);
     min-height: 44px;
@@ -1995,9 +2000,12 @@ html[dir="ltr"] .whatsapp-float {
   }
 
   .hero {
+    width: 100%;
+    margin: 0;
     min-height: auto;
     padding-top: 150px;
     padding-bottom: 42px;
+    padding-inline: 20px;
   }
 
   h1 {
@@ -2111,11 +2119,7 @@ html[dir="ltr"] .whatsapp-float {
   }
 
   .hero-emblem {
-    position: relative;
-    inset: auto;
-    width: 96px;
-    height: 96px;
-    margin-top: 18px;
+    display: none;
   }
 
   .founder-frame {
