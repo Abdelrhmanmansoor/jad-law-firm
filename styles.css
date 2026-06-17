@@ -2188,15 +2188,35 @@ html[dir="ltr"] .whatsapp-float {
 
   .clients-marquee-shell::before,
   .clients-marquee-shell::after {
-    width: 34px;
+    display: none;
+  }
+
+  .clients-marquee-shell {
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .clients-marquee-track {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .clients-marquee-track .client-logo-slide:nth-child(n + 13) {
+    display: none;
   }
 
   .client-logo-slide {
-    width: 210px;
-    min-width: 210px;
-    height: 118px;
+    width: 100%;
+    min-width: 0;
+    height: 114px;
     padding: 12px;
-    border-radius: 22px;
+    border-radius: 24px;
   }
 
   .client-logo-frame {
