@@ -18,18 +18,19 @@ const content = {
     practiceAreas: "مجالات الاختصاص",
     contactInfo: "بيانات التواصل",
     saudiArabia: "المملكة العربية السعودية",
-    topbarEmail: "info@jad-law.sa",
-    topbarPhone: "+966 54 004 6657",
+    topbarEmail: "mlwri1818@gmail.com",
+    topbarPhone: "0548708885",
     topbarLocation: "الشاطئ، جيزان 82726، المملكة العربية السعودية",
-    topbarHours: "الأحد إلى الخميس من 9 ص - 6 م",
+    topbarHours: "الأحد إلى الخميس من 8 ص - 3 م",
     footerAddress: "الشاطئ، جيزان 82726، المملكة العربية السعودية",
     footerText:
       "مكتب قانوني سعودي يقدم خدمات المحاماة والاستشارات القانونية للأفراد والشركات وفق أعلى معايير المهنية والسرية والالتزام.",
+    siteCredit: "تصميم وبرمجة الموقع بواسطة",
     copyright: "جميع الحقوق محفوظة © 2026 جاد العبدالله للمحاماة والاستشارات القانونية.",
-    heroKicker: "مكتب جاد العبدالله للمحاماة والاستشارات القانونية",
-    heroTitle: "تمثيل قانوني رصين واستشارات تصنع الفارق",
+    heroKicker: "مكتب المحامي جاد العبدالله",
+    heroTitle: "ثقةٌ تجاوزت المليارات.. وأحكامٌ تصنع الريادة",
     heroLead:
-      "نقدم خدمات المحاماة والاستشارات القانونية للأفراد والشركات بمنهجية احترافية تجمع بين التحليل الدقيق، وسرعة الاستجابة، والالتزام بحماية مصالح عملائنا داخل المملكة العربية السعودية.",
+      "نخبة من الكفاءات القانونية تجمعنا لخدمتكم. يضم مكتبنا مجموعة كبرى من المستشارين، والمحامين المرخصين، والكوادر المتدربة، يقودهم المحامي جاد العبدالله بخبرته الواسعة وعميقة الأثر في السلك القانوني. نجاحاتنا تتحدث عنا بملفات وقضايا نوعية تجاوزت قيمتها الإجمالية <span class=\"headline-amount\">المليار ريال</span>، لتكون الثقة هي أساس علاقتنا بوعي قانوني يحمي مصالحكم.",
     heroPrimary: "احجز استشارة قانونية",
     heroSecondary: "استعرض خدماتنا",
     founderRole: "قيادة المكتب",
@@ -42,10 +43,10 @@ const content = {
     ],
     aboutTitle: "من نحن",
     aboutLead:
-      "يمثل مكتب جاد العبدالله للمحاماة والاستشارات القانونية نموذجًا مهنيًا حديثًا في تقديم الحلول القانونية، عبر فهم عميق للأنظمة السعودية، وصياغة دقيقة للمواقف القانونية، وتمثيل منضبط أمام الجهات القضائية وشبه القضائية.",
+      "نخبة من الكفاءات القانونية تجمعنا لخدمتكم. يضم مكتبنا مجموعة كبرى من المستشارين، والمحامين المرخصين، والكوادر المتدربة، يقودهم المحامي جاد العبدالله بخبرته الواسعة وعميقة الأثر في السلك القانوني.",
     aboutBody:
-      "ننطلق من دراسة الوقائع والمستندات بعناية، ثم نبني التوصية أو الاستراتيجية القانونية بما يحقق أفضل حماية ممكنة للحق، ويمنح العميل وضوحًا في القرار وثقة في المسار. نؤمن بأن جودة العمل القانوني تبدأ من الصدق في التقييم وتنتهي بالدقة في التنفيذ.",
-    values: ["الدقة", "السرية", "الالتزام", "الحوكمة القانونية"],
+      "نجاحاتنا تتحدث عنا بملفات وقضايا نوعية تجاوزت قيمتها الإجمالية المليار ريال، لتكون الثقة هي أساس علاقتنا بوعي قانوني يحمي مصالحكم.",
+    values: ["الثقة", "السرية", "الاحترافية", "حماية المصالح"],
     practicesTitle: "خدماتنا",
     practicesLead:
       "نقدم باقة متكاملة من الخدمات القانونية المصممة لحماية الحقوق، إدارة المخاطر، وتمثيل العملاء بكفاءة أمام مختلف الجهات.",
@@ -75,7 +76,7 @@ const content = {
     ],
     casesTitle: "نماذج من خبراتنا القانونية",
     casesLead:
-      "نعالج ملفات قانونية نوعية وفق أعلى معايير السرية المهنية، مع التركيز على حماية مصالح العميل وتحقيق أفضل مسار نظامي ممكن.",
+      "نماذج من أحكام وملفات قانونية منقحة، روعي فيها إخفاء الأسماء والبيانات الخاصة حفاظاً على السرية المهنية وحماية خصوصية أطراف القضايا.",
     cases: [
       ["نزاع تجاري", "قطاع الشركات", "إعادة تنظيم العلاقة التعاقدية ومعالجة إخلالات جوهرية دون إفشاء أطراف النزاع."],
       ["ملف مالي", "التمويل والائتمان", "تقييم مطالبات مالية معقدة وبناء مسار تسوية يحفظ حقوق العميل."],
@@ -124,13 +125,14 @@ const content = {
     practiceAreas: "Practice Areas",
     contactInfo: "Contact",
     saudiArabia: "Kingdom of Saudi Arabia",
-    topbarEmail: "info@jad-law.sa",
-    topbarPhone: "+966 54 004 6657",
+    topbarEmail: "mlwri1818@gmail.com",
+    topbarPhone: "0548708885",
     topbarLocation: "Al Shati, Jazan 82726, Saudi Arabia",
-    topbarHours: "Sun to Thu, 9 AM - 6 PM",
+    topbarHours: "Sun to Thu, 8 AM - 3 PM",
     footerAddress: "Al Shati, Jazan 82726, Saudi Arabia",
     footerText:
       "A Saudi law office providing litigation and legal advisory services to individuals and companies with professionalism, confidentiality, and commitment.",
+    siteCredit: "Website designed and developed by",
     copyright: "All rights reserved © 2026 Jad Alabdullah Law Firm.",
     heroKicker: "Jad Alabdullah Law Firm",
     heroTitle: "Grounded representation and legal advice that protects your interests",
@@ -420,7 +422,7 @@ const practices = [
 const caseWins = [
   {
     id: "bank-aljazira-3-6m",
-    file: "assets/legal-documents/cases/حكم إثبات الوفاء بالسند التنفيذيبقيمة (3.6) مليون ريال ضد بنك الجزيرة.pdf",
+    file: "assets/legal-documents/cases/إثبات الوفاء بسند تنفيذي 3.6 مليون - منقح.pdf",
     title: {
       ar: "إثبات الوفاء بسند تنفيذي بقيمة 3.6 مليون ريال",
       en: "Proof of satisfaction of a SAR 3.6M enforcement instrument",
@@ -443,7 +445,7 @@ const caseWins = [
   },
   {
     id: "final-cheque-ruling",
-    file: "assets/legal-documents/cases/حكم الشيك النهائي.pdf",
+    file: "assets/legal-documents/cases/حكم نهائي في منازعة شيك - منقح.pdf",
     title: { ar: "حكم نهائي في منازعة تنفيذ شيك", en: "Final judgment in a cheque enforcement dispute" },
     category: { ar: "شيكات وأوراق تجارية", en: "Cheques and commercial papers" },
     amount: { ar: "منازعة شيك", en: "Cheque dispute" },
@@ -463,7 +465,7 @@ const caseWins = [
   },
   {
     id: "commercial-48m-non-admission",
-    file: "assets/legal-documents/cases/document_1743629798712.pdf",
+    file: "assets/legal-documents/cases/عدم قبول مطالبة تجارية 48.1 مليون - منقح.pdf",
     title: { ar: "عدم قبول مطالبة تجارية وتعويضية بمبلغ 48.1 مليون ريال", en: "Non-admission of a SAR 48.1M commercial compensation claim" },
     category: { ar: "قضايا تجارية وتعويضات", en: "Commercial claims and compensation" },
     amount: { ar: "48.1 مليون ريال", en: "SAR 48.1M" },
@@ -483,7 +485,7 @@ const caseWins = [
   },
   {
     id: "company-liability-defense",
-    file: "assets/legal-documents/cases/document_1743629933738.pdf",
+    file: "assets/legal-documents/cases/دفاع في مسؤولية مديري شركة - منقح.pdf",
     title: { ar: "دفاع في مطالبة متعلقة بمسؤولية مديري شركة", en: "Defense in a company managers' liability claim" },
     category: { ar: "حوكمة ومسؤولية شركات", en: "Governance and corporate liability" },
     amount: { ar: "مطالبة عالية القيمة", en: "High-value claim" },
@@ -503,7 +505,7 @@ const caseWins = [
   },
   {
     id: "talal-compensation-500k",
-    file: "assets/legal-documents/cases/طلال عبداللطيف.pdf",
+    file: "assets/legal-documents/cases/رد مطالبة تعويض 500 ألف - منقح.pdf",
     title: { ar: "رد مطالبة تعويض بمبلغ 500 ألف ريال", en: "Defense against a SAR 500K compensation claim" },
     category: { ar: "تعويضات ومصاريف تقاضي", en: "Compensation and litigation costs" },
     amount: { ar: "500 ألف ريال", en: "SAR 500K" },
@@ -523,7 +525,7 @@ const caseWins = [
   },
   {
     id: "405m-enforcement-dispute",
-    file: "assets/legal-documents/cases/حكم برد دعوى 405 مليون منازعة تنفيذية.pdf",
+    file: "assets/legal-documents/cases/رد دعوى تنفيذية 405 مليون - منقح.pdf",
     title: { ar: "رد دعوى تنفيذية بقيمة 405 مليون ريال", en: "Dismissal of a SAR 405M enforcement dispute" },
     category: { ar: "منازعة تنفيذية كبرى", en: "Major enforcement dispute" },
     amount: { ar: "405 مليون ريال", en: "SAR 405M" },
@@ -543,7 +545,7 @@ const caseWins = [
   },
   {
     id: "palace-contract-3m",
-    file: "assets/legal-documents/cases/حكم القصر ب 3 مليون.pdf",
+    file: "assets/legal-documents/cases/نزاع مقاولة مشروع قصر 3 مليون - منقح.pdf",
     title: { ar: "نزاع مقاولة وتشطيبات في مشروع قصر", en: "Construction and finishing dispute for a palace project" },
     category: { ar: "مقاولات وعقود تجارية", en: "Construction and commercial contracts" },
     amount: { ar: "3 مليون ريال", en: "SAR 3M" },
@@ -563,7 +565,7 @@ const caseWins = [
   },
   {
     id: "bank-finance-3-6m-dismissal",
-    file: "assets/legal-documents/cases/حكم لصالح عميلنا في قضي فيه برد دعوى الوفاء بالسند التنفيذي المرفوع من البنك بمبلغ ثلاثة ملايين وستمائة.pdf",
+    file: "assets/legal-documents/cases/رد دعوى وفاء بسند تنفيذي 3.6 مليون - منقح.pdf",
     title: { ar: "رد دعوى وفاء بسند تنفيذي مرفوعة من بنك", en: "Dismissal of a bank enforcement satisfaction claim" },
     category: { ar: "تمويل عقاري وتنفيذ", en: "Real estate finance and enforcement" },
     amount: { ar: "3.6 مليون ريال", en: "SAR 3.6M" },
@@ -938,9 +940,9 @@ function mapSection() {
       emailLabel: "البريد الإلكتروني",
       hoursLabel: "ساعات العمل",
       address: "الشاطئ، جيزان 82726، المملكة العربية السعودية",
-      phone: "+966 54 004 6657",
-      email: "info@jad-law.sa",
-      hours: "الأحد إلى الخميس من 9 ص - 6 م",
+      phone: "0548708885",
+      email: "mlwri1818@gmail.com",
+      hours: "الأحد إلى الخميس من 8 ص - 3 م",
       cta: "تواصل عبر واتساب",
     },
     en: {
@@ -952,9 +954,9 @@ function mapSection() {
       emailLabel: "Email",
       hoursLabel: "Working Hours",
       address: "Al Shati, Jazan 82726, Saudi Arabia",
-      phone: "+966 54 004 6657",
-      email: "info@jad-law.sa",
-      hours: "Sun to Thu, 9 AM - 6 PM",
+      phone: "0548708885",
+      email: "mlwri1818@gmail.com",
+      hours: "Sun to Thu, 8 AM - 3 PM",
       cta: "Contact on WhatsApp",
     },
   };
@@ -988,7 +990,7 @@ function mapSection() {
               </li>
               <li>
                 <strong>${copy.phoneLabel}</strong>
-                <a class="phone-ltr" href="tel:+966540046657">${copy.phone}</a>
+                <a class="phone-ltr" href="tel:0548708885">${copy.phone}</a>
               </li>
               <li>
                 <strong>${copy.emailLabel}</strong>
@@ -999,7 +1001,7 @@ function mapSection() {
                 <span>${copy.hours}</span>
               </li>
             </ul>
-            <a class="dark-button" href="https://wa.me/966540046657" target="_blank" rel="noreferrer">${copy.cta}</a>
+            <a class="dark-button" href="https://wa.me/966548708885" target="_blank" rel="noreferrer">${copy.cta}</a>
           </div>
         </div>
       </div>
@@ -1242,18 +1244,17 @@ function officeGallerySection() {
 }
 
 function licenseSection() {
-  const licensePdf = "assets/legal-documents/license/JuridicalLicenses_CCTS_48267e56-822c-4e32-8522-b6c401ae540e.pdf";
   return `
     <section class="license-section">
       <div class="license-copy">
-        <p class="eyebrow">${lang === "ar" ? "اعتماد رسمي" : "Official License"}</p>
-        <h2>${lang === "ar" ? "ترخيص مزاولة مهنة المحاماة" : "Licensed Legal Practice"}</h2>
-        <p>${lang === "ar" ? "يعرض الموقع الرخصة المهنية الصادرة من وزارة العدل كجزء من عناصر الثقة والشفافية المهنية للمكتب." : "The website displays the professional license issued by the Ministry of Justice as part of the office's trust and transparency signals."}</p>
-        <a class="dark-button" href="${licensePdf}" target="_blank" rel="noreferrer">${lang === "ar" ? "عرض الرخصة" : "View License"}</a>
+        <p class="eyebrow">${lang === "ar" ? "اعتماد مهني" : "Professional Accreditation"}</p>
+        <h2>${lang === "ar" ? "مرخص ومعتمد من هيئة المحامين" : "Licensed and accredited by the Saudi Bar Association"}</h2>
+        <p>${lang === "ar" ? "تم الاكتفاء بعرض صفة الاعتماد المهني دون نشر صورة الرخصة أو أي بيانات تعريفية خاصة، حفاظاً على الخصوصية والسرية." : "The website highlights the professional accreditation status without displaying license imagery or sensitive identifying information."}</p>
       </div>
-      <a class="license-preview" href="${licensePdf}" target="_blank" rel="noreferrer">
-        <img src="assets/legal-documents/license/license-preview.jpg" alt="${lang === "ar" ? "رخصة مزاولة مهنة المحاماة" : "Legal practice license"}" loading="lazy" />
-      </a>
+      <div class="license-preview license-preview-badge">
+        <img src="assets/trust/saudi-bar-association.png" alt="${lang === "ar" ? "هيئة المحامين" : "Saudi Bar Association"}" loading="lazy" />
+        <strong>${lang === "ar" ? "مرخص معتمد" : "Accredited License"}</strong>
+      </div>
     </section>
   `;
 }
@@ -1312,7 +1313,7 @@ function caseWinsSection(limit) {
       <div class="section-head">
         <p class="eyebrow">${lang === "ar" ? "قضايا كسبناها" : "Selected Winning Matters"}</p>
         <h2>${lang === "ar" ? "ملفات قضائية موثقة بنتائجها" : "Documented matters with clear outcomes"}</h2>
-        <p>${lang === "ar" ? "نماذج من أحكام وملفات قانونية تم التعامل معها بسرية ومهنية، مع إتاحة ملف الحكم الأصلي كما هو للاطلاع." : "Selected judgments and legal matters handled with confidentiality and professionalism, with the original judgment files available as provided."}</p>
+        <p>${lang === "ar" ? "نماذج من أحكام وملفات قانونية منقحة، أُخفيت منها الأسماء والبيانات الخاصة بما يحفظ السرية المهنية ويُبرز النتيجة القانونية." : "Selected legal matters presented through redacted files that preserve confidentiality while highlighting the legal outcome."}</p>
       </div>
       <div class="case-win-grid">
         ${items.map((item) => caseWinCard(item)).join("")}
@@ -1336,7 +1337,7 @@ function caseWinCard(item) {
       </dl>
       <div class="case-card-actions">
         <a class="glass-button" href="#/case/${item.id}">${t("viewDetails")}</a>
-        <a class="file-link" href="${encodeURI(item.file)}" target="_blank" rel="noreferrer">${lang === "ar" ? "ملف الحكم" : "Judgment PDF"}</a>
+        <a class="file-link" href="${encodeURI(item.file)}" target="_blank" rel="noreferrer">${lang === "ar" ? "الملف المنقح" : "Redacted File"}</a>
       </div>
     </article>
   `;
@@ -1346,8 +1347,8 @@ function casesPage() {
   return subPage(
     lang === "ar" ? "قضايانا وإنجازاتنا القضائية" : "Cases and Judicial Outcomes",
     lang === "ar"
-      ? "تقسيم مهني للملفات التي تم توثيقها بالأحكام المرفقة، مع ملخص لكل قضية ورابط مباشر لملف الحكم الأصلي."
-      : "A professional classification of documented matters, each with a concise summary and a direct link to the original judgment file.",
+      ? "تقسيم مهني لملفات القضايا المنقحة، مع ملخص لكل قضية ورابط مباشر لنسختها المنقحة الآمنة."
+      : "A professional classification of redacted case matters, each with a concise summary and a direct link to its safe redacted file.",
     `<div class="case-win-grid">${caseWins.map((item) => caseWinCard(item)).join("")}</div>`,
   );
 }
@@ -1365,9 +1366,9 @@ function caseDetailPage(id) {
           <dl>
             <div><dt>${lang === "ar" ? "القيمة" : "Amount"}</dt><dd>${local(item.amount)}</dd></div>
             <div><dt>${lang === "ar" ? "النتيجة" : "Result"}</dt><dd>${local(item.result)}</dd></div>
-            <div><dt>${lang === "ar" ? "الملف" : "File"}</dt><dd>${item.file.split("/").pop()}</dd></div>
+            <div><dt>${lang === "ar" ? "الملف" : "File"}</dt><dd>${decodeURI(item.file.split("/").pop())}</dd></div>
           </dl>
-          <a class="dark-button" href="${encodeURI(item.file)}" target="_blank" rel="noreferrer">${lang === "ar" ? "فتح ملف الحكم الأصلي" : "Open Original Judgment"}</a>
+          <a class="dark-button" href="${encodeURI(item.file)}" target="_blank" rel="noreferrer">${lang === "ar" ? "فتح الملف المنقح" : "Open Redacted File"}</a>
         </aside>
         <article class="case-detail-body">
           <h2>${lang === "ar" ? "ملخص القضية" : "Case Summary"}</h2>
@@ -1384,7 +1385,7 @@ function caseDetailPage(id) {
           </div>
           <section class="confidential-note">
             <h3>${lang === "ar" ? "ملاحظة السرية" : "Confidentiality Note"}</h3>
-            <p>${lang === "ar" ? "تم عرض الملخص بصياغة عامة تحافظ على السرية المهنية، بينما يبقى ملف الحكم الأصلي متاحًا كما تم تزويده للموقع." : "The summary is drafted generally to preserve professional confidentiality, while the original judgment file remains available as provided."}</p>
+            <p>${lang === "ar" ? "تمت صياغة الملخصات وإتاحة الملفات بصيغة منقحة تخفي أسماء الأطراف والبيانات الخاصة متى لزم ذلك، حفاظاً على السرية المهنية." : "Summaries and linked files are presented in a redacted form that conceals party names and private information where needed."}</p>
           </section>
         </article>
       </div>
@@ -1429,7 +1430,7 @@ function contactPreview() {
         <h2>${lang === "ar" ? "ابدأ استشارتك القانونية بثقة" : "Start your legal consultation with confidence"}</h2>
         <p class="lead">${lang === "ar" ? "فريقنا مستعد لدراسة طلبك وتوجيهك للمسار القانوني الأنسب بسرية ومهنية." : "Our team is ready to review your request and guide you to the right legal route with confidentiality and professionalism."}</p>
         <div class="hero-actions">
-        <a class="dark-button" href="https://wa.me/966540046657" target="_blank" rel="noreferrer">${lang === "ar" ? "تواصل عبر واتساب" : "Contact via WhatsApp"}</a>
+        <a class="dark-button" href="https://wa.me/966548708885" target="_blank" rel="noreferrer">${lang === "ar" ? "تواصل عبر واتساب" : "Contact via WhatsApp"}</a>
           <a class="glass-button" href="#/contact">${t("bookConsultation")}</a>
         </div>
       </div>
@@ -1512,9 +1513,9 @@ function contactPage() {
         <div class="contact-card">
           <h3>${t("directContact")}</h3>
           <p>${t("noSensitiveInfo")}</p>
-          <a class="phone-ltr" href="tel:+966540046657">+966 54 004 6657</a>
-          <a href="https://wa.me/966540046657" target="_blank" rel="noreferrer">WhatsApp</a>
-          <a href="mailto:info@jad-law.sa">info@jad-law.sa</a>
+          <a class="phone-ltr" href="tel:0548708885">0548708885</a>
+          <a href="https://wa.me/966548708885" target="_blank" rel="noreferrer">WhatsApp</a>
+          <a href="mailto:mlwri1818@gmail.com">mlwri1818@gmail.com</a>
         </div>
         <form class="contact-card contact-form">
           <input placeholder="${t("formName")}" required />
@@ -1576,7 +1577,7 @@ document.addEventListener("submit", (event) => {
     event.preventDefault();
     const note = lang === "ar" ? "تم تجهيز الطلب. يرجى التواصل عبر واتساب لإرساله مباشرة." : "Your request is ready. Please continue through WhatsApp to send it directly.";
     alert(note);
-    window.open("https://wa.me/966540046657", "_blank", "noopener,noreferrer");
+    window.open("https://wa.me/966548708885", "_blank", "noopener,noreferrer");
   }
 });
 
