@@ -583,6 +583,52 @@ const caseWins = [
       en: "Presented the enforcement chronology and defenses related to the instrument and the scope of the claim.",
     },
   },
+  {
+    id: "real-estate-sale-nullification-8m",
+    file: "assets/legal-documents/cases/بطلان عقد بيع عقاري 8 مليون - منقح.pdf",
+    title: {
+      ar: "بطلان عقد بيع عقاري بمبلغ 8 ملايين ريال",
+      en: "Nullification of an SAR 8M real estate sale contract",
+    },
+    category: { ar: "عقارات وإبطال بيع", en: "Real estate and sale nullification" },
+    amount: { ar: "8 ملايين ريال", en: "SAR 8M" },
+    result: { ar: "الحكم ببطلان عقد البيع", en: "The sale contract was declared void" },
+    summary: {
+      ar: "نزاع عقاري دارت وقائعه حول بيع جزء من أرض مقابل ثمانية ملايين ريال، وانتهى الحكم إلى بطلان عقد البيع لعدم ملكية البائعة للعقار وقت التعاقد.",
+      en: "A real estate dispute involving the sale of part of a property for SAR 8M, ending with the contract being voided because the seller did not own the property at the time of sale.",
+    },
+    challenge: {
+      ar: "إثبات أثر عدم الملكية وقت البيع وتكييف النزاع على أساس شروط صحة التصرف العقاري.",
+      en: "Showing the legal effect of lack of ownership at the time of sale and framing the dispute around the validity requirements of real estate disposal.",
+    },
+    action: {
+      ar: "التركيز على شرط الملكية، وحجية الصك، وسلامة بناء المطالبة بإبطال البيع.",
+      en: "Focused on ownership, title deed probative value, and the legal basis for nullifying the sale.",
+    },
+  },
+  {
+    id: "appeal-sale-nullification-8m",
+    file: "assets/legal-documents/cases/تأييد استئنافي لبطلان عقد بيع عقاري 8 مليون - منقح.pdf",
+    title: {
+      ar: "تأييد استئنافي لحكم بطلان عقد بيع عقاري",
+      en: "Appellate affirmation of a void real estate sale judgment",
+    },
+    category: { ar: "استئناف عقاري", en: "Real estate appeal" },
+    amount: { ar: "8 ملايين ريال", en: "SAR 8M" },
+    result: { ar: "تأييد الحكم المستأنف", en: "The appealed judgment was affirmed" },
+    summary: {
+      ar: "حكم استئنافي تناول الطعن على حكم بطلان عقد البيع، وانتهى إلى رفضه موضوعًا وتأييد الحكم القاضي ببطلان البيع لعدم الملكية وقت التعاقد.",
+      en: "An appellate judgment addressing a challenge to the sale-nullification ruling, ultimately rejecting the appeal on the merits and affirming the judgment.",
+    },
+    challenge: {
+      ar: "المحافظة على الحكم الابتدائي أمام الاستئناف وتدعيم أسبابه النظامية والواقعية.",
+      en: "Preserving the first-instance judgment on appeal and reinforcing its legal and factual reasoning.",
+    },
+    action: {
+      ar: "إعداد جواب استئنافي يعزز سلامة الحكم ويربط النتيجة بثبوت عدم الملكية وقت البيع.",
+      en: "Prepared an appellate response supporting the judgment and tying the outcome to lack of ownership at the time of sale.",
+    },
+  },
 ];
 
 const blogPosts = [
