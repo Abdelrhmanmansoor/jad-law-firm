@@ -419,7 +419,7 @@ const practices = [
   },
 ];
 
-const caseWins = [
+const retiredCaseWins = [
   {
     id: "bank-aljazira-3-6m",
     file: "assets/legal-documents/cases/إثبات الوفاء بسند تنفيذي 3.6 مليون - منقح.pdf",
@@ -627,6 +627,147 @@ const caseWins = [
     action: {
       ar: "إعداد جواب استئنافي يعزز سلامة الحكم ويربط النتيجة بثبوت عدم الملكية وقت البيع.",
       en: "Prepared an appellate response supporting the judgment and tying the outcome to lack of ownership at the time of sale.",
+    },
+  },
+];
+
+const caseWins = [
+  {
+    id: "mortgage-deed-satisfaction-dismissal",
+    file: "assets/legal-documents/cases/رد دعوى الوفاء بصك رهن عقاري - منقح.pdf",
+    title: {
+      ar: "رد دعوى الوفاء بسند تنفيذي مرتبط بصك رهن عقاري",
+      en: "Dismissal of a satisfaction claim involving a mortgage deed",
+    },
+    category: { ar: "تنفيذ وتمويل عقاري", en: "Enforcement and real estate finance" },
+    amount: { ar: "منازعة رهن عقاري", en: "Mortgage enforcement dispute" },
+    result: { ar: "رد الدعوى واكتساب الحكم القطعية", en: "Claim dismissed and judgment became final" },
+    summary: {
+      ar: "دعوى وفاء بسند تنفيذي مرتبط بصك رهن عقاري، انتهت إلى رد الدعوى وسقوط حق الاعتراض بعد انقضاء المدة النظامية.",
+      en: "A satisfaction claim concerning an enforcement instrument linked to a mortgage deed, ending in dismissal and finality after the objection period elapsed.",
+    },
+    challenge: {
+      ar: "معالجة أثر السند التنفيذي وصك الرهن ضمن إجراءات التنفيذ ومواعيد الاعتراض.",
+      en: "Addressing the enforcement instrument and mortgage deed within enforcement procedure and objection deadlines.",
+    },
+    action: {
+      ar: "عرض التسلسل الإجرائي والدفوع المرتبطة بالسند حتى صدور الحكم النهائي.",
+      en: "Presented the procedural chronology and instrument-related defenses through final judgment.",
+    },
+  },
+  {
+    id: "commercial-contract-invalidity-4-5m",
+    file: "assets/legal-documents/cases/فساد عقد تجاري والحكم بمبالغ 4.5 مليون - منقح.pdf",
+    title: {
+      ar: "ثبوت فساد عقد تجاري والحكم بمبالغ تتجاوز 4.5 مليون ريال",
+      en: "Commercial contract invalidity and awards exceeding SAR 4.5M",
+    },
+    category: { ar: "عقود ومنازعات تجارية", en: "Contracts and commercial disputes" },
+    amount: { ar: "أكثر من 4.5 مليون ريال", en: "Over SAR 4.5M" },
+    result: { ar: "ثبوت فساد العقد والحكم بالمبالغ المستحقة", en: "Contract invalidity established and monetary awards granted" },
+    summary: {
+      ar: "نزاع تجاري حول عقد وأعمال منجزة، انتهى الحكم بثبوت فساد العقد وإلزام الأطراف بمبالغ قدرها 1,187,321 ريال و3,312,679 ريال.",
+      en: "A commercial dispute over a contract and completed works, ending with a finding of invalidity and awards of SAR 1,187,321 and SAR 3,312,679.",
+    },
+    challenge: {
+      ar: "إثبات فساد العقد وتحديد قيمة الأعمال والمبالغ المستحقة بين أطراف متعددة.",
+      en: "Establishing contract invalidity and quantifying completed works and liabilities among multiple parties.",
+    },
+    action: {
+      ar: "ربط المستندات والأعمال المنفذة بالآثار المالية للعقد أمام الدائرة التجارية.",
+      en: "Connected the documents and completed works to the contract's financial consequences.",
+    },
+  },
+  {
+    id: "commercial-dismissal-appeal-affirmed",
+    file: "assets/legal-documents/cases/تأييد رد دعوى تجارية استئنافيا - منقح.pdf",
+    title: {
+      ar: "تأييد رد دعوى تجارية استئنافيًا",
+      en: "Appellate affirmation of a commercial claim dismissal",
+    },
+    category: { ar: "استئناف تجاري", en: "Commercial appeal" },
+    amount: { ar: "دعوى تجارية", en: "Commercial claim" },
+    result: { ar: "رفض الاستئناف موضوعًا وتأييد الحكم", en: "Appeal rejected on the merits and judgment affirmed" },
+    summary: {
+      ar: "قضت محكمة الاستئناف بقبول الاستئناف شكلًا ورفضه موضوعًا، وتأييد الحكم السابق القاضي برد الدعوى.",
+      en: "The appellate court accepted the appeal procedurally, rejected it on the merits, and affirmed the prior dismissal.",
+    },
+    challenge: {
+      ar: "المحافظة على الحكم الابتدائي أمام أسباب الاعتراض المقدمة في الاستئناف.",
+      en: "Preserving the first-instance judgment against the grounds raised on appeal.",
+    },
+    action: {
+      ar: "تقديم جواب استئنافي يدعم أسباب الحكم وسلامة النتيجة.",
+      en: "Submitted an appellate response supporting the judgment's reasoning and result.",
+    },
+  },
+  {
+    id: "enforcement-jurisdiction-appeal",
+    file: "assets/legal-documents/cases/نقض حكم لعدم الاختصاص في منازعة تنفيذ - منقح.pdf",
+    title: {
+      ar: "نقض حكم لعدم الاختصاص في منازعة تنفيذ",
+      en: "Judgment overturned for lack of jurisdiction in an enforcement dispute",
+    },
+    category: { ar: "استئناف وتنفيذ", en: "Appeal and enforcement" },
+    amount: { ar: "منازعة تنفيذية", en: "Enforcement dispute" },
+    result: { ar: "نقض الحكم وتقرير اختصاص محكمة التنفيذ", en: "Judgment overturned and enforcement court jurisdiction confirmed" },
+    summary: {
+      ar: "قبلت محكمة الاستئناف الطلب شكلًا وموضوعًا، ونقضت الحكم المستأنف لعدم الاختصاص، وقررت أن الاختصاص ينعقد لمحكمة التنفيذ بجازان.",
+      en: "The appellate court accepted the request, overturned the appealed judgment for lack of jurisdiction, and held that the Jazan Enforcement Court was competent.",
+    },
+    challenge: {
+      ar: "تحديد المحكمة المختصة بنظر النزاع وتصحيح المسار القضائي للدعوى.",
+      en: "Determining the competent court and correcting the claim's judicial route.",
+    },
+    action: {
+      ar: "بناء الاعتراض على قواعد الاختصاص وطبيعة المنازعة التنفيذية.",
+      en: "Built the appeal around jurisdiction rules and the enforcement nature of the dispute.",
+    },
+  },
+  {
+    id: "commercial-judgment-cancelled-non-admission",
+    file: "assets/legal-documents/cases/إلغاء حكم تجاري وعدم قبول الدعوى - منقح.pdf",
+    title: {
+      ar: "إلغاء حكم تجاري والحكم مجددًا بعدم قبول الدعوى",
+      en: "Commercial judgment cancelled and claim ruled inadmissible",
+    },
+    category: { ar: "استئناف تجاري", en: "Commercial appeal" },
+    amount: { ar: "دعوى تجارية", en: "Commercial claim" },
+    result: { ar: "إلغاء الحكم وعدم قبول الدعوى", en: "Judgment cancelled and claim ruled inadmissible" },
+    summary: {
+      ar: "ألغت الدائرة الاستئنافية الحكم الصادر من الدائرة التجارية الأولى، وحكمت مجددًا بعدم قبول الدعوى.",
+      en: "The appellate circuit cancelled the judgment issued by the first commercial circuit and ruled the claim inadmissible.",
+    },
+    challenge: {
+      ar: "إبراز الخلل في قبول الدعوى وأثره على الحكم الابتدائي.",
+      en: "Demonstrating the admissibility defect and its effect on the first-instance judgment.",
+    },
+    action: {
+      ar: "تركيز الاعتراض على شروط القبول والمسار النظامي للدعوى.",
+      en: "Focused the appeal on admissibility requirements and the proper legal route.",
+    },
+  },
+  {
+    id: "enforcement-dismissal-appeal-affirmed",
+    file: "assets/legal-documents/cases/تأييد رد دعوى تنفيذية استئنافيا - منقح.pdf",
+    title: {
+      ar: "تأييد رد دعوى تنفيذية استئنافيًا",
+      en: "Appellate affirmation of an enforcement claim dismissal",
+    },
+    category: { ar: "استئناف تنفيذي", en: "Enforcement appeal" },
+    amount: { ar: "منازعة تنفيذية", en: "Enforcement dispute" },
+    result: { ar: "رفض الاستئناف وتأييد رد الدعوى", en: "Appeal rejected and claim dismissal affirmed" },
+    summary: {
+      ar: "قبلت الدائرة الاستئناف شكلًا ورفضته موضوعًا، وأيدت حكم دائرة التنفيذ الخامسة القاضي برد الدعوى.",
+      en: "The appellate circuit accepted the appeal procedurally, rejected it on the merits, and affirmed the Fifth Enforcement Circuit's dismissal.",
+    },
+    challenge: {
+      ar: "الدفاع عن نتيجة الحكم التنفيذي أمام الاعتراض الاستئنافي.",
+      en: "Defending the enforcement judgment against the appellate challenge.",
+    },
+    action: {
+      ar: "تقديم رد منظم على أسباب الاستئناف وتدعيم سلامة الحكم.",
+      en: "Submitted a structured response to the appeal grounds supporting the judgment.",
     },
   },
 ];
