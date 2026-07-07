@@ -583,10 +583,130 @@ document.getElementById("refreshBtn").addEventListener("click", async () => {
   }
 });
 
+/* ---------------- first-login guided tour ---------------- */
+const TOUR_STEPS = [
+  {
+    target: null,
+    title: "أهلًا بك 👋",
+    body: "هذه جولة سريعة هتشرحلك كل جزء في لوحة التحكم عشان تقدري تتحكمي في الموقع بسهولة تامة. تقدري تتخطيها في أي وقت.",
+  },
+  {
+    target: '[data-section="contact"]',
+    title: "بيانات التواصل",
+    body: "من هنا تعدّلي رقم الهاتف، واتساب، البريد الإلكتروني، العنوان، وساعات العمل — بتظهر تلقائيًا في كل صفحات الموقع.",
+  },
+  {
+    target: '[data-section="texts"]',
+    title: "النصوص التعريفية",
+    body: "من هنا تعدّلي نصوص الصفحة الرئيسية، وصفحة \"من نحن\"، وبيانات قيادة المكتب.",
+  },
+  {
+    target: '[data-section="practices"]',
+    title: "الخدمات / مجالات الاختصاص",
+    body: "من هنا تضيفي أو تعدّلي أو تحذفي خدمات المكتب اللي بتظهر في صفحة الخدمات.",
+  },
+  {
+    target: '[data-section="cases"]',
+    title: "القضايا",
+    body: "من هنا تضيفي أو تعدّلي القضايا، مع إمكانية رفع صورة لكل قضية.",
+  },
+  {
+    target: '[data-section="blog"]',
+    title: "مقالات المدونة",
+    body: "من هنا تضيفي مقالات قصيرة تظهر في صفحة المدونة.",
+  },
+  {
+    target: "#refreshBtn",
+    title: "زر التحديث",
+    body: "لو حد تاني عدّل حاجة، دوسي هنا لتحديث كل البيانات فورًا من غير ما تحتاجي تخرجي وتدخلي تاني.",
+  },
+  {
+    target: "#reportIssueBtn",
+    title: "الإبلاغ عن عطل",
+    body: "لو حصلت أي مشكلة أو حاجة مش شغالة صح، دوسي هنا وهيفتحلك واتساب مباشرة للتواصل.",
+  },
+  {
+    target: '[data-section="account"]',
+    title: "إعدادات الحساب",
+    body: "من هنا تقدري تغيّري كلمة المرور في أي وقت.",
+  },
+  {
+    target: '[data-section="publish"]',
+    title: "⚠️ الخطوة الأهم: حفظ ونشر التعديلات",
+    body: 'أي تعديل تعمليه في أي قسم (تواصل، نصوص، خدمة، قضية، مقالة) بيتحفظ عندك بس، ومش هيظهر على الموقع الحقيقي إلا لما تيجي هنا وتدوسي زر "حفظ ونشر التعديلات". من غير الخطوة دي، أي تعديل مش هيبان لحد.',
+  },
+];
+
+const TOUR_STORAGE_KEY = "jad_admin_tour_done_v1";
+let tourIndex = 0;
+
+function clearTourHighlight() {
+  document.querySelectorAll(".tour-highlight").forEach((el) => el.classList.remove("tour-highlight"));
+}
+
+function showTourStep(index) {
+  clearTourHighlight();
+  const step = TOUR_STEPS[index];
+  document.getElementById("tourStepCount").textContent = `${index + 1} / ${TOUR_STEPS.length}`;
+  document.getElementById("tourTitle").textContent = step.title;
+  document.getElementById("tourBody").textContent = step.body;
+  document.getElementById("tourBackBtn").style.visibility = index === 0 ? "hidden" : "visible";
+  document.getElementById("tourNextBtn").textContent = index === TOUR_STEPS.length - 1 ? "إنهاء الجولة" : "التالي";
+  if (step.target) {
+    const el = document.querySelector(step.target);
+    if (el) el.classList.add("tour-highlight");
+  }
+}
+
+function startTour() {
+  tourIndex = 0;
+  showTourStep(tourIndex);
+  document.getElementById("tourOverlay").classList.add("show");
+}
+
+function endTour() {
+  clearTourHighlight();
+  document.getElementById("tourOverlay").classList.remove("show");
+  localStorage.setItem(TOUR_STORAGE_KEY, "1");
+  showReminderBanner();
+}
+
+document.getElementById("tourNextBtn").addEventListener("click", () => {
+  if (tourIndex >= TOUR_STEPS.length - 1) {
+    endTour();
+    return;
+  }
+  tourIndex += 1;
+  showTourStep(tourIndex);
+});
+
+document.getElementById("tourBackBtn").addEventListener("click", () => {
+  if (tourIndex === 0) return;
+  tourIndex -= 1;
+  showTourStep(tourIndex);
+});
+
+document.getElementById("tourSkipBtn").addEventListener("click", endTour);
+
+/* ---------------- publish reminder banner (every login) ---------------- */
+function showReminderBanner() {
+  const banner = document.getElementById("reminderBanner");
+  window.setTimeout(() => banner.classList.add("show"), 400);
+}
+
+document.getElementById("reminderClose").addEventListener("click", () => {
+  document.getElementById("reminderBanner").classList.remove("show");
+});
+
 /* ---------------- initial load ---------------- */
 (async () => {
   try {
     await refreshAll();
+    if (!localStorage.getItem(TOUR_STORAGE_KEY)) {
+      startTour();
+    } else {
+      showReminderBanner();
+    }
   } catch (err) {
     showError(err.message);
   }

@@ -447,3 +447,143 @@ a { color: inherit; }
   .main { padding: 20px; }
   .toolbar { position: static; justify-content: flex-start; flex-wrap: wrap; }
 }
+
+/* ---------- guided tour ---------- */
+.tour-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(10, 8, 6, 0.6);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.tour-overlay.show { display: flex; }
+
+.tour-card {
+  width: 100%;
+  max-width: 420px;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(20px);
+  border-radius: 18px;
+  padding: 26px 28px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  animation: tourPop 0.25s ease both;
+}
+
+@keyframes tourPop {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.tour-step-count {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--bronze);
+  letter-spacing: 0.3px;
+}
+
+.tour-card h2 {
+  margin: 0 0 10px;
+  font-size: 19px;
+}
+
+.tour-card p#tourBody {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--ink);
+}
+
+.tour-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.tour-actions-nav {
+  display: flex;
+  gap: 8px;
+}
+
+.tour-actions .btn {
+  padding: 9px 16px;
+  font-size: 13px;
+}
+
+.nav-link.tour-highlight {
+  background: rgba(201, 163, 90, 0.24);
+  border-color: rgba(201, 163, 90, 0.6);
+  color: var(--gold-soft);
+  box-shadow: 0 0 0 3px rgba(201, 163, 90, 0.22);
+}
+
+.toolbar-btn.tour-highlight,
+#refreshBtn.tour-highlight,
+#reportIssueBtn.tour-highlight {
+  box-shadow: 0 0 0 4px rgba(201, 163, 90, 0.35);
+}
+
+/* ---------- publish reminder banner ---------- */
+.reminder-banner {
+  position: fixed;
+  bottom: 20px;
+  inset-inline-end: 20px;
+  z-index: 120;
+  max-width: 380px;
+  display: none;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(23, 19, 15, 0.94);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(201, 163, 90, 0.4);
+  box-shadow: var(--shadow);
+  animation: reminderRise 0.3s ease both;
+}
+
+.reminder-banner.show { display: flex; }
+
+@keyframes reminderRise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.reminder-icon { font-size: 18px; flex-shrink: 0; }
+
+.reminder-text {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #f3ead9;
+}
+
+.reminder-text strong { color: var(--gold-soft); }
+
+.reminder-close {
+  background: none;
+  border: none;
+  color: #cbbfa8;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.reminder-close:hover { color: #fff; }
+
+@media (max-width: 480px) {
+  .reminder-banner {
+    inset-inline: 12px;
+    bottom: 12px;
+    max-width: none;
+  }
+}

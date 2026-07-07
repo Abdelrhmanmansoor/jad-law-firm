@@ -219,6 +219,29 @@
     </div>
   </div>
 
+  <!-- ================= First-login guided tour ================= -->
+  <div class="tour-overlay" id="tourOverlay">
+    <div class="tour-card" id="tourCard">
+      <p class="tour-step-count" id="tourStepCount">1 / 10</p>
+      <h2 id="tourTitle">أهلًا بك</h2>
+      <p id="tourBody">هذه جولة سريعة تشرح كل جزء في لوحة التحكم.</p>
+      <div class="tour-actions">
+        <button type="button" class="btn btn-outline" id="tourSkipBtn">تخطي الجولة</button>
+        <div class="tour-actions-nav">
+          <button type="button" class="btn btn-outline" id="tourBackBtn">السابق</button>
+          <button type="button" class="btn btn-gold" id="tourNextBtn">التالي</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= Publish reminder banner (shown every login) ================= -->
+  <div class="reminder-banner" id="reminderBanner">
+    <span class="reminder-icon">🔔</span>
+    <span class="reminder-text">تذكير: أي تعديل تعمليه (تواصل، نصوص، خدمة، قضية، مقالة) لازم بعده تضغطي <strong>"حفظ ونشر التعديلات"</strong> من القائمة الجانبية حتى يظهر فعليًا على الموقع.</span>
+    <button type="button" class="reminder-close" id="reminderClose" aria-label="إغلاق">×</button>
+  </div>
+
   <script src="/admin/js/admin.js"></script>
 </body>
 </html>
