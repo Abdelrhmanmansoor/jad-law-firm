@@ -1081,28 +1081,29 @@ function clientsMarqueeSection() {
     },
   };
 
+  // mode "normal": dark/colored mark, reads fine on a white card (grayscale by default, color on hover)
+  // mode "invert": mark is white/near-white, must be inverted to read on a white card
+  // mode "boost": faint mid-gray mark, needs extra contrast to read on a white card
   const logos = [
-    { src: "assets/clients/rawas.png", alt: "Rawas", tone: "color", size: "mark" },
-    { src: "assets/clients/modern-diesel-machinery.png", alt: "Modern Diesel Machinery", tone: "light", size: "large" },
-    { src: "assets/clients/saudi-coasts.png", alt: "Saudi Coasts", tone: "color", size: "tall" },
-    { src: "assets/clients/brund.png", alt: "Brund", tone: "neutral", size: "wide" },
-    { src: "assets/clients/ithra.png", alt: "ITHRA", tone: "dark", size: "wide" },
-    { src: "assets/clients/hassan-hadi-abdullah.png", alt: "Hassan Hadi Abdullah Co.", tone: "dark", size: "large" },
-    { src: "assets/clients/jadco-logistic.png", alt: "Jadco Logistic", tone: "light", size: "large" },
-    { src: "assets/clients/duja.png", alt: "Duja", tone: "color", size: "tall" },
-    { src: "assets/clients/cold90.png", alt: "Cold90", tone: "light", size: "wide" },
-    { src: "assets/clients/rakaz-industrial.png", alt: "Rakaz Industrial", tone: "light", size: "large" },
-    { src: "assets/clients/imdad-aljanoob.png", alt: "Imdad Aljanoob", tone: "light", size: "large" },
-    { src: "assets/clients/oja.png", alt: "Oja", tone: "neutral", size: "mark" },
+    { src: "assets/clients/rawas.png", alt: "Rawas", mode: "normal" },
+    { src: "assets/clients/modern-diesel-machinery.png", alt: "Modern Diesel Machinery", mode: "invert" },
+    { src: "assets/clients/saudi-coasts.png", alt: "Saudi Coasts", mode: "normal" },
+    { src: "assets/clients/brund.png", alt: "Brund", mode: "boost" },
+    { src: "assets/clients/ithra.png", alt: "ITHRA", mode: "normal" },
+    { src: "assets/clients/hassan-hadi-abdullah.png", alt: "Hassan Hadi Abdullah Co.", mode: "normal" },
+    { src: "assets/clients/jadco-logistic.png", alt: "Jadco Logistic", mode: "invert" },
+    { src: "assets/clients/duja.png", alt: "Duja", mode: "normal" },
+    { src: "assets/clients/cold90.png", alt: "Cold90", mode: "invert" },
+    { src: "assets/clients/rakaz-industrial.png", alt: "Rakaz Industrial", mode: "invert" },
+    { src: "assets/clients/imdad-aljanoob.png", alt: "Imdad Aljanoob", mode: "invert" },
+    { src: "assets/clients/oja.png", alt: "Oja", mode: "boost" },
   ];
 
   const cards = logos
     .map(
       (logo) => `
-        <article class="client-logo-slide client-logo-slide--${logo.tone}">
-          <div class="client-logo-frame client-logo-frame--${logo.size}">
-            <img src="${logo.src}" alt="${logo.alt}" loading="lazy" />
-          </div>
+        <article class="client-logo-slide client-logo-slide--${logo.mode}">
+          <img src="${logo.src}" alt="${logo.alt}" loading="lazy" />
         </article>
       `,
     )
