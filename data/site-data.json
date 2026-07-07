@@ -1,0 +1,552 @@
+{
+  "contact": {
+    "phone": "0548708885",
+    "whatsapp": "966548708885",
+    "email": "mlwri1818@gmail.com",
+    "address": {
+      "ar": "الشاطئ، جيزان 82726، المملكة العربية السعودية",
+      "en": "Al Shati, Jazan 82726, Saudi Arabia"
+    },
+    "hours": {
+      "ar": "الأحد إلى الخميس من 8 ص - 3 م",
+      "en": "Sun to Thu, 8 AM - 3 PM"
+    }
+  },
+  "texts": {
+    "heroKicker": {
+      "ar": "مكتب المحامي جاد العبدالله صيرم",
+      "en": "Jad Alabdullah Law Firm"
+    },
+    "heroLead": {
+      "ar": "نخبة من الكفاءات القانونية تجمعنا لخدمتكم. يضم مكتبنا مجموعة كبرى من المستشارين، والمحامين المرخصين، والكوادر المتدربة، يقودهم المحامي جاد العبدالله بخبرته الواسعة وعميقة الأثر في السلك القانوني. نجاحاتنا تتحدث عنا بملفات وقضايا نوعية تجاوزت قيمتها الإجمالية <span class=\"headline-amount\">المليار ريال</span>، لتكون الثقة هي أساس علاقتنا بوعي قانوني يحمي مصالحكم.",
+      "en": "We provide litigation and legal advisory services for individuals and companies through a disciplined methodology built on analysis, responsiveness, and protection of client interests in Saudi Arabia."
+    },
+    "aboutLead": {
+      "ar": "نخبة من الكفاءات القانونية تجمعنا لخدمتكم. يضم مكتبنا مجموعة كبرى من المستشارين، والمحامين المرخصين، والكوادر المتدربة، يقودهم المحامي جاد العبدالله بخبرته الواسعة وعميقة الأثر في السلك القانوني.",
+      "en": "Jad Alabdullah Law Firm reflects a modern professional model for legal services, grounded in Saudi regulations, precise legal positioning, and disciplined representation before judicial and quasi-judicial bodies."
+    },
+    "aboutBody": {
+      "ar": "نجاحاتنا تتحدث عنا بملفات وقضايا نوعية تجاوزت قيمتها الإجمالية المليار ريال، لتكون الثقة هي أساس علاقتنا بوعي قانوني يحمي مصالحكم.",
+      "en": "We begin with a careful review of facts and documents, then build the right legal recommendation or strategy to protect rights and give clients clarity and confidence in the path ahead."
+    },
+    "founderRole": {
+      "ar": "قيادة المكتب",
+      "en": "Office Leadership"
+    },
+    "founderCaption": {
+      "ar": "حضور رسمي، سرية مهنية، ومنهجية قانونية دقيقة.",
+      "en": "Formal presence, professional confidentiality, and disciplined legal methodology."
+    },
+    "footerText": {
+      "ar": "مكتب قانوني سعودي يقدم خدمات المحاماة والاستشارات القانونية للأفراد والشركات وفق أعلى معايير المهنية والسرية والالتزام.",
+      "en": "A Saudi law office providing litigation and legal advisory services to individuals and companies with professionalism, confidentiality, and commitment."
+    }
+  },
+  "practices": [
+    {
+      "id": "commercial",
+      "icon": "landmark",
+      "title": {
+        "ar": "القضايا التجارية",
+        "en": "Commercial Matters"
+      },
+      "subtitle": {
+        "ar": "حوكمة الشركات وحماية الاستثمارات",
+        "en": "Corporate governance and investment protection"
+      },
+      "desc": {
+        "ar": "منظومة متكاملة لحماية الأنشطة الاستثمارية والتجارية وضمان توافقها مع الأنظمة واللوائح السارية.",
+        "en": "Integrated support for commercial and investment activities with alignment to applicable regulations."
+      },
+      "services": {
+        "ar": [
+          "تأسيس الشركات وحوكمتها",
+          "إعداد عقود التأسيس",
+          "تحويل الكيانات القانونية",
+          "لوائح تنظيم العمل الداخلية",
+          "منازعات الشركاء",
+          "الدمج والاستحواذ",
+          "حماية حقوق الأقلية",
+          "قضايا الإفلاس والتعثر",
+          "إعادة الهيكلة المالية والوقائية",
+          "الوكالات والامتيازات التجارية",
+          "عقود الفرنشايز",
+          "حماية الملكية الفكرية والعلامات التجارية"
+        ],
+        "en": [
+          "Company formation and governance",
+          "Articles of association",
+          "Entity conversion",
+          "Internal work regulations",
+          "Shareholder disputes",
+          "Mergers and acquisitions",
+          "Minority rights protection",
+          "Bankruptcy and distress matters",
+          "Financial and preventive restructuring",
+          "Commercial agencies and franchises",
+          "Franchise agreements",
+          "Intellectual property and trademarks"
+        ]
+      }
+    },
+    {
+      "id": "financial",
+      "icon": "badge-dollar-sign",
+      "title": {
+        "ar": "القضايا المالية",
+        "en": "Financial Matters"
+      },
+      "subtitle": {
+        "ar": "إدارة الأزمات وحماية الائتمان",
+        "en": "Crisis management and credit protection"
+      },
+      "desc": {
+        "ar": "نتعامل مع الملفات المالية المعقدة للشركات والأفراد بهدف حماية الحقوق وتحقيق الاستقرار المالي.",
+        "en": "We handle complex financial files for companies and individuals to protect rights and support stability."
+      },
+      "services": {
+        "ar": [
+          "المنازعات المصرفية والتمويلية",
+          "الترافع أمام اللجان المصرفية والتمويلية",
+          "القضايا ضد البنوك وشركات التمويل",
+          "الكمبيالات والسندات لأمر",
+          "الشيكات بدون رصيد",
+          "إثبات الدفوع النظامية",
+          "إعادة هيكلة الديون",
+          "التسويات الودية",
+          "خطط السداد القانونية",
+          "قضايا سوق المال",
+          "منازعات الأوراق المالية والأسهم",
+          "مخالفات هيئة سوق المال"
+        ],
+        "en": [
+          "Banking and finance disputes",
+          "Representation before banking and finance committees",
+          "Claims against banks and finance companies",
+          "Bills and promissory notes",
+          "Unfunded checks",
+          "Regulatory defenses",
+          "Debt restructuring",
+          "Amicable settlements",
+          "Legal payment plans",
+          "Capital market matters",
+          "Securities and shares disputes",
+          "Capital Market Authority violations"
+        ]
+      }
+    },
+    {
+      "id": "civil",
+      "icon": "scale",
+      "title": {
+        "ar": "القضايا الحقوقية",
+        "en": "Civil Claims"
+      },
+      "subtitle": {
+        "ar": "صون الحقوق واسترداد المظالم",
+        "en": "Protecting rights and recovering claims"
+      },
+      "desc": {
+        "ar": "نعنى بحفظ حقوق الأفراد والكيانات والمطالبة بالتعويضات العادلة عن الإخلال بالالتزامات.",
+        "en": "We protect rights for individuals and entities and pursue fair compensation for breached obligations."
+      },
+      "services": {
+        "ar": [
+          "المطالبات المالية",
+          "دعاوى تحصيل الأموال",
+          "إثبات المديونيات",
+          "استرداد الحقوق",
+          "قضايا التعويض",
+          "المسؤولية التقصيرية",
+          "التعويض عن الأضرار المادية والمعنوية",
+          "إثبات الحقوق وتوثيقها",
+          "صياغة وتوثيق العقود المدنية",
+          "حماية الالتزامات المتبادلة"
+        ],
+        "en": [
+          "Financial claims",
+          "Debt collection lawsuits",
+          "Debt proof",
+          "Rights recovery",
+          "Compensation claims",
+          "Tort liability",
+          "Material and moral damages",
+          "Rights documentation",
+          "Civil contract drafting and notarization",
+          "Mutual obligation protection"
+        ]
+      }
+    },
+    {
+      "id": "enforcement",
+      "icon": "file-check-2",
+      "title": {
+        "ar": "القضايا التنفيذية",
+        "en": "Enforcement Matters"
+      },
+      "subtitle": {
+        "ar": "تحويل الأحكام إلى واقع ملموس",
+        "en": "Turning judgments into real outcomes"
+      },
+      "desc": {
+        "ar": "نتابع تنفيذ الأحكام والسندات ميدانيًا عبر محاكم التنفيذ بأعلى درجات الصرامة والمتابعة.",
+        "en": "We follow through on judgments and enforceable instruments before enforcement courts with disciplined follow-up."
+      },
+      "services": {
+        "ar": [
+          "تنفيذ الأحكام والسندات",
+          "تنفيذ أحكام التحكيم",
+          "تنفيذ الأوراق التجارية",
+          "تتبع الأموال واستردادها",
+          "إجراءات الإفصاح",
+          "الحجز على الحسابات",
+          "الحجز على العقارات والأسهم",
+          "منع السفر عند توافر موجباته النظامية",
+          "منازعات التنفيذ",
+          "الاعتراض على إجراءات التنفيذ الباطلة"
+        ],
+        "en": [
+          "Enforcement of judgments and instruments",
+          "Arbitral award enforcement",
+          "Commercial paper enforcement",
+          "Asset tracing and recovery",
+          "Disclosure procedures",
+          "Account attachment",
+          "Real estate and share attachment",
+          "Travel ban procedures where legally justified",
+          "Enforcement disputes",
+          "Challenges to invalid enforcement actions"
+        ]
+      }
+    },
+    {
+      "id": "real-estate",
+      "icon": "building-2",
+      "title": {
+        "ar": "القضايا العقارية",
+        "en": "Real Estate Matters"
+      },
+      "subtitle": {
+        "ar": "حماية الثروة العقارية والمقاولات",
+        "en": "Real estate and construction protection"
+      },
+      "desc": {
+        "ar": "حماية قانونية للمستثمرين والمطورين والملاك في القطاع العقاري والإنشائي.",
+        "en": "Legal protection for investors, developers, and owners across real estate and construction matters."
+      },
+      "services": {
+        "ar": [
+          "منازعات الملكية والفرز",
+          "قضايا تداخل العقارات",
+          "إثبات الملكية",
+          "حظر التعديات",
+          "فرز وتصفية العقارات المشتركة",
+          "عقود المقاولات والإنشاءات",
+          "قضايا عيوب التنفيذ",
+          "التأخر في التسليم",
+          "صياغة عقود الفيديك",
+          "الاستثمار والتطوير العقاري",
+          "حوكمة الصناديق العقارية",
+          "اتفاقيات التطوير",
+          "نزاعات البيع على الخارطة",
+          "الأقسام والتركات العقارية",
+          "تصفية المساهمات العقارية المتعثرة"
+        ],
+        "en": [
+          "Ownership and subdivision disputes",
+          "Overlapping property claims",
+          "Ownership proof",
+          "Trespass prevention",
+          "Partition of jointly owned property",
+          "Construction contracts",
+          "Defective works claims",
+          "Delivery delay disputes",
+          "FIDIC contract drafting",
+          "Real estate investment and development",
+          "Real estate fund governance",
+          "Development agreements",
+          "Off-plan sale disputes",
+          "Real estate inheritance partitions",
+          "Distressed real estate contribution liquidation"
+        ]
+      }
+    }
+  ],
+  "cases": [
+    {
+      "id": "mortgage-deed-satisfaction-dismissal",
+      "file": "assets/legal-documents/cases/رد دعوى الوفاء بصك رهن عقاري - منقح.pdf",
+      "image": "",
+      "title": {
+        "ar": "رد دعوى الوفاء بسند تنفيذي مرتبط بصك رهن عقاري",
+        "en": "Dismissal of a satisfaction claim involving a mortgage deed"
+      },
+      "category": {
+        "ar": "تنفيذ وتمويل عقاري",
+        "en": "Enforcement and real estate finance"
+      },
+      "amount": {
+        "ar": "منازعة رهن عقاري",
+        "en": "Mortgage enforcement dispute"
+      },
+      "result": {
+        "ar": "رد الدعوى واكتساب الحكم القطعية",
+        "en": "Claim dismissed and judgment became final"
+      },
+      "summary": {
+        "ar": "دعوى وفاء بسند تنفيذي مرتبط بصك رهن عقاري، انتهت إلى رد الدعوى وسقوط حق الاعتراض بعد انقضاء المدة النظامية.",
+        "en": "A satisfaction claim concerning an enforcement instrument linked to a mortgage deed, ending in dismissal and finality after the objection period elapsed."
+      },
+      "challenge": {
+        "ar": "معالجة أثر السند التنفيذي وصك الرهن ضمن إجراءات التنفيذ ومواعيد الاعتراض.",
+        "en": "Addressing the enforcement instrument and mortgage deed within enforcement procedure and objection deadlines."
+      },
+      "action": {
+        "ar": "عرض التسلسل الإجرائي والدفوع المرتبطة بالسند حتى صدور الحكم النهائي.",
+        "en": "Presented the procedural chronology and instrument-related defenses through final judgment."
+      }
+    },
+    {
+      "id": "commercial-contract-invalidity-4-5m",
+      "file": "assets/legal-documents/cases/فساد عقد تجاري والحكم بمبالغ 4.5 مليون - منقح.pdf",
+      "image": "",
+      "title": {
+        "ar": "ثبوت فساد عقد تجاري والحكم بمبالغ تتجاوز 4.5 مليون ريال",
+        "en": "Commercial contract invalidity and awards exceeding SAR 4.5M"
+      },
+      "category": {
+        "ar": "عقود ومنازعات تجارية",
+        "en": "Contracts and commercial disputes"
+      },
+      "amount": {
+        "ar": "أكثر من 4.5 مليون ريال",
+        "en": "Over SAR 4.5M"
+      },
+      "result": {
+        "ar": "ثبوت فساد العقد والحكم بالمبالغ المستحقة",
+        "en": "Contract invalidity established and monetary awards granted"
+      },
+      "summary": {
+        "ar": "نزاع تجاري حول عقد وأعمال منجزة، انتهى الحكم بثبوت فساد العقد وإلزام الأطراف بمبالغ قدرها 1,187,321 ريال و3,312,679 ريال.",
+        "en": "A commercial dispute over a contract and completed works, ending with a finding of invalidity and awards of SAR 1,187,321 and SAR 3,312,679."
+      },
+      "challenge": {
+        "ar": "إثبات فساد العقد وتحديد قيمة الأعمال والمبالغ المستحقة بين أطراف متعددة.",
+        "en": "Establishing contract invalidity and quantifying completed works and liabilities among multiple parties."
+      },
+      "action": {
+        "ar": "ربط المستندات والأعمال المنفذة بالآثار المالية للعقد أمام الدائرة التجارية.",
+        "en": "Connected the documents and completed works to the contract's financial consequences."
+      }
+    },
+    {
+      "id": "commercial-dismissal-appeal-affirmed",
+      "file": "assets/legal-documents/cases/تأييد رد دعوى تجارية استئنافيا - منقح.pdf",
+      "image": "",
+      "title": {
+        "ar": "تأييد رد دعوى تجارية استئنافيًا",
+        "en": "Appellate affirmation of a commercial claim dismissal"
+      },
+      "category": {
+        "ar": "استئناف تجاري",
+        "en": "Commercial appeal"
+      },
+      "amount": {
+        "ar": "دعوى تجارية",
+        "en": "Commercial claim"
+      },
+      "result": {
+        "ar": "رفض الاستئناف موضوعًا وتأييد الحكم",
+        "en": "Appeal rejected on the merits and judgment affirmed"
+      },
+      "summary": {
+        "ar": "قضت محكمة الاستئناف بقبول الاستئناف شكلًا ورفضه موضوعًا، وتأييد الحكم السابق القاضي برد الدعوى.",
+        "en": "The appellate court accepted the appeal procedurally, rejected it on the merits, and affirmed the prior dismissal."
+      },
+      "challenge": {
+        "ar": "المحافظة على الحكم الابتدائي أمام أسباب الاعتراض المقدمة في الاستئناف.",
+        "en": "Preserving the first-instance judgment against the grounds raised on appeal."
+      },
+      "action": {
+        "ar": "تقديم جواب استئنافي يدعم أسباب الحكم وسلامة النتيجة.",
+        "en": "Submitted an appellate response supporting the judgment's reasoning and result."
+      }
+    },
+    {
+      "id": "enforcement-jurisdiction-appeal",
+      "file": "assets/legal-documents/cases/نقض حكم لعدم الاختصاص في منازعة تنفيذ - منقح.pdf",
+      "image": "",
+      "title": {
+        "ar": "نقض حكم لعدم الاختصاص في منازعة تنفيذ",
+        "en": "Judgment overturned for lack of jurisdiction in an enforcement dispute"
+      },
+      "category": {
+        "ar": "استئناف وتنفيذ",
+        "en": "Appeal and enforcement"
+      },
+      "amount": {
+        "ar": "منازعة تنفيذية",
+        "en": "Enforcement dispute"
+      },
+      "result": {
+        "ar": "نقض الحكم وتقرير اختصاص محكمة التنفيذ",
+        "en": "Judgment overturned and enforcement court jurisdiction confirmed"
+      },
+      "summary": {
+        "ar": "قبلت محكمة الاستئناف الطلب شكلًا وموضوعًا، ونقضت الحكم المستأنف لعدم الاختصاص، وقررت أن الاختصاص ينعقد لمحكمة التنفيذ بجازان.",
+        "en": "The appellate court accepted the request, overturned the appealed judgment for lack of jurisdiction, and held that the Jazan Enforcement Court was competent."
+      },
+      "challenge": {
+        "ar": "تحديد المحكمة المختصة بنظر النزاع وتصحيح المسار القضائي للدعوى.",
+        "en": "Determining the competent court and correcting the claim's judicial route."
+      },
+      "action": {
+        "ar": "بناء الاعتراض على قواعد الاختصاص وطبيعة المنازعة التنفيذية.",
+        "en": "Built the appeal around jurisdiction rules and the enforcement nature of the dispute."
+      }
+    },
+    {
+      "id": "commercial-judgment-cancelled-non-admission",
+      "file": "assets/legal-documents/cases/إلغاء حكم تجاري وعدم قبول الدعوى - منقح.pdf",
+      "image": "",
+      "title": {
+        "ar": "إلغاء حكم تجاري والحكم مجددًا بعدم قبول الدعوى",
+        "en": "Commercial judgment cancelled and claim ruled inadmissible"
+      },
+      "category": {
+        "ar": "استئناف تجاري",
+        "en": "Commercial appeal"
+      },
+      "amount": {
+        "ar": "دعوى تجارية",
+        "en": "Commercial claim"
+      },
+      "result": {
+        "ar": "إلغاء الحكم وعدم قبول الدعوى",
+        "en": "Judgment cancelled and claim ruled inadmissible"
+      },
+      "summary": {
+        "ar": "ألغت الدائرة الاستئنافية الحكم الصادر من الدائرة التجارية الأولى، وحكمت مجددًا بعدم قبول الدعوى.",
+        "en": "The appellate circuit cancelled the judgment issued by the first commercial circuit and ruled the claim inadmissible."
+      },
+      "challenge": {
+        "ar": "إبراز الخلل في قبول الدعوى وأثره على الحكم الابتدائي.",
+        "en": "Demonstrating the admissibility defect and its effect on the first-instance judgment."
+      },
+      "action": {
+        "ar": "تركيز الاعتراض على شروط القبول والمسار النظامي للدعوى.",
+        "en": "Focused the appeal on admissibility requirements and the proper legal route."
+      }
+    },
+    {
+      "id": "enforcement-dismissal-appeal-affirmed",
+      "file": "assets/legal-documents/cases/تأييد رد دعوى تنفيذية استئنافيا - منقح.pdf",
+      "image": "",
+      "title": {
+        "ar": "تأييد رد دعوى تنفيذية استئنافيًا",
+        "en": "Appellate affirmation of an enforcement claim dismissal"
+      },
+      "category": {
+        "ar": "استئناف تنفيذي",
+        "en": "Enforcement appeal"
+      },
+      "amount": {
+        "ar": "منازعة تنفيذية",
+        "en": "Enforcement dispute"
+      },
+      "result": {
+        "ar": "رفض الاستئناف وتأييد رد الدعوى",
+        "en": "Appeal rejected and claim dismissal affirmed"
+      },
+      "summary": {
+        "ar": "قبلت الدائرة الاستئناف شكلًا ورفضته موضوعًا، وأيدت حكم دائرة التنفيذ الخامسة القاضي برد الدعوى.",
+        "en": "The appellate circuit accepted the appeal procedurally, rejected it on the merits, and affirmed the Fifth Enforcement Circuit's dismissal."
+      },
+      "challenge": {
+        "ar": "الدفاع عن نتيجة الحكم التنفيذي أمام الاعتراض الاستئنافي.",
+        "en": "Defending the enforcement judgment against the appellate challenge."
+      },
+      "action": {
+        "ar": "تقديم رد منظم على أسباب الاستئناف وتدعيم سلامة الحكم.",
+        "en": "Submitted a structured response to the appeal grounds supporting the judgment."
+      }
+    }
+  ],
+  "blog": [
+    {
+      "id": "commercial-lawyer",
+      "category": {
+        "ar": "تجاري",
+        "en": "Commercial"
+      },
+      "title": {
+        "ar": "متى تحتاج إلى محام تجاري؟",
+        "en": "When do you need a commercial lawyer?"
+      },
+      "summary": {
+        "ar": "علامات مبكرة تستدعي مراجعة قانونية قبل توقيع عقد أو الدخول في شراكة.",
+        "en": "Early signs that call for legal review before signing a contract or entering a partnership."
+      }
+    },
+    {
+      "id": "contracts",
+      "category": {
+        "ar": "عقود",
+        "en": "Contracts"
+      },
+      "title": {
+        "ar": "أهمية توثيق العقود في حماية الحقوق",
+        "en": "Why documented contracts protect rights"
+      },
+      "summary": {
+        "ar": "التوثيق الدقيق يقلل النزاعات ويجعل الالتزامات قابلة للإثبات.",
+        "en": "Precise documentation reduces disputes and makes obligations easier to prove."
+      }
+    },
+    {
+      "id": "distress",
+      "category": {
+        "ar": "مالي",
+        "en": "Finance"
+      },
+      "title": {
+        "ar": "كيف تتعامل الشركات مع التعثر المالي؟",
+        "en": "How companies can handle financial distress"
+      },
+      "summary": {
+        "ar": "مسارات نظامية تساعد على إدارة الديون والتفاوض قبل تفاقم المخاطر.",
+        "en": "Regulatory paths that help manage debts and negotiate before risks escalate."
+      }
+    },
+    {
+      "id": "enforcement",
+      "category": {
+        "ar": "تنفيذ",
+        "en": "Enforcement"
+      },
+      "title": {
+        "ar": "خطوات تنفيذ الأحكام في السعودية",
+        "en": "Judgment enforcement steps in Saudi Arabia"
+      },
+      "summary": {
+        "ar": "نظرة عملية على تحويل الحكم إلى إجراءات تنفيذية متابعة.",
+        "en": "A practical look at turning a judgment into followed enforcement procedures."
+      }
+    },
+    {
+      "id": "real-estate-disputes",
+      "category": {
+        "ar": "عقاري",
+        "en": "Real Estate"
+      },
+      "title": {
+        "ar": "أبرز النزاعات العقارية وطرق الوقاية منها",
+        "en": "Common real estate disputes and prevention"
+      },
+      "summary": {
+        "ar": "قراءة للعقود والمستندات قبل النزاع تقلل احتمالات التعثر.",
+        "en": "Reviewing contracts and documents before disputes lowers the chance of disruption."
+      }
+    }
+  ]
+}

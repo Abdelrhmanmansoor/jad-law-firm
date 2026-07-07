@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>لوحة تحكم موقع جاد العبدالله للمحاماة</title>
+  <link rel="stylesheet" href="/admin/css/admin.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-brand">جاد العبدالله للمحاماة</div>
+      <div class="sidebar-sub">لوحة تحكم المحتوى</div>
+
+      <a class="nav-link active" data-section="contact">بيانات التواصل</a>
+      <a class="nav-link" data-section="texts">النصوص التعريفية</a>
+      <a class="nav-link" data-section="practices">الخدمات / مجالات الاختصاص</a>
+      <a class="nav-link" data-section="cases">القضايا</a>
+      <a class="nav-link" data-section="blog">مقالات المدونة</a>
+      <a class="nav-link" data-section="publish">حفظ ونشر التعديلات</a>
+      <a class="nav-link" data-section="account">إعدادات الحساب</a>
+
+      <div class="sidebar-footer">
+        مسجّل الدخول باسم: <strong id="whoami">...</strong><br />
+        <a href="#" id="logoutLink" style="color:#e9d3a3;">تسجيل الخروج</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div id="globalAlert" class="alert alert-error" style="margin-bottom:20px;"></div>
+      <div id="globalSuccess" class="alert alert-success" style="margin-bottom:20px;"></div>
+
+      <!-- ================= CONTACT ================= -->
+      <section class="content-section" id="section-contact">
+        <div class="main-header">
+          <div>
+            <h1>بيانات التواصل</h1>
+            <p>رقم الهاتف، واتساب، البريد، العنوان، وساعات العمل تظهر تلقائيًا في كل صفحات الموقع.</p>
+          </div>
+        </div>
+        <form class="panel" id="contactForm">
+          <div class="grid-2">
+            <div class="field">
+              <label>رقم الهاتف (بدون رمز الدولة، كما يظهر في الموقع)</label>
+              <input type="text" id="c_phone" placeholder="0548708885" required />
+            </div>
+            <div class="field">
+              <label>رقم واتساب (بصيغة دولية بدون + أو أصفار، مثال: 966548708885)</label>
+              <input type="text" id="c_whatsapp" placeholder="966548708885" required />
+            </div>
+          </div>
+          <div class="field">
+            <label>البريد الإلكتروني</label>
+            <input type="email" id="c_email" required />
+          </div>
+          <div class="grid-2">
+            <div class="lang-block">
+              <div class="lang-tag">العنوان - عربي</div>
+              <textarea id="c_address_ar" rows="2" required></textarea>
+            </div>
+            <div class="lang-block">
+              <div class="lang-tag">Address - English</div>
+              <textarea id="c_address_en" rows="2" required></textarea>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="lang-block">
+              <div class="lang-tag">ساعات العمل - عربي</div>
+              <input type="text" id="c_hours_ar" required />
+            </div>
+            <div class="lang-block">
+              <div class="lang-tag">Working Hours - English</div>
+              <input type="text" id="c_hours_en" required />
+            </div>
+          </div>
+          <button type="submit" class="btn btn-gold">حفظ بيانات التواصل</button>
+        </form>
+      </section>
+
+      <!-- ================= TEXTS ================= -->
+      <section class="content-section" id="section-texts" style="display:none;">
+        <div class="main-header">
+          <div>
+            <h1>النصوص التعريفية</h1>
+            <p>نصوص الصفحة الرئيسية، مقدمة "من نحن"، وبيانات قيادة المكتب.</p>
+          </div>
+        </div>
+        <form class="panel" id="textsForm">
+          <div id="textsFields"></div>
+          <button type="submit" class="btn btn-gold">حفظ النصوص</button>
+        </form>
+      </section>
+
+      <!-- ================= PRACTICES ================= -->
+      <section class="content-section" id="section-practices" style="display:none;">
+        <div class="main-header">
+          <div>
+            <h1>الخدمات / مجالات الاختصاص</h1>
+            <p>كل خدمة تظهر ببطاقة في صفحة "مجالات الاختصاص" وصفحتها التفصيلية.</p>
+          </div>
+          <button class="btn btn-gold" id="newPracticeBtn">+ إضافة خدمة جديدة</button>
+        </div>
+        <div class="panel">
+          <p class="tabs-note">الخدمات الخمس الأساسية معرّفاتها ثابتة ومرتبطة بتصميم الصفحة الرئيسية، يمكن تعديل نصوصها لكن يفضّل عدم حذفها. يمكنك إضافة خدمات جديدة بحرية.</p>
+          <div id="practicesList"></div>
+        </div>
+      </section>
+
+      <!-- ================= CASES ================= -->
+      <section class="content-section" id="section-cases" style="display:none;">
+        <div class="main-header">
+          <div>
+            <h1>القضايا</h1>
+            <p>القضايا المعروضة في صفحة "قضايانا" مع ملخص كل قضية والملف/الصورة المرفقة.</p>
+          </div>
+          <button class="btn btn-gold" id="newCaseBtn">+ إضافة قضية جديدة</button>
+        </div>
+        <div class="panel">
+          <div id="casesList"></div>
+        </div>
+      </section>
+
+      <!-- ================= BLOG ================= -->
+      <section class="content-section" id="section-blog" style="display:none;">
+        <div class="main-header">
+          <div>
+            <h1>مقالات المدونة</h1>
+            <p>مقالات قصيرة تظهر في صفحة المدونة.</p>
+          </div>
+          <button class="btn btn-gold" id="newBlogBtn">+ إضافة مقالة جديدة</button>
+        </div>
+        <div class="panel">
+          <div id="blogList"></div>
+        </div>
+      </section>
+
+      <!-- ================= PUBLISH ================= -->
+      <section class="content-section" id="section-publish" style="display:none;">
+        <div class="main-header">
+          <div>
+            <h1>حفظ ونشر التعديلات</h1>
+            <p>يقوم هذا الزر برفع كل التعديلات المحفوظة إلى GitHub، ليتم تحديث الموقع المنشور تلقائيًا.</p>
+          </div>
+        </div>
+        <div class="panel">
+          <button class="btn btn-primary" id="publishBtn" style="width:auto; padding:14px 30px;">حفظ ونشر التعديلات</button>
+          <p class="tabs-note" style="margin-top:14px;">لن يتم الرفع إذا لم توجد أي تغييرات جديدة.</p>
+          <div id="publishLog" class="publish-log" style="display:none; margin-top:16px;"></div>
+        </div>
+      </section>
+
+      <!-- ================= ACCOUNT ================= -->
+      <section class="content-section" id="section-account" style="display:none;">
+        <div class="main-header">
+          <div>
+            <h1>إعدادات الحساب</h1>
+            <p>تغيير كلمة مرور الدخول إلى لوحة التحكم.</p>
+          </div>
+        </div>
+        <form class="panel" id="passwordForm" style="max-width:420px;">
+          <div class="field">
+            <label>كلمة المرور الحالية</label>
+            <input type="password" id="p_current" required />
+          </div>
+          <div class="field">
+            <label>كلمة المرور الجديدة</label>
+            <input type="password" id="p_new" required />
+          </div>
+          <div class="field">
+            <label>تأكيد كلمة المرور الجديدة</label>
+            <input type="password" id="p_confirm" required />
+          </div>
+          <button type="submit" class="btn btn-gold">تحديث كلمة المرور</button>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <!-- ================= Item edit modal (practices/cases/blog) ================= -->
+  <div class="modal-overlay" id="itemModal">
+    <div class="modal-box" style="max-width:640px; max-height:88vh; overflow-y:auto;">
+      <h2 id="itemModalTitle">إضافة عنصر</h2>
+      <form id="itemForm"></form>
+    </div>
+  </div>
+
+  <!-- ================= Confirm delete modal ================= -->
+  <div class="modal-overlay" id="confirmModal">
+    <div class="modal-box">
+      <h2>تأكيد الحذف</h2>
+      <p id="confirmMessage">هل أنت متأكد من حذف هذا العنصر؟ لا يمكن التراجع بعد الحذف.</p>
+      <div class="modal-actions">
+        <button class="btn btn-outline" id="confirmCancel">إلغاء</button>
+        <button class="btn btn-danger" id="confirmOk">حذف نهائي</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/admin/js/admin.js"></script>
+</body>
+</html>

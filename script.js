@@ -23,6 +23,7 @@ const content = {
     topbarLocation: "الشاطئ، جيزان 82726، المملكة العربية السعودية",
     topbarHours: "الأحد إلى الخميس من 8 ص - 3 م",
     footerAddress: "الشاطئ، جيزان 82726، المملكة العربية السعودية",
+    // NOTE: contact defaults above are placeholders overwritten at runtime from data/site-data.json via siteConfig
     footerText:
       "مكتب قانوني سعودي يقدم خدمات المحاماة والاستشارات القانونية للأفراد والشركات وفق أعلى معايير المهنية والسرية والالتزام.",
     siteCredit: "تصميم وبرمجة الموقع بواسطة",
@@ -215,11 +216,19 @@ const content = {
   },
 };
 
+const siteConfig = {
+  phone: "0548708885",
+  whatsapp: "966548708885",
+  email: "mlwri1818@gmail.com",
+  address: { ar: "الشاطئ، جيزان 82726، المملكة العربية السعودية", en: "Al Shati, Jazan 82726, Saudi Arabia" },
+  hours: { ar: "الأحد إلى الخميس من 8 ص - 3 م", en: "Sun to Thu, 8 AM - 3 PM" },
+};
+
 const practices = [
   {
     id: "commercial",
     icon: "landmark",
-    titleKey: "commercialTitle",
+    title: { ar: "القضايا التجارية", en: "Commercial Matters" },
     subtitle: {
       ar: "حوكمة الشركات وحماية الاستثمارات",
       en: "Corporate governance and investment protection",
@@ -262,7 +271,7 @@ const practices = [
   {
     id: "financial",
     icon: "badge-dollar-sign",
-    titleKey: "financialTitle",
+    title: { ar: "القضايا المالية", en: "Financial Matters" },
     subtitle: { ar: "إدارة الأزمات وحماية الائتمان", en: "Crisis management and credit protection" },
     desc: {
       ar: "نتعامل مع الملفات المالية المعقدة للشركات والأفراد بهدف حماية الحقوق وتحقيق الاستقرار المالي.",
@@ -302,7 +311,7 @@ const practices = [
   {
     id: "civil",
     icon: "scale",
-    titleKey: "civilTitle",
+    title: { ar: "القضايا الحقوقية", en: "Civil Claims" },
     subtitle: { ar: "صون الحقوق واسترداد المظالم", en: "Protecting rights and recovering claims" },
     desc: {
       ar: "نعنى بحفظ حقوق الأفراد والكيانات والمطالبة بالتعويضات العادلة عن الإخلال بالالتزامات.",
@@ -338,7 +347,7 @@ const practices = [
   {
     id: "enforcement",
     icon: "file-check-2",
-    titleKey: "enforcementTitle",
+    title: { ar: "القضايا التنفيذية", en: "Enforcement Matters" },
     subtitle: { ar: "تحويل الأحكام إلى واقع ملموس", en: "Turning judgments into real outcomes" },
     desc: {
       ar: "نتابع تنفيذ الأحكام والسندات ميدانيًا عبر محاكم التنفيذ بأعلى درجات الصرامة والمتابعة.",
@@ -374,7 +383,7 @@ const practices = [
   {
     id: "real-estate",
     icon: "building-2",
-    titleKey: "realEstateTitle",
+    title: { ar: "القضايا العقارية", en: "Real Estate Matters" },
     subtitle: { ar: "حماية الثروة العقارية والمقاولات", en: "Real estate and construction protection" },
     desc: {
       ar: "حماية قانونية للمستثمرين والمطورين والملاك في القطاع العقاري والإنشائي.",
@@ -877,7 +886,7 @@ function practicesGrid(limit) {
       (item) => `
         <article class="practice-card">
           <div class="icon-box">${icon(item.icon)}</div>
-          <h3>${t(item.titleKey)}</h3>
+          <h3>${local(item.title)}</h3>
           <p class="pill">${local(item.subtitle)}</p>
           <p>${local(item.desc)}</p>
           <a class="glass-button" href="#/practice/${item.id}">${t("viewDetails")}</a>
@@ -1013,7 +1022,7 @@ function serviceShowcaseSection() {
             (item) => `
               <article class="service-panel" style="background-image:linear-gradient(rgba(10, 12, 16, 0.74), rgba(10, 12, 16, 0.74)), url('${item.image}')">
                 <div class="service-panel-icon">${icon(practices.find((entry) => entry.id === item.id)?.icon || "briefcase-business")}</div>
-                <h3>${t(practices.find((entry) => entry.id === item.id)?.titleKey || "commercialTitle")}</h3>
+                <h3>${local(practices.find((entry) => entry.id === item.id)?.title || practices[0].title)}</h3>
                 <ul>
                   ${item.bullets[lang].map((bullet) => `<li>${bullet}</li>`).join("")}
                 </ul>
@@ -1126,10 +1135,10 @@ function mapSection() {
       phoneLabel: "الهاتف",
       emailLabel: "البريد الإلكتروني",
       hoursLabel: "ساعات العمل",
-      address: "الشاطئ، جيزان 82726، المملكة العربية السعودية",
-      phone: "0548708885",
-      email: "mlwri1818@gmail.com",
-      hours: "الأحد إلى الخميس من 8 ص - 3 م",
+      address: siteConfig.address.ar,
+      phone: siteConfig.phone,
+      email: siteConfig.email,
+      hours: siteConfig.hours.ar,
       cta: "تواصل عبر واتساب",
     },
     en: {
@@ -1140,10 +1149,10 @@ function mapSection() {
       phoneLabel: "Phone",
       emailLabel: "Email",
       hoursLabel: "Working Hours",
-      address: "Al Shati, Jazan 82726, Saudi Arabia",
-      phone: "0548708885",
-      email: "mlwri1818@gmail.com",
-      hours: "Sun to Thu, 8 AM - 3 PM",
+      address: siteConfig.address.en,
+      phone: siteConfig.phone,
+      email: siteConfig.email,
+      hours: siteConfig.hours.en,
       cta: "Contact on WhatsApp",
     },
   };
@@ -1177,7 +1186,7 @@ function mapSection() {
               </li>
               <li>
                 <strong>${copy.phoneLabel}</strong>
-                <a class="phone-ltr" href="tel:0548708885">${copy.phone}</a>
+                <a class="phone-ltr" href="tel:${siteConfig.phone}">${copy.phone}</a>
               </li>
               <li>
                 <strong>${copy.emailLabel}</strong>
@@ -1188,7 +1197,7 @@ function mapSection() {
                 <span>${copy.hours}</span>
               </li>
             </ul>
-            <a class="dark-button" href="https://wa.me/966548708885" target="_blank" rel="noreferrer">${copy.cta}</a>
+            <a class="dark-button" href="https://wa.me/${siteConfig.whatsapp}" target="_blank" rel="noreferrer">${copy.cta}</a>
           </div>
         </div>
       </div>
@@ -1363,7 +1372,7 @@ function solutionShowcase() {
               <a class="solution-row" href="#/practice/${item.id}">
                 <span>${String(index + 1).padStart(2, "0")}</span>
                 <div>
-                  <strong>${t(item.titleKey)}</strong>
+                  <strong>${local(item.title)}</strong>
                   <small>${local(item.subtitle)}</small>
                 </div>
                 ${icon("arrow-up-left")}
@@ -1515,6 +1524,7 @@ function caseWinsSection(limit) {
 function caseWinCard(item) {
   return `
     <article class="case-win-card">
+      ${item.image ? `<img class="case-win-image" src="${encodeURI(item.image)}" alt="" loading="lazy" />` : ""}
       <span class="pill">${local(item.category)}</span>
       <h3>${local(item.title)}</h3>
       <p>${local(item.summary)}</p>
@@ -1548,6 +1558,7 @@ function caseDetailPage(id) {
     `
       <div class="case-detail-layout">
         <aside class="case-detail-panel">
+          ${item.image ? `<img class="case-win-image" src="${encodeURI(item.image)}" alt="" loading="lazy" />` : ""}
           <span class="pill">${local(item.category)}</span>
           <h3>${lang === "ar" ? "بيانات الملف" : "Matter Snapshot"}</h3>
           <dl>
@@ -1617,7 +1628,7 @@ function contactPreview() {
         <h2>${lang === "ar" ? "ابدأ استشارتك القانونية بثقة" : "Start your legal consultation with confidence"}</h2>
         <p class="lead">${lang === "ar" ? "فريقنا مستعد لدراسة طلبك وتوجيهك للمسار القانوني الأنسب بسرية ومهنية." : "Our team is ready to review your request and guide you to the right legal route with confidentiality and professionalism."}</p>
         <div class="hero-actions">
-        <a class="dark-button" href="https://wa.me/966548708885" target="_blank" rel="noreferrer">${lang === "ar" ? "تواصل عبر واتساب" : "Contact via WhatsApp"}</a>
+        <a class="dark-button" href="https://wa.me/${siteConfig.whatsapp}" target="_blank" rel="noreferrer">${lang === "ar" ? "تواصل عبر واتساب" : "Contact via WhatsApp"}</a>
           <a class="glass-button" href="#/contact">${t("bookConsultation")}</a>
         </div>
       </div>
@@ -1639,7 +1650,7 @@ function subPage(title, lead, body) {
 function practiceDetail(id) {
   const item = practices.find((practice) => practice.id === id) || practices[0];
   return subPage(
-    t(item.titleKey),
+    local(item.title),
     local(item.desc),
     `
       <div class="detail-layout">
@@ -1700,9 +1711,9 @@ function contactPage() {
         <div class="contact-card">
           <h3>${t("directContact")}</h3>
           <p>${t("noSensitiveInfo")}</p>
-          <a class="phone-ltr" href="tel:0548708885">0548708885</a>
-          <a href="https://wa.me/966548708885" target="_blank" rel="noreferrer">WhatsApp</a>
-          <a href="mailto:mlwri1818@gmail.com">mlwri1818@gmail.com</a>
+          <a class="phone-ltr" href="tel:${siteConfig.phone}">${siteConfig.phone}</a>
+          <a href="https://wa.me/${siteConfig.whatsapp}" target="_blank" rel="noreferrer">WhatsApp</a>
+          <a href="mailto:${siteConfig.email}">${siteConfig.email}</a>
         </div>
         <form class="contact-card contact-form">
           <input placeholder="${t("formName")}" required />
@@ -1710,7 +1721,7 @@ function contactPage() {
           <input type="email" placeholder="${t("formEmail")}" />
           <select>
             <option>${t("formService")}</option>
-            ${practices.map((item) => `<option>${t(item.titleKey)}</option>`).join("")}
+            ${practices.map((item) => `<option>${local(item.title)}</option>`).join("")}
           </select>
           <textarea placeholder="${t("formMessage")}"></textarea>
           <button class="dark-button" type="submit">${t("formSubmit")}</button>
@@ -1764,11 +1775,87 @@ document.addEventListener("submit", (event) => {
     event.preventDefault();
     const note = lang === "ar" ? "تم تجهيز الطلب. يرجى التواصل عبر واتساب لإرساله مباشرة." : "Your request is ready. Please continue through WhatsApp to send it directly.";
     alert(note);
-    window.open("https://wa.me/966548708885", "_blank", "noopener,noreferrer");
+    window.open(`https://wa.me/${siteConfig.whatsapp}`, "_blank", "noopener,noreferrer");
   }
 });
 
 window.addEventListener("hashchange", render);
 window.addEventListener("scroll", syncHeaderState, { passive: true });
 window.addEventListener("load", syncHeaderState);
-render();
+
+function replaceArray(target, items) {
+  if (!Array.isArray(items)) return;
+  target.length = 0;
+  target.push(...items);
+}
+
+function applySiteData(dataFile) {
+  if (!dataFile || typeof dataFile !== "object") return;
+
+  if (dataFile.contact) {
+    const c = dataFile.contact;
+    if (c.phone) siteConfig.phone = c.phone;
+    if (c.whatsapp) siteConfig.whatsapp = c.whatsapp;
+    if (c.email) siteConfig.email = c.email;
+    if (c.address) siteConfig.address = c.address;
+    if (c.hours) siteConfig.hours = c.hours;
+
+    ["ar", "en"].forEach((lng) => {
+      content[lng].topbarPhone = siteConfig.phone;
+      content[lng].topbarEmail = siteConfig.email;
+      content[lng].topbarLocation = siteConfig.address[lng] ?? content[lng].topbarLocation;
+      content[lng].topbarHours = siteConfig.hours[lng] ?? content[lng].topbarHours;
+      content[lng].footerAddress = siteConfig.address[lng] ?? content[lng].footerAddress;
+    });
+
+    const whatsappHref = `https://wa.me/${siteConfig.whatsapp}`;
+    const whatsappFloat = document.getElementById("whatsappFloat");
+    if (whatsappFloat) whatsappFloat.href = whatsappHref;
+    const footerPhone = document.getElementById("footerPhoneLink");
+    if (footerPhone) {
+      footerPhone.href = `tel:${siteConfig.phone}`;
+      footerPhone.textContent = siteConfig.phone;
+    }
+    const footerEmail = document.getElementById("footerEmailLink");
+    if (footerEmail) {
+      footerEmail.href = `mailto:${siteConfig.email}`;
+      footerEmail.textContent = siteConfig.email;
+    }
+  }
+
+  if (dataFile.texts) {
+    const texts = dataFile.texts;
+    ["ar", "en"].forEach((lng) => {
+      if (texts.heroKicker?.[lng]) content[lng].heroKicker = texts.heroKicker[lng];
+      if (texts.heroLead?.[lng]) content[lng].heroLead = texts.heroLead[lng];
+      if (texts.aboutLead?.[lng]) content[lng].aboutLead = texts.aboutLead[lng];
+      if (texts.aboutBody?.[lng]) content[lng].aboutBody = texts.aboutBody[lng];
+      if (texts.founderRole?.[lng]) content[lng].founderRole = texts.founderRole[lng];
+      if (texts.founderCaption?.[lng]) content[lng].founderCaption = texts.founderCaption[lng];
+      if (texts.footerText?.[lng]) content[lng].footerText = texts.footerText[lng];
+    });
+  }
+
+  if (Array.isArray(dataFile.practices) && dataFile.practices.length) {
+    replaceArray(practices, dataFile.practices);
+  }
+  if (Array.isArray(dataFile.cases) && dataFile.cases.length) {
+    replaceArray(caseWins, dataFile.cases);
+  }
+  if (Array.isArray(dataFile.blog) && dataFile.blog.length) {
+    replaceArray(blogPosts, dataFile.blog);
+  }
+}
+
+async function loadSiteData() {
+  try {
+    const res = await fetch("data/site-data.json", { cache: "no-store" });
+    if (!res.ok) return;
+    const dataFile = await res.json();
+    applySiteData(dataFile);
+  } catch (err) {
+    console.warn("تعذر تحميل بيانات الموقع، سيتم استخدام المحتوى الافتراضي.", err);
+  }
+}
+
+loadSiteData().finally(() => render());

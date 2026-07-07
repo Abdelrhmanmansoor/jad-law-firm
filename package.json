@@ -1,0 +1,17 @@
+{
+  "name": "jad-law-firm-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "موقع مكتب جاد العبدالله للمحاماة + لوحة تحكم محلية لإدارة المحتوى",
+  "scripts": {
+    "admin": "node server/server.js",
+    "site": "python -m http.server 4173 --bind 127.0.0.1"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "multer": "^2.2.0"
+  }
+}

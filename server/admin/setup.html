@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>إعداد لوحة التحكم لأول مرة</title>
+  <link rel="stylesheet" href="/admin/css/admin.css" />
+</head>
+<body>
+  <div class="auth-shell">
+    <div class="auth-card">
+      <h1>إنشاء حساب الدخول</h1>
+      <p class="sub">هذه أول مرة يتم فيها فتح لوحة التحكم. الرجاء إنشاء اسم مستخدم وكلمة مرور لحماية اللوحة.</p>
+      <div id="alertBox" class="alert alert-error"></div>
+      <form id="setupForm">
+        <div class="field">
+          <label for="username">اسم المستخدم</label>
+          <input type="text" id="username" name="username" autocomplete="username" required />
+          <small class="hint">حروف وأرقام إنجليزية فقط، 3 خانات على الأقل.</small>
+        </div>
+        <div class="field">
+          <label for="password">كلمة المرور</label>
+          <input type="password" id="password" name="password" autocomplete="new-password" required />
+          <small class="hint">8 خانات على الأقل.</small>
+        </div>
+        <div class="field">
+          <label for="confirmPassword">تأكيد كلمة المرور</label>
+          <input type="password" id="confirmPassword" name="confirmPassword" autocomplete="new-password" required />
+        </div>
+        <button type="submit" class="btn btn-primary" id="submitBtn">إنشاء الحساب والدخول</button>
+      </form>
+    </div>
+  </div>
+  <script>
+    const form = document.getElementById("setupForm");
+    const alertBox = document.getElementById("alertBox");
+    const submitBtn = document.getElementById("submitBtn");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      alertBox.classList.remove("show");
+      submitBtn.disabled = true;
+      submitBtn.textContent = "جارٍ الإنشاء...";
+      try {
+        const res = await fetch("/api/setup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: document.getElementById("username").value.trim(),
+            password: document.getElementById("password").value,
+            confirmPassword: document.getElementById("confirmPassword").value,
+          }),
+        });
+        const result = await res.json();
+        if (!result.ok) throw new Error(result.error || "حدث خطأ غير متوقع.");
+        window.location.href = "/admin/dashboard.html";
+      } catch (err) {
+        alertBox.textContent = err.message;
+        alertBox.classList.add("show");
+        submitBtn.disabled = false;
+        submitBtn.textContent = "إنشاء الحساب والدخول";
+      }
+    });
+  </script>
+</body>
+</html>

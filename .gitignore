@@ -1,2 +1,9 @@
 tmp_pdf_extract.json
 tmp_pdf_previews/
+
+# Admin panel local files - do not commit
+node_modules/
+.env
+data/admin-user.json
+data/.session-secret
+data/backups/
