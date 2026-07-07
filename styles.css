@@ -1832,17 +1832,12 @@ html[dir="rtl"] .clients-marquee-track {
 }
 
 .site-footer {
-  width: min(1280px, calc(100% - 24px));
-  margin: 96px auto 0;
-  padding: 76px 48px 28px;
-  display: grid;
-  grid-template-columns: 1.4fr 0.85fr 0.85fr 1.1fr;
-  gap: 40px;
-  border-radius: 32px 32px 0 0;
+  width: min(1200px, calc(100% - 24px));
+  margin: 64px auto 0;
+  padding: 40px 40px 20px;
+  border-radius: 20px 20px 0 0;
   color: #fffdf8;
-  background:
-    radial-gradient(circle at 15% 0%, rgba(201, 163, 90, 0.14), transparent 42%),
-    linear-gradient(160deg, #171310 0%, #201a15 55%, #2c2419 100%);
+  background: linear-gradient(160deg, #17130f 0%, #1e1912 100%);
   position: relative;
   overflow: hidden;
   border-top: 1px solid rgba(233, 211, 163, 0.22);
@@ -1853,36 +1848,46 @@ html[dir="rtl"] .clients-marquee-track {
   position: absolute;
   inset: 0 0 auto;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(233, 211, 163, 0.55), transparent);
+  background: linear-gradient(90deg, transparent, rgba(233, 211, 163, 0.5), transparent);
+}
+
+.footer-main {
+  display: grid;
+  grid-template-columns: 1.3fr 0.8fr 0.8fr 1fr;
+  gap: 28px;
 }
 
 .site-footer p,
 .site-footer small,
 .site-footer span {
-  color: rgba(247, 242, 234, 0.68);
+  color: rgba(247, 242, 234, 0.62);
 }
 
 .site-footer a,
 .site-footer span {
-  display: block;
-  margin-bottom: 11px;
-  font-size: 15px;
-  line-height: 1.8;
+  font-size: 13.5px;
+  line-height: 1.6;
 }
 
 .site-footer h3 {
-  margin-bottom: 18px;
-  font-size: 14px;
+  margin: 0 0 12px;
+  font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.4px;
-  line-height: 1.25;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
   color: var(--gold-soft);
   text-transform: uppercase;
 }
 
 .footer-brand {
-  margin-bottom: 22px;
+  margin-bottom: 12px;
   align-items: center;
+  gap: 10px;
+}
+
+.footer-brand .brand-mark {
+  width: 34px;
+  height: 34px;
 }
 
 .footer-brand-copy {
@@ -1892,50 +1897,45 @@ html[dir="rtl"] .clients-marquee-track {
 
 .site-footer .brand strong {
   color: #fffdf8;
-  font-size: 22px;
+  font-size: 16px;
 }
 
 .site-footer .brand small {
-  color: rgba(255, 248, 235, 0.6);
-  font-size: 13px;
+  color: rgba(255, 248, 235, 0.55);
+  font-size: 12px;
 }
 
-.site-footer > div:first-child p {
-  max-width: 400px;
-  font-size: 15px;
-  line-height: 1.9;
-  margin-bottom: 22px;
+.footer-intro p {
+  max-width: 320px;
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 0;
 }
 
 .footer-bottom {
-  grid-column: 1 / -1;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 12px;
-  padding-top: 22px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 8px;
+  margin-top: 28px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .copyright {
-  font-size: 13px;
-  line-height: 1.6;
+  font-size: 12px;
   margin: 0;
 }
 
 .site-credit {
   margin: 0;
-  color: rgba(255, 248, 235, 0.46);
-  font-size: 12px;
-  line-height: 1.6;
+  color: rgba(255, 248, 235, 0.4);
+  font-size: 11px;
 }
 
 .site-credit a {
-  display: inline;
-  margin: 0;
-  color: rgba(233, 211, 163, 0.78);
+  color: rgba(233, 211, 163, 0.75);
   font-size: inherit;
 }
 
@@ -1944,24 +1944,19 @@ html[dir="rtl"] .clients-marquee-track {
 }
 
 .footer-intro {
-  max-width: 430px;
-}
-
-.footer-column {
-  padding-top: 4px;
+  max-width: 320px;
 }
 
 .footer-links {
-  display: grid;
-  gap: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .footer-links a {
   width: fit-content;
-  padding-bottom: 2px;
-  margin-bottom: 0;
   position: relative;
-  color: rgba(255, 248, 235, 0.78);
+  color: rgba(255, 248, 235, 0.7);
   transition: color 0.2s ease;
 }
 
@@ -1983,49 +1978,35 @@ html[dir="rtl"] .clients-marquee-track {
   width: 100%;
 }
 
-.footer-pill-row {
+.footer-contact-list {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.footer-pill {
-  padding: 7px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 999px;
-  color: rgba(255, 248, 235, 0.72);
-  background: rgba(255, 255, 255, 0.04);
-  font-size: 12px;
-  line-height: 1.2;
-  letter-spacing: 0.2px;
-}
-
-.footer-contact-column {
-  min-width: 0;
-}
-
-.footer-contact-cards {
-  display: grid;
+  flex-direction: column;
   gap: 10px;
 }
 
-.footer-contact-card {
-  padding: 13px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(255, 248, 235, 0.88);
-  line-height: 1.6;
-  margin-bottom: 0;
-  backdrop-filter: blur(10px);
-  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+.footer-contact-list a,
+.footer-contact-list > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 248, 235, 0.72);
+  transition: color 0.2s ease;
 }
 
-a.footer-contact-card:hover {
-  border-color: rgba(233, 211, 163, 0.4);
-  background: rgba(255, 255, 255, 0.07);
-  color: #ffffff;
-  transform: translateY(-1px);
+.footer-contact-list a:hover {
+  color: #fff9ef;
+}
+
+.footer-contact-list i {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  color: var(--bronze);
+}
+
+.footer-contact-list a span,
+.footer-contact-list > span span {
+  color: inherit;
 }
 
 .whatsapp-float {
@@ -2127,13 +2108,17 @@ html[dir="ltr"] .whatsapp-float {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .site-footer {
+  .footer-main {
     grid-template-columns: 1.15fr 1fr;
-    gap: 28px 24px;
+    gap: 22px 24px;
   }
 
   .footer-intro {
     grid-column: 1 / -1;
+    max-width: none;
+  }
+
+  .footer-intro p {
     max-width: none;
   }
 
@@ -2350,27 +2335,25 @@ html[dir="ltr"] .whatsapp-float {
 
   .site-footer {
     width: calc(100% - 20px);
-    padding: 54px 22px 24px;
-    border-radius: 34px 34px 0 0;
+    padding: 36px 20px 18px;
+    border-radius: 22px 22px 0 0;
+  }
+
+  .footer-main {
     grid-template-columns: 1fr;
-    gap: 22px;
+    gap: 26px;
   }
 
   .site-footer .brand strong {
-    font-size: 21px;
+    font-size: 16px;
     max-width: none;
     overflow: visible;
     text-overflow: clip;
   }
 
-  .site-footer a,
-  .site-footer span,
-  .site-footer > div:first-child p {
-    font-size: 15px;
-  }
-
-  .site-footer h3 {
-    font-size: 13px;
+  .footer-intro,
+  .footer-intro p {
+    max-width: none;
   }
 
   .footer-links a {
@@ -2381,15 +2364,6 @@ html[dir="ltr"] .whatsapp-float {
     flex-direction: column;
     align-items: flex-start;
     text-align: start;
-  }
-
-  .footer-pill-row {
-    gap: 8px;
-  }
-
-  .footer-contact-card {
-    padding: 12px 14px;
-    border-radius: 16px;
   }
 
   .site-credit {

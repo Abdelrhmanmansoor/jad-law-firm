@@ -1812,15 +1812,13 @@ function applySiteData(dataFile) {
     const whatsappFloat = document.getElementById("whatsappFloat");
     if (whatsappFloat) whatsappFloat.href = whatsappHref;
     const footerPhone = document.getElementById("footerPhoneLink");
-    if (footerPhone) {
-      footerPhone.href = `tel:${siteConfig.phone}`;
-      footerPhone.textContent = siteConfig.phone;
-    }
+    const footerPhoneText = document.getElementById("footerPhoneText");
+    if (footerPhone) footerPhone.href = `tel:${siteConfig.phone}`;
+    if (footerPhoneText) footerPhoneText.textContent = siteConfig.phone;
     const footerEmail = document.getElementById("footerEmailLink");
-    if (footerEmail) {
-      footerEmail.href = `mailto:${siteConfig.email}`;
-      footerEmail.textContent = siteConfig.email;
-    }
+    const footerEmailText = document.getElementById("footerEmailText");
+    if (footerEmail) footerEmail.href = `mailto:${siteConfig.email}`;
+    if (footerEmailText) footerEmailText.textContent = siteConfig.email;
   }
 
   if (dataFile.texts) {
