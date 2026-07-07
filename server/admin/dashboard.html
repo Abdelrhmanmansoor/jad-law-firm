@@ -7,26 +7,49 @@
   <link rel="stylesheet" href="/admin/css/admin.css" />
 </head>
 <body>
+  <div class="bg-orbs" aria-hidden="true">
+    <span class="orb orb-1"></span>
+    <span class="orb orb-2"></span>
+    <span class="orb orb-3"></span>
+  </div>
+
   <div class="app-shell">
     <aside class="sidebar">
       <div class="sidebar-brand">جاد العبدالله للمحاماة</div>
       <div class="sidebar-sub">لوحة تحكم المحتوى</div>
 
-      <a class="nav-link active" data-section="contact">بيانات التواصل</a>
-      <a class="nav-link" data-section="texts">النصوص التعريفية</a>
-      <a class="nav-link" data-section="practices">الخدمات / مجالات الاختصاص</a>
-      <a class="nav-link" data-section="cases">القضايا</a>
-      <a class="nav-link" data-section="blog">مقالات المدونة</a>
-      <a class="nav-link" data-section="publish">حفظ ونشر التعديلات</a>
-      <a class="nav-link" data-section="account">إعدادات الحساب</a>
+      <nav class="nav-group">
+        <a class="nav-link active" data-section="contact"><span class="nav-icon">☎</span>بيانات التواصل</a>
+        <a class="nav-link" data-section="texts"><span class="nav-icon">✎</span>النصوص التعريفية</a>
+        <a class="nav-link" data-section="practices"><span class="nav-icon">⚖</span>الخدمات / مجالات الاختصاص</a>
+        <a class="nav-link" data-section="cases"><span class="nav-icon">📁</span>القضايا</a>
+        <a class="nav-link" data-section="blog"><span class="nav-icon">📰</span>مقالات المدونة</a>
+        <a class="nav-link" data-section="publish"><span class="nav-icon">☁</span>حفظ ونشر التعديلات</a>
+        <a class="nav-link" data-section="account"><span class="nav-icon">⚙</span>إعدادات الحساب</a>
+      </nav>
 
       <div class="sidebar-footer">
         مسجّل الدخول باسم: <strong id="whoami">...</strong><br />
-        <a href="#" id="logoutLink" style="color:#e9d3a3;">تسجيل الخروج</a>
+        <a href="#" id="logoutLink">تسجيل الخروج</a>
       </div>
     </aside>
 
     <main class="main">
+      <div class="toolbar">
+        <button type="button" class="btn btn-glass" id="refreshBtn">
+          <span class="refresh-icon">↻</span> تحديث
+        </button>
+        <a
+          class="btn btn-glass-warning"
+          id="reportIssueBtn"
+          href="https://wa.me/201007835547?text=%D9%84%D8%AF%D9%8A%20%D9%85%D8%B4%D9%83%D9%84%D8%A9%20%D9%81%D9%8A%20%D9%84%D9%88%D8%AD%D8%A9%20%D8%A7%D9%84%D8%AA%D8%AD%D9%83%D9%85%3A%20"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <span class="report-icon">⚠</span> الإبلاغ عن عطل
+        </a>
+      </div>
+
       <div id="globalAlert" class="alert alert-error" style="margin-bottom:20px;"></div>
       <div id="globalSuccess" class="alert alert-success" style="margin-bottom:20px;"></div>
 

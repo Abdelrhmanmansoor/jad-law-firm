@@ -553,14 +553,40 @@ document.getElementById("passwordForm").addEventListener("submit", async (e) => 
   }
 });
 
+/* ---------------- refresh (no logout needed) ---------------- */
+async function refreshAll() {
+  await loadContact();
+  await loadTexts();
+  await loadPractices();
+  await loadCases();
+  await loadBlog();
+  try {
+    const me = await api("/api/me");
+    document.getElementById("whoami").textContent = me.username;
+  } catch (err) {
+    /* redirected already if session expired */
+  }
+}
+
+document.getElementById("refreshBtn").addEventListener("click", async () => {
+  const btn = document.getElementById("refreshBtn");
+  btn.disabled = true;
+  btn.classList.add("is-spinning");
+  try {
+    await refreshAll();
+    showSuccess("تم تحديث البيانات بنجاح.");
+  } catch (err) {
+    showError(err.message);
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove("is-spinning");
+  }
+});
+
 /* ---------------- initial load ---------------- */
 (async () => {
   try {
-    await loadContact();
-    await loadTexts();
-    await loadPractices();
-    await loadCases();
-    await loadBlog();
+    await refreshAll();
   } catch (err) {
     showError(err.message);
   }
