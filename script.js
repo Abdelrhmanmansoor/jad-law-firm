@@ -1085,15 +1085,15 @@ function clientsMarqueeSection() {
     { src: "assets/clients/rawas.png", alt: "Rawas", tone: "color", size: "mark" },
     { src: "assets/clients/modern-diesel-machinery.png", alt: "Modern Diesel Machinery", tone: "light", size: "large" },
     { src: "assets/clients/saudi-coasts.png", alt: "Saudi Coasts", tone: "color", size: "tall" },
-    { src: "assets/clients/brund.png", alt: "Brund", tone: "dark", size: "wide" },
+    { src: "assets/clients/brund.png", alt: "Brund", tone: "neutral", size: "wide" },
     { src: "assets/clients/ithra.png", alt: "ITHRA", tone: "dark", size: "wide" },
     { src: "assets/clients/hassan-hadi-abdullah.png", alt: "Hassan Hadi Abdullah Co.", tone: "dark", size: "large" },
     { src: "assets/clients/jadco-logistic.png", alt: "Jadco Logistic", tone: "light", size: "large" },
     { src: "assets/clients/duja.png", alt: "Duja", tone: "color", size: "tall" },
-    { src: "assets/clients/cold90.png", alt: "Cold90", tone: "dark", size: "wide" },
+    { src: "assets/clients/cold90.png", alt: "Cold90", tone: "light", size: "wide" },
     { src: "assets/clients/rakaz-industrial.png", alt: "Rakaz Industrial", tone: "light", size: "large" },
-    { src: "assets/clients/imdad-aljanoob.png", alt: "Imdad Aljanoob", tone: "dark", size: "large" },
-    { src: "assets/clients/oja.png", alt: "Oja", tone: "dark", size: "mark" },
+    { src: "assets/clients/imdad-aljanoob.png", alt: "Imdad Aljanoob", tone: "light", size: "large" },
+    { src: "assets/clients/oja.png", alt: "Oja", tone: "neutral", size: "mark" },
   ];
 
   const cards = logos
@@ -1858,4 +1858,17 @@ async function loadSiteData() {
   }
 }
 
-loadSiteData().finally(() => render());
+function hidePreloader() {
+  const preloader = document.getElementById("preloader");
+  if (!preloader) return;
+  preloader.classList.add("preloader--hidden");
+  window.setTimeout(() => preloader.remove(), 600);
+}
+
+const preloaderSafetyTimer = window.setTimeout(hidePreloader, 4000);
+
+loadSiteData().finally(() => {
+  render();
+  window.clearTimeout(preloaderSafetyTimer);
+  window.requestAnimationFrame(() => window.requestAnimationFrame(hidePreloader));
+});
