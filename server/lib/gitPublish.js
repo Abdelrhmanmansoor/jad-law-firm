@@ -1,6 +1,8 @@
 const { execFile } = require("child_process");
 const { ROOT_DIR } = require("./paths");
 
+const PRODUCTION_BRANCH = "main";
+
 function runGit(args) {
   return new Promise((resolve, reject) => {
     execFile("git", args, { cwd: ROOT_DIR, timeout: 60000, maxBuffer: 5 * 1024 * 1024 }, (error, stdout, stderr) => {
@@ -28,6 +30,18 @@ async function hasChanges() {
   return status.length > 0;
 }
 
+async function currentBranch() {
+  return runGit(["rev-parse", "--abbrev-ref", "HEAD"]);
+}
+
+async function ensureOnProductionBranch(log) {
+  const branch = await currentBranch();
+  if (branch === PRODUCTION_BRANCH) return;
+  log.push(`الفرع الحالي "${branch}" وليس فرع النشر الرسمي، جارٍ الانتقال إلى "${PRODUCTION_BRANCH}"...`);
+  await runGit(["checkout", PRODUCTION_BRANCH]);
+  log.push(`تم الانتقال إلى فرع "${PRODUCTION_BRANCH}" بنجاح.`);
+}
+
 async function publish() {
   const log = [];
 
@@ -35,6 +49,8 @@ async function publish() {
     throw new Error("المجلد الحالي ليس مستودع Git.");
   }
   log.push("تم التحقق من مستودع Git.");
+
+  await ensureOnProductionBranch(log);
 
   const changed = await hasChanges();
   if (!changed) {
@@ -51,7 +67,7 @@ async function publish() {
   log.push("تم إنشاء نسخة محفوظة (commit).");
 
   try {
-    await runGit(["push"]);
+    await runGit(["push", "origin", `HEAD:${PRODUCTION_BRANCH}`]);
     log.push("تم رفع التعديلات بنجاح إلى GitHub.");
   } catch (pushError) {
     log.push(`تم الحفظ محليًا، لكن فشل الرفع إلى GitHub: ${pushError.message}`);
