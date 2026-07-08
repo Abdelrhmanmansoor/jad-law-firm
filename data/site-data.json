@@ -307,39 +307,6 @@
       }
     },
     {
-      "id": "commercial-contract-invalidity-4-5m",
-      "file": "assets/legal-documents/cases/رد دعوى الوفاء بصك رهن عقاري - منقح.pdf",
-      "image": "",
-      "title": {
-        "ar": "رد دعوى الوفاء بسند تنفيذي مرتبط بصك رهن عقاري",
-        "en": "Dismissal of a satisfaction claim involving a mortgage deed"
-      },
-      "category": {
-        "ar": "تنفيذ وتمويل عقاري",
-        "en": "Enforcement and real estate finance"
-      },
-      "amount": {
-        "ar": "منازعة رهن عقاري",
-        "en": "Mortgage enforcement dispute"
-      },
-      "result": {
-        "ar": "رد الدعوى واكتساب الحكم القطعية",
-        "en": "Claim dismissed and judgment became final"
-      },
-      "summary": {
-        "ar": "دعوى وفاء بسند تنفيذي مرتبط بصك رهن عقاري، انتهت إلى رد الدعوى وسقوط حق الاعتراض بعد انقضاء المدة النظامية.",
-        "en": "A satisfaction claim concerning an enforcement instrument linked to a mortgage deed, ending in dismissal and finality after the objection period elapsed."
-      },
-      "challenge": {
-        "ar": "معالجة أثر السند التنفيذي وصك الرهن ضمن إجراءات التنفيذ ومواعيد الاعتراض.",
-        "en": "Addressing the enforcement instrument and mortgage deed within enforcement procedure and objection deadlines."
-      },
-      "action": {
-        "ar": "عرض التسلسل الإجرائي والدفوع المرتبطة بالسند حتى صدور الحكم النهائي.",
-        "en": "Presented the procedural chronology and instrument-related defenses through final judgment."
-      }
-    },
-    {
       "id": "commercial-dismissal-appeal-affirmed",
       "file": "assets/legal-documents/cases/تأييد رد دعوى تجارية استئنافيا - منقح.pdf",
       "image": "",
