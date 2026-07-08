@@ -6,14 +6,53 @@ cd /d "%~dp0"
 
 where node >nul 2>nul
 if errorlevel 1 (
+  where winget >nul 2>nul
+  if errorlevel 1 goto :node_manual_install
+
+  color 0E
+  cls
   echo.
-  echo تعذر العثور على Node.js على هذا الجهاز.
-  echo الرجاء تثبيته أولاً من الرابط التالي ثم إعادة تشغيل هذا الملف:
-  echo https://nodejs.org
+  echo   ============================================================
   echo.
-  pause
-  exit /b
+  echo      لم يتم العثور على Node.js - جاري تثبيته تلقائيًا الآن
+  echo.
+  echo      إذا ظهرت نافذة صلاحيات من ويندوز (User Account Control)،
+  echo      اضغط "نعم" للموافقة على المتابعة.
+  echo      يرجى الانتظار ولا تُغلق هذه النافذة.
+  echo.
+  echo   ============================================================
+  echo.
+  winget install --id OpenJS.NodeJS.LTS -e --accept-package-agreements --accept-source-agreements
+  set "PATH=%PATH%;C:\Program Files\nodejs\"
+  where node >nul 2>nul
+  if errorlevel 1 goto :node_manual_install
+
+  color 0A
+  cls
+  echo.
+  echo   ============================================================
+  echo.
+  echo      تم تثبيت Node.js بنجاح! جاري المتابعة...
+  echo.
+  echo   ============================================================
+  echo.
+  timeout /t 2 >nul
+  color
+  goto :node_ready
 )
+goto :node_ready
+
+:node_manual_install
+color
+echo.
+echo تعذر تثبيت Node.js تلقائيًا على هذا الجهاز.
+echo الرجاء تثبيته يدويًا من الرابط التالي ثم إعادة تشغيل هذا الملف:
+echo https://nodejs.org
+echo.
+pause
+exit /b
+
+:node_ready
 
 if not exist node_modules (
   color 0E
