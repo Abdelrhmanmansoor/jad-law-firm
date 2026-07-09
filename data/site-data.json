@@ -410,32 +410,32 @@
       "file": "assets/legal-documents/cases/إلغاء حكم تجاري وعدم قبول الدعوى - منقح.pdf",
       "image": "",
       "title": {
-        "ar": "إلغاء حكم",
-        "en": "Commercial judgment cancelled and claim ruled inadmissible"
+        "ar": "إلغاء حكم تجاري صادر ضد موكلنا بمبلغ 167 مليون ريال",
+        "en": "Overturning a commercial judgment issued against our client worth 167 million SAR"
       },
       "category": {
         "ar": "استئناف تجاري",
         "en": "Commercial appeal"
       },
       "amount": {
-        "ar": "167 مليون ريال",
-        "en": "Commercial claim"
+        "ar": "167 مليون ريال سعودي",
+        "en": "167 Million SAR"
       },
       "result": {
-        "ar": "إلغاء الحكم وعدم قبول الدعوى",
-        "en": "Judgment cancelled and claim ruled inadmissible"
+        "ar": "إلغاء الحكم المستأنف والحكم مجدداً بعدم قبول الدعوى",
+        "en": "Overturning the appealed judgment and ruling anew to dismiss the lawsuit"
       },
       "summary": {
-        "ar": "ألغت الدائرة الاستئنافية الحكم الصادر من الدائرة التجارية الأولى، وحكمت مجددًا بعدم قبول الدعوى.",
-        "en": "The appellate circuit cancelled the judgment issued by the first commercial circuit and ruled the claim inadmissible."
+        "ar": "ألغت الدائرة الاستئنافية الحكم الصادر من الدائرة التجارية الأولى ضد موكلنا، والذي كان يقضي بالتضامن بمبلغ وقدره 167 مليون ريال، وحكمت الدائرة مجدداً بعدم قبول الدعوى لصالح موكلنا.",
+        "en": "The Appellate Circuit overturned the judgment issued by the First Commercial Circuit against our client, which ruled for joint liability in the amount of 167 million SAR, and ruled anew to dismiss the lawsuit in favor of our client."
       },
       "challenge": {
-        "ar": "إبراز الخلل في قبول الدعوى وأثره على الحكم الابتدائي.",
-        "en": "Demonstrating the admissibility defect and its effect on the first-instance judgment."
+        "ar": "نقض الحكم الابتدائي الصادر بالتضامن المالي وإثبات عدم نظامية قبول الدعوى أمام الدائرة الاستئنافية.",
+        "en": "Overturning the preliminary judgment issued for joint financial liability and proving the illegality of accepting the lawsuit before the Appellate Circuit."
       },
       "action": {
-        "ar": "تركيز الاعتراض على شروط القبول والمسار النظامي للدعوى.",
-        "en": "Focused the appeal on admissibility requirements and the proper legal route."
+        "ar": "تقديم لائحة استئنافية مدعمة بالدفوع القانونية والشروط الشكلية والموضوعية لقبول الدعوى، مما أدى لإلغاء الحكم بالكامل.",
+        "en": "Submitting an appeal memorandum supported by legal defenses regarding the formal and substantive conditions for accepting the lawsuit, which led to the complete cancellation of the judgment."
       }
     },
     {
