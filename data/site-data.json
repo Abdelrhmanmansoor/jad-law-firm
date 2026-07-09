@@ -275,35 +275,35 @@
   "cases": [
     {
       "id": "mortgage-deed-satisfaction-dismissal",
-      "file": "assets/legal-documents/cases/رد دعوى الوفاء بصك رهن عقاري - منقح.pdf",
+      "file": "assets/legal-documents/cases/نقض حكم لعدم الاختصاص في منازعة تنفيذ - منقح.pdf",
       "image": "",
       "title": {
-        "ar": "رد دعوى الوفاء بسند تنفيذي مرتبط بصك رهن عقاري",
-        "en": "Dismissal of a satisfaction claim involving a mortgage deed"
+        "ar": "حكم برد دعوى المدعي يطالب باثبات ابطال الشيك وتتأيد الحكم لصالح موكلنا",
+        "en": "A judgment dismissing the plaintiff's claim to invalidate a check, and affirming the ruling in favor of our client"
       },
       "category": {
-        "ar": "تنفيذ وتمويل عقاري",
-        "en": "Enforcement and real estate finance"
+        "ar": "استئناف وتنفيذ",
+        "en": "Appeal and enforcement"
       },
       "amount": {
-        "ar": "منازعة رهن عقاري",
-        "en": "Mortgage enforcement dispute"
+        "ar": "منازعة تنفيذية",
+        "en": "Enforcement dispute"
       },
       "result": {
-        "ar": "رد الدعوى واكتساب الحكم القطعية",
-        "en": "Claim dismissed and judgment became final"
+        "ar": "رد دعوى المدعي وتأييد الحكم لصالح موكلنا",
+        "en": "Dismissal of the plaintiff's claim and affirming the judgment in favor of our client"
       },
       "summary": {
-        "ar": "دعوى وفاء بسند تنفيذي مرتبط بصك رهن عقاري، انتهت إلى رد الدعوى وسقوط حق الاعتراض بعد انقضاء المدة النظامية.",
-        "en": "A satisfaction claim concerning an enforcement instrument linked to a mortgage deed, ending in dismissal and finality after the objection period elapsed."
+        "ar": "حكم برد المدعي يطالب باثبات ابطال الشيك قيمته 400 مليون وتتأيد الحكم لصالح موكلنا",
+        "en": "A judgment dismissing the plaintiff's lawsuit, which sought to prove the invalidation of a check valued at 400 million, and affirming the ruling issued in favor of our client."
       },
       "challenge": {
-        "ar": "معالجة أثر السند التنفيذي وصك الرهن ضمن إجراءات التنفيذ ومواعيد الاعتراض.",
-        "en": "Addressing the enforcement instrument and mortgage deed within enforcement procedure and objection deadlines."
+        "ar": "تحديد المحكمة المختصة بنظر النزاع وتصحيح المسار القضائي للدعوى.",
+        "en": "Determining the competent court and correcting the claim's judicial route."
       },
       "action": {
-        "ar": "عرض التسلسل الإجرائي والدفوع المرتبطة بالسند حتى صدور الحكم النهائي.",
-        "en": "Presented the procedural chronology and instrument-related defenses through final judgment."
+        "ar": "بناء الاعتراض على قواعد الاختصاص وطبيعة المنازعة التنفيذية.",
+        "en": "Built the appeal around jurisdiction rules and the enforcement nature of the dispute."
       }
     },
     {
@@ -377,8 +377,8 @@
       "file": "assets/legal-documents/cases/نقض حكم لعدم الاختصاص في منازعة تنفيذ - منقح.pdf",
       "image": "",
       "title": {
-        "ar": "نقض حكم لعدم الاختصاص في منازعة تنفيذ",
-        "en": "Judgment overturned for lack of jurisdiction in an enforcement dispute"
+        "ar": "حكم برد دعوى المدعي يطالب باثبات ابطال الشيك وتتأيد الحكم لصالح موكلنا",
+        "en": "A judgment dismissing the plaintiff's claim to invalidate a check, and affirming the ruling in favor of our client"
       },
       "category": {
         "ar": "استئناف وتنفيذ",
@@ -389,12 +389,12 @@
         "en": "Enforcement dispute"
       },
       "result": {
-        "ar": "نقض الحكم وتقرير اختصاص محكمة التنفيذ",
-        "en": "Judgment overturned and enforcement court jurisdiction confirmed"
+        "ar": "رد دعوى المدعي وتأييد الحكم لصالح موكلنا",
+        "en": "Dismissal of the plaintiff's claim and affirming the judgment in favor of our client"
       },
       "summary": {
-        "ar": "قبلت محكمة الاستئناف الطلب شكلًا وموضوعًا، ونقضت الحكم المستأنف لعدم الاختصاص، وقررت أن الاختصاص ينعقد لمحكمة التنفيذ بجازان.",
-        "en": "The appellate court accepted the request, overturned the appealed judgment for lack of jurisdiction, and held that the Jazan Enforcement Court was competent."
+        "ar": "حكم برد المدعي يطالب باثبات ابطال الشيك قيمته 400 مليون وتتأيد الحكم لصالح موكلنا",
+        "en": "A judgment dismissing the plaintiff's lawsuit, which sought to prove the invalidation of a check valued at 400 million, and affirming the ruling issued in favor of our client."
       },
       "challenge": {
         "ar": "تحديد المحكمة المختصة بنظر النزاع وتصحيح المسار القضائي للدعوى.",
