@@ -2,7 +2,11 @@
   "contact": {
     "phone": "05487088085",
     "whatsapp": "966548708885",
+<<<<<<< HEAD
     "email": "mlwri18108@gmail.com",
+=======
+    "email": "jadabdullahlaw@gmail.com",
+>>>>>>> 2cf5fd20410e34b21ee0ee5d5e575761aecb22e7
     "address": {
       "ar": "الشاطئ، جيزان 82726، المملكة العربية السعودية",
       "en": "Al Shati, Jazan 82726, Saudi Arabia"
@@ -14,7 +18,11 @@
   },
   "texts": {
     "heroKicker": {
+<<<<<<< HEAD
       "ar": "مكتب المحامي جادللللا تتالعبدالله صيرم",
+=======
+      "ar": "مكتب المحامي جاد العبدالله صيرم",
+>>>>>>> 2cf5fd20410e34b21ee0ee5d5e575761aecb22e7
       "en": "Jad Alabdullah Law Firm"
     },
     "heroLead": {
@@ -304,39 +312,6 @@
       "action": {
         "ar": "بناء الاعتراض على قواعد الاختصاص وطبيعة المنازعة التنفيذية.",
         "en": "Built the appeal around jurisdiction rules and the enforcement nature of the dispute."
-      }
-    },
-    {
-      "id": "commercial-contract-invalidity-4-5m",
-      "file": "assets/legal-documents/cases/فساد عقد تجاري والحكم بمبالغ 4.5 مليون - منقح.pdf",
-      "image": "",
-      "title": {
-        "ar": "ثبوت فساد عقد تجاري والحكم بمبالغ تتجاوز 4.5 مليون ريال",
-        "en": "Commercial contract invalidity and awards exceeding SAR 4.5M"
-      },
-      "category": {
-        "ar": "عقود ومنازعات تجارية",
-        "en": "Contracts and commercial disputes"
-      },
-      "amount": {
-        "ar": "أكثر من 4.5 مليون ريال",
-        "en": "Over SAR 4.5M"
-      },
-      "result": {
-        "ar": "ثبوت فساد العقد والحكم بالمبالغ المستحقة",
-        "en": "Contract invalidity established and monetary awards granted"
-      },
-      "summary": {
-        "ar": "نزاع تجاري حول عقد وأعمال منجزة، انتهى الحكم بثبوت فساد العقد وإلزام الأطراف بمبالغ قدرها 1,187,321 ريال و3,312,679 ريال.",
-        "en": "A commercial dispute over a contract and completed works, ending with a finding of invalidity and awards of SAR 1,187,321 and SAR 3,312,679."
-      },
-      "challenge": {
-        "ar": "إثبات فساد العقد وتحديد قيمة الأعمال والمبالغ المستحقة بين أطراف متعددة.",
-        "en": "Establishing contract invalidity and quantifying completed works and liabilities among multiple parties."
-      },
-      "action": {
-        "ar": "ربط المستندات والأعمال المنفذة بالآثار المالية للعقد أمام الدائرة التجارية.",
-        "en": "Connected the documents and completed works to the contract's financial consequences."
       }
     },
     {
