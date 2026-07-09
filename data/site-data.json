@@ -278,16 +278,16 @@
       "file": "assets/legal-documents/cases/نقض حكم لعدم الاختصاص في منازعة تنفيذ - منقح.pdf",
       "image": "",
       "title": {
-        "ar": "حكم برد دعوى المدعي يطالب باثبات ابطال الشيك وتتأيد الحكم لصالح موكلنا",
-        "en": "A judgment dismissing the plaintiff's claim to invalidate a check, and affirming the ruling in favor of our client"
+        "ar": "حكم برد دعوى المدعي يطالب باثبات ابطال الشيك قيمته 400 مليون وتأيد الحكم لصالح موكلنا",
+        "en": "Dismissal of the plaintiff's lawsuit claiming the invalidation of a check worth 400 million"
       },
       "category": {
         "ar": "استئناف وتنفيذ",
         "en": "Appeal and enforcement"
       },
       "amount": {
-        "ar": "منازعة تنفيذية",
-        "en": "Enforcement dispute"
+        "ar": "400 مليون",
+        "en": "400  Million"
       },
       "result": {
         "ar": "رد دعوى المدعي وتأييد الحكم لصالح موكلنا",
@@ -295,15 +295,15 @@
       },
       "summary": {
         "ar": "حكم برد المدعي يطالب باثبات ابطال الشيك قيمته 400 مليون وتتأيد الحكم لصالح موكلنا",
-        "en": "A judgment dismissing the plaintiff's lawsuit, which sought to prove the invalidation of a check valued at 400 million, and affirming the ruling issued in favor of our client."
+        "en": "A judgment dismissing the plaintiff's lawsuit, which demanded the invalidation of a check valued at 400 million, and upholding the ruling in favor of our client."
       },
       "challenge": {
-        "ar": "تحديد المحكمة المختصة بنظر النزاع وتصحيح المسار القضائي للدعوى.",
-        "en": "Determining the competent court and correcting the claim's judicial route."
+        "ar": "التحدي الخاص بالشيك",
+        "en": "Refuting the plaintiff's allegations and proving the legal and financial validity of the check to protect the client's rights."
       },
       "action": {
-        "ar": "بناء الاعتراض على قواعد الاختصاص وطبيعة المنازعة التنفيذية.",
-        "en": "Built the appeal around jurisdiction rules and the enforcement nature of the dispute."
+        "ar": "تقديم الدفوع القانونية والمستندات المالية التي تدحض ادعاءات المدعي وتثبت سلامة الشيك قانونياً.",
+        "en": "Submitting legal defenses and financial documents that refute the plaintiff's allegations and prove the legal validity of the check."
       }
     },
     {
