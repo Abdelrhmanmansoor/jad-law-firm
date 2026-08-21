@@ -11,18 +11,7 @@
 
   "headers": [
     {
-      "source": "/assets/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
-    },
-    {
-      "source": "/favicon.png",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }]
-    },
-    {
-      "source": "/data/site-data.json",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }]
-    },
-    {
+      "//": "قاعدة عامة أولًا. عند تكرار نفس الترويسة تفوز القاعدة الأخيرة المطابقة، لذلك تأتي قواعد التخزين الأدق بعدها.",
       "source": "/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" },
@@ -31,6 +20,19 @@
         { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
         { "key": "Strict-Transport-Security", "value": "max-age=63072000; includeSubDomains" }
       ]
+    },
+    {
+      "//": "الصور والخطوط والأيقونات: أسماؤها ثابتة ومحتواها لا يتغيّر، فتُخزَّن سنة كاملة.",
+      "source": "/assets/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+    },
+    {
+      "source": "/(styles.css|script.js)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=3600, must-revalidate" }]
+    },
+    {
+      "source": "/favicon.png",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }]
     }
   ]
 }
