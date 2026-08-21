@@ -123,6 +123,7 @@ globalThis.__site = {
   SITE_ORIGIN,
   STATIC_PAGES,
   content,
+  siteConfig,
   renderPage(route, activeLang) {
     lang = activeLang;
     currentRoute = route;
@@ -248,6 +249,21 @@ function localiseLinks(html, site, route, lang) {
   );
 }
 
+/**
+ * بيانات التواصل في القالب مكتوبة كقيم افتراضية، والموقع يحدّثها وقت التشغيل
+ * من data/site-data.json. لكن الصفحات المولّدة مسبقًا هي ما تقرأه محركات البحث
+ * وزوار بلا جافاسكربت، فيجب أن تحمل البيانات الصحيحة وقت البناء.
+ */
+function localiseContact(html, site) {
+  const { phone, whatsapp, email } = site.siteConfig;
+  return html
+    .replace(/(id="whatsappFloat"[\s\S]{0,80}?href=")[^"]*(")/, `$1https://wa.me/${whatsapp}$2`)
+    .replace(/(id="footerPhoneLink" href="tel:)[^"]*(")/, `$1${phone}$2`)
+    .replace(/(id="footerPhoneText"[^>]*>)[^<]*(<)/, `$1${phone}$2`)
+    .replace(/(id="footerEmailLink" href="mailto:)[^"]*(")/, `$1${email}$2`)
+    .replace(/(id="footerEmailText"[^>]*>)[^<]*(<)/, `$1${email}$2`);
+}
+
 function buildPage(template, site, route, lang, appHtml) {
   const dir = lang === "ar" ? "rtl" : "ltr";
   let html = template
@@ -257,6 +273,7 @@ function buildPage(template, site, route, lang, appHtml) {
     .replace("{{APP}}", appHtml);
   html = localiseShell(html, site, lang);
   html = localiseLinks(html, site, route, lang);
+  html = localiseContact(html, site);
   return html;
 }
 
@@ -316,6 +333,37 @@ ${entries}
 `;
 }
 
+/**
+ * حارس السيو: العنوان أو الوصف المكرّر بين صفحتين يجعل جوجل يختار إحداهما
+ * ويتجاهل الأخرى. ننبّه عليه بوضوح في مخرجات البناء.
+ * يعيد true إذا كان كل شيء سليمًا.
+ */
+function assertUniqueMetadata(pages) {
+  const problems = [];
+  for (const field of ["title", "description"]) {
+    const seen = new Map();
+    for (const page of pages) {
+      const value = page[field];
+      if (!seen.has(value)) seen.set(value, []);
+      seen.get(value).push(page.path);
+    }
+    for (const [value, paths] of seen) {
+      if (paths.length > 1) {
+        problems.push(`  ${field} مكرّر (${paths.length} صفحات): "${value}"\n    ${paths.join("\n    ")}`);
+      }
+    }
+  }
+  if (problems.length) {
+    // تنبيه لا يوقف النشر: زر "حفظ ونشر التعديلات" يجب أن يبقى يعمل دائمًا،
+    // لكن التكرار يحتاج تصحيحًا في المحتوى من لوحة التحكم.
+    console.warn("\n⚠️  تنبيه سيو — بيانات مكرّرة بين صفحتين أو أكثر:");
+    console.warn(problems.join("\n"));
+    console.warn("   جوجل سيفهرس واحدة فقط منها. يُنصح بتعديل النص من لوحة التحكم.\n");
+    return false;
+  }
+  return true;
+}
+
 function main() {
   if (!fs.existsSync(TEMPLATE_FILE)) {
     throw new Error("index.template.html غير موجود — لا يمكن توليد الصفحات.");
@@ -332,14 +380,20 @@ function main() {
   ];
 
   let written = 0;
+  const metadata = [];
   for (const route of routes) {
     for (const lang of site.SUPPORTED_LANGS) {
       const appHtml = site.renderPage(route, lang);
       const html = buildPage(template, site, route, lang, appHtml);
-      writePage(site.routePath(route.page, route.id, lang), html);
+      const routeHref = site.routePath(route.page, route.id, lang);
+      writePage(routeHref, html);
+      const meta = site.seoFor(route, lang);
+      metadata.push({ path: routeHref, title: meta.title, description: meta.description });
       written += 1;
     }
   }
+
+  const metadataClean = assertUniqueMetadata(metadata);
 
   // صفحة 404: تستخدمها GitHub Pages كاحتياطي لأي مسار غير معروف،
   // فتُقلع منها واجهة الموقع وتعرض المسار الصحيح دون إعادة تحميل.
@@ -355,6 +409,7 @@ function main() {
   console.log(`✓ ${written} صفحة ثابتة (${routes.length} مسار × ${site.SUPPORTED_LANGS.length} لغة)`);
   console.log("✓ 404.html");
   console.log(`✓ sitemap.xml — ${routes.length * site.SUPPORTED_LANGS.length} رابط`);
+  if (metadataClean) console.log("✓ فحص السيو: كل العناوين والأوصاف فريدة");
 }
 
 main();

@@ -18,7 +18,7 @@ const content = {
     practiceAreas: "مجالات الاختصاص",
     contactInfo: "بيانات التواصل",
     saudiArabia: "المملكة العربية السعودية",
-    topbarEmail: "mlwri1818@gmail.com",
+    topbarEmail: "jadabdullahlaw1@gmail.com",
     topbarPhone: "0548708885",
     topbarLocation: "الشاطئ، جيزان 82726، المملكة العربية السعودية",
     topbarHours: "الأحد إلى الخميس من 8 ص - 3 م",
@@ -126,7 +126,7 @@ const content = {
     practiceAreas: "Practice Areas",
     contactInfo: "Contact",
     saudiArabia: "Kingdom of Saudi Arabia",
-    topbarEmail: "mlwri1818@gmail.com",
+    topbarEmail: "jadabdullahlaw1@gmail.com",
     topbarPhone: "0548708885",
     topbarLocation: "Al Shati, Jazan 82726, Saudi Arabia",
     topbarHours: "Sun to Thu, 8 AM - 3 PM",
@@ -219,7 +219,7 @@ const content = {
 const siteConfig = {
   phone: "0548708885",
   whatsapp: "966548708885",
-  email: "mlwri1818@gmail.com",
+  email: "jadabdullahlaw1@gmail.com",
   address: { ar: "الشاطئ، جيزان 82726، المملكة العربية السعودية", en: "Al Shati, Jazan 82726, Saudi Arabia" },
   hours: { ar: "الأحد إلى الخميس من 8 ص - 3 م", en: "Sun to Thu, 8 AM - 3 PM" },
 };
@@ -444,9 +444,17 @@ function seoFor(route, activeLang) {
   if (route.page === "case") {
     const item = caseWins.find((entry) => entry.id === route.id);
     if (item) {
+      // عناوين القضايا متشابهة جدًا في بدايتها، وتقصيرها وحده ينتج عناوين
+      // مكرّرة تضرّ بالفهرسة. البدء بقيمة الملف يجعل كل عنوان مميزًا وأوضح في نتائج البحث.
+      const amount = pick(item.amount);
+      const category = pick(item.category);
+      const leaf = amount ? amount + " · " + pick(item.title) : pick(item.title);
+      // نفس المنطق للوصف: بعض الملخصات متطابقة بين ملفين، والتصنيف والقيمة يميّزانها.
+      const context = [category, amount].filter(Boolean).join(" · ");
+      const summary = pick(item.summary);
       return {
-        title: clampTitle(pick(item.title), shortBrand),
-        description: clampDescription(pick(item.summary)),
+        title: clampTitle(leaf, shortBrand),
+        description: clampDescription(context ? context + ": " + summary : summary),
       };
     }
   }
