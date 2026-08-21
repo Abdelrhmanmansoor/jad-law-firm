@@ -1,7 +1,32 @@
 const { execFile } = require("child_process");
+const path = require("path");
 const { ROOT_DIR } = require("./paths");
 
 const PRODUCTION_BRANCH = "main";
+
+/**
+ * إعادة توليد صفحات الموقع الثابتة.
+ *
+ * محتوى الموقع صار يُولَّد مسبقًا في ملفات HTML حقيقية (about/index.html ...)
+ * حتى تراه محركات البحث. لذلك أي تعديل من لوحة التحكم على data/site-data.json
+ * يجب أن يُتبَع بإعادة بناء، وإلا نُشرت صفحات قديمة لا تطابق المحتوى الجديد.
+ */
+function runBuild() {
+  return new Promise((resolve, reject) => {
+    execFile(
+      process.execPath,
+      [path.join(ROOT_DIR, "tools", "build.mjs")],
+      { cwd: ROOT_DIR, timeout: 120000, maxBuffer: 5 * 1024 * 1024 },
+      (error, stdout, stderr) => {
+        if (error) {
+          reject(new Error((stderr && stderr.trim()) || error.message));
+          return;
+        }
+        resolve((stdout || "").trim());
+      },
+    );
+  });
+}
 
 function runGit(args) {
   return new Promise((resolve, reject) => {
@@ -52,6 +77,15 @@ async function publish() {
 
   await ensureOnProductionBranch(log);
 
+  // البناء أولًا: قد لا يوجد تغيير في المصدر لكن الصفحات المولّدة تحتاج تحديثًا.
+  try {
+    await runBuild();
+    log.push("تم تحديث صفحات الموقع وخريطة الموقع (sitemap) بالمحتوى الجديد.");
+  } catch (buildError) {
+    log.push(`تعذّر إعادة توليد صفحات الموقع: ${buildError.message}`);
+    return { ok: false, log, error: buildError.message };
+  }
+
   const changed = await hasChanges();
   if (!changed) {
     return { ok: true, noChanges: true, log: [...log, "لا توجد أي تغييرات جديدة لنشرها."] };
@@ -77,4 +111,4 @@ async function publish() {
   return { ok: true, log };
 }
 
-module.exports = { publish, isGitRepo, hasChanges };
+module.exports = { publish, isGitRepo, hasChanges, runBuild };

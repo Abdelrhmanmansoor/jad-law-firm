@@ -442,7 +442,7 @@ html[dir="ltr"] .mobile-panel {
   color: #fffdf9;
   background:
     linear-gradient(90deg, rgba(20, 17, 15, 0.68) 0%, rgba(20, 17, 15, 0.52) 100%),
-    url("assets/office/office-reception.png") center / cover no-repeat;
+    url("assets/office/office-reception.webp") center / cover no-repeat;
 }
 
 .hero::after {
@@ -1782,7 +1782,7 @@ html[dir="rtl"] .clients-marquee-track {
   padding: 90px max(16px, calc((100vw - 1180px) / 2));
   background:
     linear-gradient(90deg, rgba(18, 12, 8, 0.9), rgba(58, 36, 24, 0.64)),
-    url("assets/office/office-desk.png") center / cover no-repeat;
+    url("assets/office/office-desk.webp") center / cover no-repeat;
 }
 
 .contact-cta-card {
@@ -2397,5 +2397,162 @@ html[dir="ltr"] .whatsapp-float {
 
   .solution-row svg {
     display: none;
+  }
+}
+
+/* ==========================================================================
+   إضافات السيو والوصولية
+   ========================================================================== */
+
+/* رابط التخطي: مخفي حتى يصل إليه التنقل بلوحة المفاتيح - متطلب وصولية أساسي. */
+.skip-link {
+  position: absolute;
+  inset-inline-start: 12px;
+  top: -100px;
+  z-index: 10000;
+  padding: 10px 18px;
+  border-radius: 10px;
+  background: var(--coal);
+  color: var(--gold-soft);
+  font-weight: 600;
+  text-decoration: none;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus-visible {
+  top: 12px;
+  outline: 2px solid var(--bronze);
+  outline-offset: 2px;
+}
+
+/* مؤشر تركيز واضح على كل العناصر التفاعلية. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--walnut-soft);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* الرابط النشط في القوائم. */
+.desktop-nav a.is-active,
+.mobile-panel a.is-active {
+  color: var(--walnut);
+  font-weight: 600;
+}
+
+/* فتات الخبز. */
+.breadcrumbs {
+  margin-bottom: 18px;
+  font-size: 0.86rem;
+  color: var(--muted);
+}
+
+.breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.breadcrumbs li + li::before {
+  content: "/";
+  margin-inline-end: 8px;
+  color: var(--line);
+}
+
+.breadcrumbs a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.breadcrumbs a:hover {
+  color: var(--walnut);
+  text-decoration: underline;
+}
+
+.breadcrumbs [aria-current="page"] {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* الأسئلة الشائعة. */
+.faq-section {
+  margin-block: 72px;
+}
+
+.faq-list {
+  display: grid;
+  gap: 12px;
+  max-width: 900px;
+  margin-inline: auto;
+}
+
+.faq-item {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--paper);
+  box-shadow: 0 8px 24px rgba(20, 17, 15, 0.04);
+  overflow: hidden;
+}
+
+.faq-item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item summary::after {
+  content: "+";
+  flex: none;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--bronze);
+  transition: transform 0.2s ease;
+}
+
+.faq-item[open] summary::after {
+  transform: rotate(45deg);
+}
+
+/* العنوان داخل summary يبقى دلاليًا (h3) دون أن يكسر التنسيق. */
+.faq-item summary h3 {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 600;
+}
+
+.faq-item > p {
+  margin: 0;
+  padding: 0 22px 20px;
+  color: var(--muted);
+  line-height: 1.9;
+}
+
+/* احترام تفضيل تقليل الحركة. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

@@ -1,14 +1,17 @@
 require("dotenv").config();
 
+const fs = require("fs");
 const path = require("path");
 const express = require("express");
 const session = require("express-session");
+const compression = require("compression");
+const helmet = require("helmet");
 
 const { ROOT_DIR, SITE_DATA_FILE } = require("./lib/paths");
 const auth = require("./lib/auth");
 const dataStore = require("./lib/dataStore");
 const gitPublish = require("./lib/gitPublish");
-const { upload, publicPathFor } = require("./lib/upload");
+const { upload, uploadDoc, publicPathFor, publicDocPathFor } = require("./lib/upload");
 const {
   isNonEmptyString,
   isBilingual,
@@ -26,6 +29,21 @@ const ADMIN_DIR = path.join(__dirname, "admin");
 const app = express();
 app.disable("x-powered-by");
 app.set("trust proxy", false);
+app.set("etag", "strong");
+
+// ضغط الاستجابات: يقلّل حجم HTML و CSS و JS بنحو 70% ويسرّع أول عرض للصفحة.
+app.use(compression());
+
+// ترويسات أمان. سياسة المحتوى معطّلة لأن الموقع يستخدم أنماطًا مضمّنة وخطوط جوجل،
+// والخادم محلي فقط - التشديد الفعلي يتم على مستوى الاستضافة.
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: "same-site" },
+    referrerPolicy: { policy: "strict-origin-when-cross-origin" },
+  }),
+);
 
 // ---------- localhost-only guard ----------
 function localhostOnly(req, res, next) {
@@ -38,13 +56,38 @@ function localhostOnly(req, res, next) {
   next();
 }
 
-// ---------- public static site (whitelisted files only) ----------
-app.get("/", (req, res) => res.sendFile(path.join(ROOT_DIR, "index.html")));
-app.get("/index.html", (req, res) => res.sendFile(path.join(ROOT_DIR, "index.html")));
-app.get("/styles.css", (req, res) => res.sendFile(path.join(ROOT_DIR, "styles.css")));
-app.get("/script.js", (req, res) => res.sendFile(path.join(ROOT_DIR, "script.js")));
+// ---------- public static site ----------
+// الموقع صار يستخدم مسارات حقيقية (/about، /en/practices ...) ولكل مسار ملف
+// HTML مولّد مسبقًا عبر `npm run build`. لذلك نخدم جذر المشروع كملفات ثابتة،
+// مع منع أي مجلد لا يخص الموقع العام.
+const PRIVATE_PREFIXES = ["/server", "/tools", "/node_modules", "/.git", "/data"];
+
+app.use((req, res, next) => {
+  const url = req.path.toLowerCase();
+  if (url === "/data/site-data.json") return next();
+  if (PRIVATE_PREFIXES.some((prefix) => url === prefix || url.startsWith(prefix + "/"))) {
+    return res.status(404).send("الصفحة غير موجودة.");
+  }
+  next();
+});
+
 app.get("/data/site-data.json", (req, res) => res.sendFile(SITE_DATA_FILE));
-app.use("/assets", express.static(path.join(ROOT_DIR, "assets")));
+
+app.use(
+  express.static(ROOT_DIR, {
+    extensions: ["html"],
+    index: "index.html",
+    dotfiles: "deny",
+    setHeaders(res, filePath) {
+      // الأصول ذات الأسماء الثابتة تُخزَّن طويلًا، وصفحات HTML تُراجَع دائمًا.
+      if (/\.(webp|png|jpe?g|svg|woff2?|ico)$/i.test(filePath)) {
+        res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+      } else if (/\.html$/i.test(filePath)) {
+        res.setHeader("Cache-Control", "no-cache");
+      }
+    },
+  }),
+);
 
 // ---------- session (used by /admin and /api only) ----------
 const sessionMiddleware = session({
@@ -353,6 +396,19 @@ app.post("/api/upload", auth.requireAuth, (req, res) => {
   });
 });
 
+// ---------- case document (PDF) upload ----------
+app.post("/api/upload-doc", auth.requireAuth, (req, res) => {
+  uploadDoc.single("document")(req, res, (err) => {
+    if (err) {
+      return res.status(400).json({ ok: false, error: err.message });
+    }
+    if (!req.file) {
+      return res.status(400).json({ ok: false, error: "لم يتم إرسال أي ملف." });
+    }
+    res.json({ ok: true, path: publicDocPathFor(req.file.filename) });
+  });
+});
+
 // ---------- git publish ----------
 app.post("/api/publish", auth.requireAuth, async (req, res) => {
   try {
@@ -364,6 +420,11 @@ app.post("/api/publish", auth.requireAuth, async (req, res) => {
 });
 
 app.use((req, res) => {
+  const fallback = path.join(ROOT_DIR, "404.html");
+  // صفحة 404 المصممة تخص الموقع العام فقط، لا لوحة التحكم ولا الـ API.
+  if (!req.path.startsWith("/api") && !req.path.startsWith("/admin") && fs.existsSync(fallback)) {
+    return res.status(404).sendFile(fallback);
+  }
   res.status(404).send("الصفحة غير موجودة.");
 });
 

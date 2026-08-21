@@ -2,16 +2,28 @@
   "name": "jad-law-firm-site",
   "version": "1.0.0",
   "private": true,
-  "description": "موقع مكتب جاد العبدالله للمحاماة + لوحة تحكم محلية لإدارة المحتوى",
+  "description": "موقع مكتب جاد العبدالله للمحاماة — موقع ثابت مُهيّأ لمحركات البحث + لوحة تحكم محلية لإدارة المحتوى",
   "scripts": {
+    "build": "node tools/build-icons.mjs && node tools/build.mjs",
+    "build:icons": "node tools/build-icons.mjs",
+    "build:images": "node tools/optimize-images.mjs",
     "admin": "node server/server.js",
-    "site": "python -m http.server 4173 --bind 127.0.0.1"
+    "site": "node server/server.js",
+    "start": "node server/server.js"
   },
   "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2",
-    "express-session": "^1.18.0",
+    "bcryptjs": "^3.0.3",
+    "compression": "^1.8.1",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "helmet": "^8.3.0",
     "multer": "^2.2.0"
+  },
+  "devDependencies": {
+    "sharp": "^0.35.3"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

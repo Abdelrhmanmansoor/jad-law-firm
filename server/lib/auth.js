@@ -73,7 +73,8 @@ function requireAuth(req, res, next) {
   if (req.path.startsWith("/api/")) {
     return res.status(401).json({ ok: false, error: "يجب تسجيل الدخول أولاً." });
   }
-  return res.redirect("/admin/login");
+  // الصفحة الفعلية هي login.html — التوجيه إلى "/admin/login" كان يعطي 404.
+  return res.redirect("/admin/login.html");
 }
 
 module.exports = {

@@ -8,6 +8,8 @@ const ADMIN_USER_FILE = path.join(DATA_DIR, "admin-user.json");
 const SESSION_SECRET_FILE = path.join(DATA_DIR, ".session-secret");
 const UPLOADS_DIR = path.join(ROOT_DIR, "assets", "uploads");
 const UPLOADS_PUBLIC_PREFIX = "assets/uploads";
+const CASE_DOCS_DIR = path.join(ROOT_DIR, "assets", "legal-documents", "cases");
+const CASE_DOCS_PUBLIC_PREFIX = "assets/legal-documents/cases";
 
 module.exports = {
   ROOT_DIR,
@@ -18,4 +20,6 @@ module.exports = {
   SESSION_SECRET_FILE,
   UPLOADS_DIR,
   UPLOADS_PUBLIC_PREFIX,
+  CASE_DOCS_DIR,
+  CASE_DOCS_PUBLIC_PREFIX,
 };

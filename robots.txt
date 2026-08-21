@@ -1,0 +1,10 @@
+# https://jaadlegal.com
+User-agent: *
+Allow: /
+
+# لا حاجة لفهرسة ملفات التشغيل الداخلية
+Disallow: /admin
+Disallow: /api/
+Disallow: /data/
+
+Sitemap: https://jaadlegal.com/sitemap.xml

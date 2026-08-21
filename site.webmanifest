@@ -1,0 +1,17 @@
+{
+  "name": "جاد العبدالله للمحاماة والاستشارات القانونية",
+  "short_name": "جاد للمحاماة",
+  "description": "مكتب قانوني سعودي في جيزان يقدم خدمات المحاماة والاستشارات القانونية للأفراد والشركات.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0d1b2a",
+  "icons": [
+    { "src": "/assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

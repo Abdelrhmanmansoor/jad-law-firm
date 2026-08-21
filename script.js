@@ -224,6 +224,444 @@ const siteConfig = {
   hours: { ar: "الأحد إلى الخميس من 8 ص - 3 م", en: "Sun to Thu, 8 AM - 3 PM" },
 };
 
+/* ────────────────────────────────────────────────────────────────────────────
+   التوجيه (Routing) وتحسين محركات البحث (SEO)
+   الروابط أصبحت حقيقية: /about بدل #/about، والنسخة الإنجليزية تحت /en/.
+   ملاحظة: أي تعديل هنا يجب أن يقابله إعادة توليد الصفحات الثابتة عبر
+   `npm run build` حتى تبقى نسخ HTML المُهيّأة لمحركات البحث متطابقة.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+const SITE_ORIGIN = "https://jaadlegal.com";
+const DEFAULT_LANG = "ar";
+const SUPPORTED_LANGS = ["ar", "en"];
+
+/** الصفحات الثابتة التي يعرفها الموجّه (بدون الصفحات التفصيلية ذات المعرّف). */
+const STATIC_PAGES = ["", "about", "practices", "consulting", "cases", "blog", "contact", "privacy", "terms"];
+/** الصفحات التفصيلية: المقطع الأول ثم معرّف العنصر. */
+const DETAIL_PAGES = ["practice", "case", "article"];
+
+/** يحوّل عنوان المتصفح إلى { lang, page, id } بشكل يعمل في المتصفح وفي التوليد المسبق. */
+function parseRoute(pathname) {
+  const segments = String(pathname || "/")
+    .split("?")[0]
+    .split("#")[0]
+    .split("/")
+    .filter(Boolean)
+    .map((segment) => {
+      try {
+        return decodeURIComponent(segment);
+      } catch {
+        return segment;
+      }
+    });
+
+  let routeLang = DEFAULT_LANG;
+  if (segments[0] && SUPPORTED_LANGS.includes(segments[0])) {
+    routeLang = segments.shift();
+  }
+
+  const page = segments[0] ?? "";
+  const id = segments[1] ?? "";
+
+  if (!page) return { lang: routeLang, page: "", id: "" };
+  if (STATIC_PAGES.includes(page)) return { lang: routeLang, page, id: "" };
+  if (DETAIL_PAGES.includes(page)) return { lang: routeLang, page, id };
+  return { lang: routeLang, page: "404", id: "" };
+}
+
+/** يبني رابطًا داخليًا مطلق المسار للصفحة المطلوبة باللغة المطلوبة. */
+function routePath(page = "", id = "", targetLang) {
+  const useLang = SUPPORTED_LANGS.includes(targetLang) ? targetLang : (typeof lang === "string" ? lang : DEFAULT_LANG);
+  const prefix = useLang === DEFAULT_LANG ? "" : "/" + useLang;
+  // الشرطة المائلة في النهاية مقصودة: الاستضافة الثابتة تخدم about/index.html
+  // على المسار /about/ وتعيد التوجيه من /about إليه. توحيدها يمنع إعادة توجيه زائدة
+  // ويمنع اختلاف الرابط الأساسي (canonical) عن الرابط الفعلي.
+  if (!page) return prefix + "/";
+  const tail = id ? "/" + encodeURIComponent(id) : "";
+  return prefix + "/" + page + tail + "/";
+}
+
+/** الرابط الأساسي الكامل (canonical) لصفحة ما. */
+function routeUrl(page, id, targetLang) {
+  return SITE_ORIGIN + routePath(page, id, targetLang);
+}
+
+/** يترجم روابط الهاش القديمة (#/about) إلى المسار الجديد، للحفاظ على الروابط المنشورة سابقًا. */
+function legacyHashToPath(hash) {
+  const raw = String(hash || "").replace(/^#\/?/, "");
+  if (!raw) return null;
+  const [page = "", id = ""] = raw.split("/");
+  if (!STATIC_PAGES.includes(page) && !DETAIL_PAGES.includes(page)) return null;
+  return routePath(page, id);
+}
+
+/* ── بيانات السيو لكل صفحة ─────────────────────────────────────────────── */
+
+const SEO_TEXT = {
+  ar: {
+    siteName: "جاد العبدالله للمحاماة والاستشارات القانونية",
+    "": {
+      title: "محامي في جيزان والسعودية | جاد العبدالله للمحاماة",
+      description:
+        "مكتب جاد العبدالله للمحاماة: محامون مرخصون ومستشارون قانونيون في جيزان والمملكة العربية السعودية. ترافع وتمثيل في القضايا التجارية والمالية والعقارية، واستشارات قانونية للأفراد والشركات.",
+    },
+    about: {
+      title: "من نحن | مكتب جاد العبدالله للمحاماة",
+      description:
+        "تعرّف على مكتب جاد العبدالله للمحاماة: نخبة من المستشارين والمحامين المرخصين، وخبرة في ملفات نوعية تجاوزت قيمتها المليار ريال، بالتزام كامل بالأنظمة السعودية والسرية المهنية.",
+    },
+    practices: {
+      title: "مجالات الاختصاص | قضايا تجارية وعقارية ومالية",
+      description:
+        "مجالات عمل مكتب جاد العبدالله للمحاماة: القضايا التجارية، المنازعات المالية والأوراق التجارية، القضايا العقارية، منازعات التنفيذ، وحوكمة الشركات وفق الأنظمة السعودية.",
+    },
+    consulting: {
+      title: "الأعمال الاستشارية | استشارات للأفراد والشركات",
+      description:
+        "استشارات قانونية مكتوبة ودقيقة: دراسة العقود قبل التوقيع، إعداد المذكرات، حوكمة الشركات، تقييم المخاطر النظامية، والتسويات الودية قبل نشوء النزاع.",
+    },
+    cases: {
+      title: "قضايانا وإنجازاتنا القضائية | أحكام منقحة",
+      description:
+        "نماذج من أحكام وملفات المكتب بصيغة منقحة تحفظ سرية الأطراف: مطالبات تجارية، منازعات تنفيذ، عقود عقارية، ومسؤولية مديري الشركات.",
+    },
+    blog: {
+      title: "المدونة القانونية | مقالات ووعي نظامي",
+      description:
+        "مقالات قانونية مبسّطة عن العقود، المطالبات التجارية، التنفيذ، والعقارات في الأنظمة السعودية، تساعدك على اتخاذ قرار أوضح قبل نشوء النزاع.",
+    },
+    contact: {
+      title: "تواصل معنا واحجز استشارة قانونية | جاد للمحاماة",
+      description:
+        "احجز استشارة قانونية مع مكتب جاد العبدالله للمحاماة في جيزان. تواصل هاتفيًا أو عبر واتساب أو البريد الإلكتروني من الأحد إلى الخميس.",
+    },
+    privacy: {
+      title: "سياسة الخصوصية | جاد العبدالله للمحاماة",
+      description: "كيف يتعامل مكتب جاد العبدالله للمحاماة مع بياناتك الشخصية والمعلومات التي تشاركها عبر الموقع.",
+    },
+    terms: {
+      title: "الشروط والأحكام | جاد العبدالله للمحاماة",
+      description: "شروط استخدام موقع مكتب جاد العبدالله للمحاماة وحدود المعلومات القانونية المنشورة فيه.",
+    },
+    404: {
+      title: "الصفحة غير موجودة | جاد العبدالله للمحاماة",
+      description: "الرابط المطلوب غير متاح. تصفّح مجالات الاختصاص أو تواصل مع المكتب لحجز استشارة.",
+    },
+  },
+  en: {
+    siteName: "Jad Alabdullah Law Firm & Legal Consultancy",
+    "": {
+      title: "Law Firm in Jazan | Jad Alabdullah Law Firm",
+      description:
+        "Jad Alabdullah Law Firm: licensed Saudi attorneys and legal consultants in Jazan. Litigation in commercial, financial, real estate and enforcement matters, plus legal advisory for individuals and companies.",
+    },
+    about: {
+      title: "About Us | Jad Alabdullah Law Firm",
+      description:
+        "Learn about Jad Alabdullah Law Firm: licensed attorneys and senior consultants with experience in high-value matters exceeding one billion SAR, aligned with Saudi regulations and professional confidentiality.",
+    },
+    practices: {
+      title: "Practice Areas | Commercial and Real Estate Law",
+      description:
+        "Practice areas at Jad Alabdullah Law Firm: commercial litigation, financial and negotiable instruments disputes, real estate matters, enforcement disputes, and corporate governance under Saudi law.",
+    },
+    consulting: {
+      title: "Legal Advisory for Individuals and Companies",
+      description:
+        "Precise written legal advisory: contract review before signing, legal memoranda, corporate governance, regulatory risk assessment, and amicable settlements before disputes arise.",
+    },
+    cases: {
+      title: "Cases and Judicial Outcomes | Jad Law Firm",
+      description:
+        "Selected redacted matters and judgments: commercial claims, enforcement disputes, real estate contracts, and directors liability, with party details concealed.",
+    },
+    blog: {
+      title: "Legal Blog | Articles and Regulatory Awareness",
+      description:
+        "Clear legal articles on contracts, commercial claims, enforcement, and real estate under Saudi regulations, to help you decide before a dispute begins.",
+    },
+    contact: {
+      title: "Contact Us | Book a Legal Consultation",
+      description:
+        "Book a legal consultation with Jad Alabdullah Law Firm in Jazan. Reach us by phone, WhatsApp, or email, Sunday to Thursday.",
+    },
+    privacy: {
+      title: "Privacy Policy | Jad Law Firm",
+      description: "How Jad Alabdullah Law Firm handles your personal data and the information you share through this website.",
+    },
+    terms: {
+      title: "Terms and Conditions | Jad Law Firm",
+      description: "Terms of use for the Jad Alabdullah Law Firm website and the limits of the legal information published on it.",
+    },
+    404: {
+      title: "Page Not Found | Jad Law Firm",
+      description: "The requested link is unavailable. Browse our practice areas or contact the firm to book a consultation.",
+    },
+  },
+};
+
+/** يقصّ نصًا ليصلح كوصف ميتا (meta description) بطول مناسب لمحركات البحث. */
+function clampDescription(text, max = 158) {
+  const clean = String(text || "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (clean.length <= max) return clean;
+  return clean.slice(0, max - 1).replace(/[\s،,.-]+$/, "") + "…";
+}
+
+/**
+ * يقصّ عنوان الصفحة ليبقى ضمن ما تعرضه جوجل فعليًا في نتائج البحث (نحو 60 حرفًا).
+ * العنوان الأطول من ذلك يُقطع في النتيجة وتضيع منه العلامة التجارية.
+ */
+function clampTitle(leaf, brand, max = 60) {
+  const suffix = " | " + brand;
+  const room = max - suffix.length;
+  const clean = String(leaf || "").replace(/\s+/g, " ").trim();
+  if (clean.length <= room) return clean + suffix;
+  return clean.slice(0, Math.max(room - 1, 12)).replace(/[\s،,.-]+$/, "") + "…" + suffix;
+}
+
+/** يبني عنوان الصفحة ووصفها لأي مسار، بما فيها الصفحات التفصيلية. */
+function seoFor(route, activeLang) {
+  const useLang = activeLang || lang;
+  const table = SEO_TEXT[useLang] ?? SEO_TEXT[DEFAULT_LANG];
+  const brand = table.siteName;
+  // الصفحات التفصيلية تحمل عنوانًا طويلًا أصلًا، فتستخدم الاسم المختصر للعلامة.
+  const shortBrand = useLang === "ar" ? "جاد العبدالله للمحاماة" : "Jad Alabdullah Law Firm";
+  const pick = (value) => (value && typeof value === "object" ? value[useLang] ?? value[DEFAULT_LANG] : value);
+
+  if (route.page === "practice") {
+    const item = practices.find((entry) => entry.id === route.id);
+    if (item) {
+      return {
+        title: clampTitle(pick(item.title), shortBrand),
+        description: clampDescription(pick(item.desc) || pick(item.subtitle)),
+      };
+    }
+  }
+
+  if (route.page === "case") {
+    const item = caseWins.find((entry) => entry.id === route.id);
+    if (item) {
+      return {
+        title: clampTitle(pick(item.title), shortBrand),
+        description: clampDescription(pick(item.summary)),
+      };
+    }
+  }
+
+  if (route.page === "article") {
+    const item = blogPosts.find((entry) => entry.id === route.id);
+    if (item) {
+      return {
+        title: clampTitle(pick(item.title), shortBrand),
+        description: clampDescription(pick(item.summary)),
+      };
+    }
+  }
+
+  const entry = table[route.page] ?? table["404"];
+  return { title: entry.title, description: clampDescription(entry.description) };
+}
+
+/** فتات الخبز (breadcrumbs) المعروضة للزائر والمستخدمة في البيانات المنظمة. */
+function breadcrumbsFor(route, activeLang) {
+  const useLang = activeLang || lang;
+  const label = (key, fallback) => (content[useLang] && content[useLang][key]) || fallback;
+  const trail = [{ name: useLang === "ar" ? "الرئيسية" : "Home", path: routePath("", "", useLang) }];
+  if (!route.page) return trail;
+
+  const parents = {
+    practice: { page: "practices", name: label("navPractices", "Practice Areas") },
+    case: { page: "cases", name: label("navCases", "Cases") },
+    article: { page: "blog", name: label("navBlog", "Blog") },
+  };
+
+  const parent = parents[route.page];
+  if (parent) trail.push({ name: parent.name, path: routePath(parent.page, "", useLang) });
+
+  const leaf = seoFor(route, useLang).title.split(" | ")[0];
+  trail.push({ name: leaf, path: routePath(route.page, route.id, useLang) });
+  return trail;
+}
+
+/** الأسئلة الشائعة - تظهر للزائر وتُرسل لجوجل كبيانات منظمة (FAQ rich result). */
+function faqItems(activeLang) {
+  const useLang = activeLang || lang;
+  if (useLang === "en") {
+    return [
+      {
+        q: "Where is Jad Alabdullah Law Firm located?",
+        a: "The firm is based in Al Shati, Jazan 82726, Saudi Arabia, and serves clients across the Kingdom, including remote consultations by phone and WhatsApp.",
+      },
+      {
+        q: "What types of cases does the firm handle?",
+        a: "Commercial litigation, financial and negotiable instruments disputes, real estate matters, enforcement disputes, and corporate governance and advisory work for companies and individuals.",
+      },
+      {
+        q: "How do I book a legal consultation?",
+        a: "Send your request from the contact page, or reach the firm directly by phone or WhatsApp between 8 AM and 3 PM, Sunday to Thursday.",
+      },
+      {
+        q: "Is my information kept confidential?",
+        a: "Yes. All matters are handled under professional confidentiality obligations, and published case files are redacted so that party names and private data are concealed.",
+      },
+      {
+        q: "Does the firm work with companies as well as individuals?",
+        a: "Yes. The firm represents companies, establishments, and individuals, and provides ongoing advisory retainers covering contracts, governance, and regulatory risk.",
+      },
+      {
+        q: "What should I prepare before the first consultation?",
+        a: "Bring the contract or claim documents, any official correspondence, and a short timeline of events. Organised documents make the initial legal assessment far more accurate.",
+      },
+    ];
+  }
+  return [
+    {
+      q: "أين يقع مكتب جاد العبدالله للمحاماة؟",
+      a: "يقع المكتب في الشاطئ، جيزان 82726، المملكة العربية السعودية، ويخدم العملاء في مختلف مناطق المملكة، بما في ذلك الاستشارات عن بُعد عبر الهاتف وواتساب.",
+    },
+    {
+      q: "ما أنواع القضايا التي يتولاها المكتب؟",
+      a: "القضايا التجارية، المنازعات المالية والأوراق التجارية، القضايا العقارية، منازعات التنفيذ، إضافة إلى حوكمة الشركات والأعمال الاستشارية للأفراد والمنشآت.",
+    },
+    {
+      q: "كيف أحجز استشارة قانونية؟",
+      a: "يمكنك إرسال طلبك من صفحة التواصل، أو الاتصال المباشر عبر الهاتف أو واتساب من الساعة 8 صباحًا حتى 3 عصرًا، من الأحد إلى الخميس.",
+    },
+    {
+      q: "هل تبقى معلوماتي سرية؟",
+      a: "نعم. تُعالج جميع الملفات وفق التزامات السرية المهنية، والملفات المنشورة على الموقع منقحة بحيث تُخفى أسماء الأطراف والبيانات الخاصة.",
+    },
+    {
+      q: "هل يعمل المكتب مع الشركات كما يعمل مع الأفراد؟",
+      a: "نعم. يمثّل المكتب الشركات والمؤسسات والأفراد، ويقدّم أعمالًا استشارية دورية تغطي العقود والحوكمة وتقييم المخاطر النظامية.",
+    },
+    {
+      q: "ماذا أُجهّز قبل الاستشارة الأولى؟",
+      a: "أحضر العقد أو مستندات المطالبة، والمراسلات الرسمية إن وُجدت، وتسلسلًا زمنيًا مختصرًا للأحداث. ترتيب المستندات يجعل التقييم القانوني الأولي أدق بكثير.",
+    },
+  ];
+}
+
+/** البيانات المنظمة (JSON-LD) التي تفهمها جوجل: المكتب، الصفحة، فتات الخبز، والمقالات. */
+function structuredDataFor(route, activeLang) {
+  const useLang = activeLang || lang;
+  const table = SEO_TEXT[useLang] ?? SEO_TEXT[DEFAULT_LANG];
+  const meta = seoFor(route, useLang);
+  const pageUrl = routeUrl(route.page, route.id, useLang);
+  const pick = (value) => (value && typeof value === "object" ? value[useLang] ?? value[DEFAULT_LANG] : value);
+
+  const graph = [
+    {
+      "@type": "LegalService",
+      "@id": SITE_ORIGIN + "/#organization",
+      name: table.siteName,
+      alternateName: useLang === "ar" ? "جاد للمحاماة" : "Jad Law Firm",
+      url: SITE_ORIGIN + "/",
+      logo: SITE_ORIGIN + "/assets/logo.webp",
+      image: SITE_ORIGIN + "/assets/office/office-sign.webp",
+      description: clampDescription(table[""].description, 300),
+      telephone: siteConfig.phone,
+      email: siteConfig.email,
+      priceRange: "$$",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: useLang === "ar" ? "الشاطئ" : "Al Shati",
+        addressLocality: useLang === "ar" ? "جيزان" : "Jazan",
+        postalCode: "82726",
+        addressCountry: "SA",
+      },
+      areaServed: { "@type": "Country", name: useLang === "ar" ? "المملكة العربية السعودية" : "Saudi Arabia" },
+      openingHoursSpecification: [
+        {
+          "@type": "OpeningHoursSpecification",
+          dayOfWeek: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"],
+          opens: "08:00",
+          closes: "15:00",
+        },
+      ],
+      knowsLanguage: ["ar", "en"],
+      serviceType: practices.map((item) => pick(item.title)),
+    },
+    {
+      "@type": "WebSite",
+      "@id": SITE_ORIGIN + "/#website",
+      url: SITE_ORIGIN + "/",
+      name: table.siteName,
+      inLanguage: useLang,
+      publisher: { "@id": SITE_ORIGIN + "/#organization" },
+    },
+    {
+      "@type": "WebPage",
+      "@id": pageUrl + "#webpage",
+      url: pageUrl,
+      name: meta.title,
+      description: meta.description,
+      inLanguage: useLang,
+      isPartOf: { "@id": SITE_ORIGIN + "/#website" },
+      about: { "@id": SITE_ORIGIN + "/#organization" },
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": pageUrl + "#breadcrumb",
+      itemListElement: breadcrumbsFor(route, useLang).map((crumb, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: crumb.name,
+        item: SITE_ORIGIN + crumb.path,
+      })),
+    },
+  ];
+
+  if (route.page === "article") {
+    const post = blogPosts.find((entry) => entry.id === route.id);
+    if (post) {
+      graph.push({
+        "@type": "Article",
+        "@id": pageUrl + "#article",
+        headline: pick(post.title),
+        description: clampDescription(pick(post.summary)),
+        articleSection: pick(post.category),
+        inLanguage: useLang,
+        author: { "@id": SITE_ORIGIN + "/#organization" },
+        publisher: { "@id": SITE_ORIGIN + "/#organization" },
+        mainEntityOfPage: { "@id": pageUrl + "#webpage" },
+      });
+    }
+  }
+
+  if (route.page === "practice") {
+    const item = practices.find((entry) => entry.id === route.id);
+    if (item) {
+      graph.push({
+        "@type": "Service",
+        "@id": pageUrl + "#service",
+        name: pick(item.title),
+        description: clampDescription(pick(item.desc)),
+        serviceType: pick(item.subtitle),
+        provider: { "@id": SITE_ORIGIN + "/#organization" },
+        areaServed: { "@type": "Country", name: useLang === "ar" ? "المملكة العربية السعودية" : "Saudi Arabia" },
+      });
+    }
+  }
+
+  if (!route.page) {
+    graph.push({
+      "@type": "FAQPage",
+      "@id": SITE_ORIGIN + "/#faq",
+      mainEntity: faqItems(useLang).map((item) => ({
+        "@type": "Question",
+        name: item.q,
+        acceptedAnswer: { "@type": "Answer", text: item.a },
+      })),
+    });
+  }
+
+  return { "@context": "https://schema.org", "@graph": graph };
+}
+
 const practices = [
   {
     id: "commercial",
@@ -431,7 +869,7 @@ const practices = [
 const retiredCaseWins = [
   {
     id: "bank-aljazira-3-6m",
-    file: "assets/legal-documents/cases/إثبات الوفاء بسند تنفيذي 3.6 مليون - منقح.pdf",
+    file: "/assets/legal-documents/cases/إثبات الوفاء بسند تنفيذي 3.6 مليون - منقح.pdf",
     title: {
       ar: "إثبات الوفاء بسند تنفيذي بقيمة 3.6 مليون ريال",
       en: "Proof of satisfaction of a SAR 3.6M enforcement instrument",
@@ -454,7 +892,7 @@ const retiredCaseWins = [
   },
   {
     id: "final-cheque-ruling",
-    file: "assets/legal-documents/cases/حكم نهائي في منازعة شيك - منقح.pdf",
+    file: "/assets/legal-documents/cases/حكم نهائي في منازعة شيك - منقح.pdf",
     title: { ar: "حكم نهائي في منازعة تنفيذ شيك", en: "Final judgment in a cheque enforcement dispute" },
     category: { ar: "شيكات وأوراق تجارية", en: "Cheques and commercial papers" },
     amount: { ar: "منازعة شيك", en: "Cheque dispute" },
@@ -474,7 +912,7 @@ const retiredCaseWins = [
   },
   {
     id: "commercial-48m-non-admission",
-    file: "assets/legal-documents/cases/عدم قبول مطالبة تجارية 48.1 مليون - منقح.pdf",
+    file: "/assets/legal-documents/cases/عدم قبول مطالبة تجارية 48.1 مليون - منقح.pdf",
     title: { ar: "عدم قبول مطالبة تجارية وتعويضية بمبلغ 48.1 مليون ريال", en: "Non-admission of a SAR 48.1M commercial compensation claim" },
     category: { ar: "قضايا تجارية وتعويضات", en: "Commercial claims and compensation" },
     amount: { ar: "48.1 مليون ريال", en: "SAR 48.1M" },
@@ -494,7 +932,7 @@ const retiredCaseWins = [
   },
   {
     id: "company-liability-defense",
-    file: "assets/legal-documents/cases/دفاع في مسؤولية مديري شركة - منقح.pdf",
+    file: "/assets/legal-documents/cases/دفاع في مسؤولية مديري شركة - منقح.pdf",
     title: { ar: "دفاع في مطالبة متعلقة بمسؤولية مديري شركة", en: "Defense in a company managers' liability claim" },
     category: { ar: "حوكمة ومسؤولية شركات", en: "Governance and corporate liability" },
     amount: { ar: "مطالبة عالية القيمة", en: "High-value claim" },
@@ -514,7 +952,7 @@ const retiredCaseWins = [
   },
   {
     id: "talal-compensation-500k",
-    file: "assets/legal-documents/cases/رد مطالبة تعويض 500 ألف - منقح.pdf",
+    file: "/assets/legal-documents/cases/رد مطالبة تعويض 500 ألف - منقح.pdf",
     title: { ar: "رد مطالبة تعويض بمبلغ 500 ألف ريال", en: "Defense against a SAR 500K compensation claim" },
     category: { ar: "تعويضات ومصاريف تقاضي", en: "Compensation and litigation costs" },
     amount: { ar: "500 ألف ريال", en: "SAR 500K" },
@@ -534,7 +972,7 @@ const retiredCaseWins = [
   },
   {
     id: "405m-enforcement-dispute",
-    file: "assets/legal-documents/cases/رد دعوى تنفيذية 405 مليون - منقح.pdf",
+    file: "/assets/legal-documents/cases/رد دعوى تنفيذية 405 مليون - منقح.pdf",
     title: { ar: "رد دعوى تنفيذية بقيمة 405 مليون ريال", en: "Dismissal of a SAR 405M enforcement dispute" },
     category: { ar: "منازعة تنفيذية كبرى", en: "Major enforcement dispute" },
     amount: { ar: "405 مليون ريال", en: "SAR 405M" },
@@ -554,7 +992,7 @@ const retiredCaseWins = [
   },
   {
     id: "palace-contract-3m",
-    file: "assets/legal-documents/cases/نزاع مقاولة مشروع قصر 3 مليون - منقح.pdf",
+    file: "/assets/legal-documents/cases/نزاع مقاولة مشروع قصر 3 مليون - منقح.pdf",
     title: { ar: "نزاع مقاولة وتشطيبات في مشروع قصر", en: "Construction and finishing dispute for a palace project" },
     category: { ar: "مقاولات وعقود تجارية", en: "Construction and commercial contracts" },
     amount: { ar: "3 مليون ريال", en: "SAR 3M" },
@@ -574,7 +1012,7 @@ const retiredCaseWins = [
   },
   {
     id: "bank-finance-3-6m-dismissal",
-    file: "assets/legal-documents/cases/رد دعوى وفاء بسند تنفيذي 3.6 مليون - منقح.pdf",
+    file: "/assets/legal-documents/cases/رد دعوى وفاء بسند تنفيذي 3.6 مليون - منقح.pdf",
     title: { ar: "رد دعوى وفاء بسند تنفيذي مرفوعة من بنك", en: "Dismissal of a bank enforcement satisfaction claim" },
     category: { ar: "تمويل عقاري وتنفيذ", en: "Real estate finance and enforcement" },
     amount: { ar: "3.6 مليون ريال", en: "SAR 3.6M" },
@@ -594,7 +1032,7 @@ const retiredCaseWins = [
   },
   {
     id: "real-estate-sale-nullification-8m",
-    file: "assets/legal-documents/cases/بطلان عقد بيع عقاري 8 مليون - منقح.pdf",
+    file: "/assets/legal-documents/cases/بطلان عقد بيع عقاري 8 مليون - منقح.pdf",
     title: {
       ar: "بطلان عقد بيع عقاري بمبلغ 8 ملايين ريال",
       en: "Nullification of an SAR 8M real estate sale contract",
@@ -617,7 +1055,7 @@ const retiredCaseWins = [
   },
   {
     id: "appeal-sale-nullification-8m",
-    file: "assets/legal-documents/cases/تأييد استئنافي لبطلان عقد بيع عقاري 8 مليون - منقح.pdf",
+    file: "/assets/legal-documents/cases/تأييد استئنافي لبطلان عقد بيع عقاري 8 مليون - منقح.pdf",
     title: {
       ar: "تأييد استئنافي لحكم بطلان عقد بيع عقاري",
       en: "Appellate affirmation of a void real estate sale judgment",
@@ -643,7 +1081,7 @@ const retiredCaseWins = [
 const caseWins = [
   {
     id: "mortgage-deed-satisfaction-dismissal",
-    file: "assets/legal-documents/cases/رد دعوى الوفاء بصك رهن عقاري - منقح.pdf",
+    file: "/assets/legal-documents/cases/رد دعوى الوفاء بصك رهن عقاري - منقح.pdf",
     title: {
       ar: "رد دعوى الوفاء بسند تنفيذي مرتبط بصك رهن عقاري",
       en: "Dismissal of a satisfaction claim involving a mortgage deed",
@@ -666,7 +1104,7 @@ const caseWins = [
   },
   {
     id: "commercial-contract-invalidity-4-5m",
-    file: "assets/legal-documents/cases/فساد عقد تجاري والحكم بمبالغ 4.5 مليون - منقح.pdf",
+    file: "/assets/legal-documents/cases/فساد عقد تجاري والحكم بمبالغ 4.5 مليون - منقح.pdf",
     title: {
       ar: "ثبوت فساد عقد تجاري والحكم بمبالغ تتجاوز 4.5 مليون ريال",
       en: "Commercial contract invalidity and awards exceeding SAR 4.5M",
@@ -689,7 +1127,7 @@ const caseWins = [
   },
   {
     id: "commercial-dismissal-appeal-affirmed",
-    file: "assets/legal-documents/cases/تأييد رد دعوى تجارية استئنافيا - منقح.pdf",
+    file: "/assets/legal-documents/cases/تأييد رد دعوى تجارية استئنافيا - منقح.pdf",
     title: {
       ar: "تأييد رد دعوى تجارية استئنافيًا",
       en: "Appellate affirmation of a commercial claim dismissal",
@@ -712,7 +1150,7 @@ const caseWins = [
   },
   {
     id: "enforcement-jurisdiction-appeal",
-    file: "assets/legal-documents/cases/نقض حكم لعدم الاختصاص في منازعة تنفيذ - منقح.pdf",
+    file: "/assets/legal-documents/cases/نقض حكم لعدم الاختصاص في منازعة تنفيذ - منقح.pdf",
     title: {
       ar: "نقض حكم لعدم الاختصاص في منازعة تنفيذ",
       en: "Judgment overturned for lack of jurisdiction in an enforcement dispute",
@@ -735,7 +1173,7 @@ const caseWins = [
   },
   {
     id: "commercial-judgment-cancelled-non-admission",
-    file: "assets/legal-documents/cases/إلغاء حكم تجاري وعدم قبول الدعوى - منقح.pdf",
+    file: "/assets/legal-documents/cases/إلغاء حكم تجاري وعدم قبول الدعوى - منقح.pdf",
     title: {
       ar: "إلغاء حكم تجاري والحكم مجددًا بعدم قبول الدعوى",
       en: "Commercial judgment cancelled and claim ruled inadmissible",
@@ -758,7 +1196,7 @@ const caseWins = [
   },
   {
     id: "enforcement-dismissal-appeal-affirmed",
-    file: "assets/legal-documents/cases/تأييد رد دعوى تنفيذية استئنافيا - منقح.pdf",
+    file: "/assets/legal-documents/cases/تأييد رد دعوى تنفيذية استئنافيا - منقح.pdf",
     title: {
       ar: "تأييد رد دعوى تنفيذية استئنافيًا",
       en: "Appellate affirmation of an enforcement claim dismissal",
@@ -829,7 +1267,8 @@ const blogPosts = [
   },
 ];
 
-let lang = localStorage.getItem("siteLang") || "ar";
+/** اللغة النشطة تُشتق من الرابط دائمًا حتى يتطابق المحتوى مع الرابط الأساسي (canonical). */
+let lang = parseRoute(window.location.pathname).lang;
 const app = document.getElementById("app");
 const langToggle = document.getElementById("langToggle");
 const mobilePanel = document.getElementById("mobilePanel");
@@ -856,7 +1295,27 @@ function syncChrome() {
     const key = node.dataset.i18n;
     node.textContent = data[key] ?? node.textContent;
   });
+
+  // روابط الترويسة والتذييل تُعاد كتابتها لتحمل بادئة اللغة النشطة (/en/...).
+  document.querySelectorAll("[data-route]").forEach((node) => {
+    node.setAttribute("href", routePath(node.dataset.route, node.dataset.routeId || ""));
+  });
+
   langToggle.textContent = data.langLabel;
+  langToggle.setAttribute("lang", lang === "ar" ? "en" : "ar");
+  langToggle.setAttribute(
+    "aria-label",
+    lang === "ar" ? "Switch language to English" : "تبديل اللغة إلى العربية",
+  );
+
+  const menuToggle = document.getElementById("menuToggle");
+  if (menuToggle) menuToggle.setAttribute("aria-label", lang === "ar" ? "فتح القائمة" : "Open menu");
+  const panelClose = document.getElementById("panelClose");
+  if (panelClose) panelClose.setAttribute("aria-label", lang === "ar" ? "إغلاق القائمة" : "Close menu");
+  const whatsappFloat = document.getElementById("whatsappFloat");
+  if (whatsappFloat) whatsappFloat.setAttribute("aria-label", lang === "ar" ? "تواصل عبر واتساب" : "Contact via WhatsApp");
+  const skipLink = document.querySelector(".skip-link");
+  if (skipLink) skipLink.textContent = lang === "ar" ? "تخطَّ إلى المحتوى الرئيسي" : "Skip to main content";
 }
 
 function syncHeaderState() {
@@ -889,11 +1348,45 @@ function practicesGrid(limit) {
           <h3>${local(item.title)}</h3>
           <p class="pill">${local(item.subtitle)}</p>
           <p>${local(item.desc)}</p>
-          <a class="glass-button" href="#/practice/${item.id}">${t("viewDetails")}</a>
+          <a class="glass-button" href="${routePath("practice", item.id)}">${t("viewDetails")}</a>
         </article>
       `,
     )
     .join("");
+}
+
+/** قسم الأسئلة الشائعة - محتوى نصي حقيقي يرفع فرص الظهور في نتائج البحث. */
+function faqSection() {
+  const items = faqItems(lang)
+    .map(
+      (item) => `
+        <details class="faq-item">
+          <summary><h3>${escapeHtml(item.q)}</h3></summary>
+          <p>${escapeHtml(item.a)}</p>
+        </details>
+      `,
+    )
+    .join("");
+  return `
+    <section class="faq-section" aria-labelledby="faqHeading">
+      <div class="section-head">
+        <p class="eyebrow">${lang === "ar" ? "أسئلة متكررة" : "Frequently Asked"}</p>
+        <h2 id="faqHeading">${lang === "ar" ? "أسئلة شائعة عن خدماتنا القانونية" : "Common Questions About Our Legal Services"}</h2>
+        <p>${lang === "ar" ? "إجابات مختصرة عن أكثر ما يسأل عنه العملاء قبل بدء الاستشارة." : "Short answers to what clients most often ask before starting a consultation."}</p>
+      </div>
+      <div class="faq-list">${items}</div>
+    </section>
+  `;
+}
+
+/** يمنع حقن HTML عند إدراج نصوص قادمة من لوحة التحكم أو من بيانات الموقع. */
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 function homePage() {
@@ -905,13 +1398,13 @@ function homePage() {
           <h1>${t("heroTitle")}</h1>
           <p class="lead">${t("heroLead")}</p>
           <div class="hero-actions">
-            <a class="dark-button" href="#/contact">${t("heroPrimary")}</a>
-            <a class="glass-button" href="#/practices">${t("heroSecondary")}</a>
+            <a class="dark-button" href="${routePath("contact")}">${t("heroPrimary")}</a>
+            <a class="glass-button" href="${routePath("practices")}">${t("heroSecondary")}</a>
           </div>
           <div class="trust-strip">${trustCards()}</div>
         </div>
         <div class="hero-emblem">
-          <img src="assets/logo.png" alt="${t("brand")}" />
+          <img src="/assets/logo.webp" alt="${t("brand")}" />
         </div>
       </div>
       ${aboutSection()}
@@ -923,6 +1416,7 @@ function homePage() {
       ${licenseSection()}
       ${methodSection()}
       ${blogSection(3)}
+      ${faqSection()}
       ${contactPreview()}
     </div>
   `;
@@ -978,7 +1472,7 @@ function serviceShowcaseSection() {
   const items = [
     {
       id: "commercial",
-      image: "assets/office/office-sign.png",
+      image: "/assets/office/office-sign.webp",
       bullets: {
         ar: [
           "صياغة ومراجعة العقود والاتفاقيات والمذكرات القانونية.",
@@ -994,7 +1488,7 @@ function serviceShowcaseSection() {
     },
     {
       id: "financial",
-      image: "assets/office/office-desk.png",
+      image: "/assets/office/office-desk.webp",
       bullets: {
         ar: [
           "استشارات قانونية تدعم القرار وتقلل المخاطر النظامية.",
@@ -1026,7 +1520,7 @@ function serviceShowcaseSection() {
                 <ul>
                   ${item.bullets[lang].map((bullet) => `<li>${bullet}</li>`).join("")}
                 </ul>
-                <a class="glass-button" href="#/practice/${item.id}">${t("viewDetails")}</a>
+                <a class="glass-button" href="${routePath("practice", item.id)}">${t("viewDetails")}</a>
               </article>
             `,
           )
@@ -1038,11 +1532,11 @@ function serviceShowcaseSection() {
 
 function trustLogosSection() {
   const logos = [
-    { src: "assets/trust/fal-rega.png", alt: "فال | الهيئة العامة للعقار" },
-    { src: "assets/trust/hrsd.png", alt: "قوى | الموارد البشرية والتنمية الاجتماعية" },
-    { src: "assets/trust/saudi-bar-association.png", alt: "الهيئة السعودية للمحامين" },
-    { src: "assets/trust/ministry-of-commerce.png", alt: "وزارة التجارة" },
-    { src: "assets/trust/ministry-of-justice.png", alt: "وزارة العدل" },
+    { src: "/assets/trust/fal-rega.webp", alt: "فال | الهيئة العامة للعقار" },
+    { src: "/assets/trust/hrsd.webp", alt: "قوى | الموارد البشرية والتنمية الاجتماعية" },
+    { src: "/assets/trust/saudi-bar-association.webp", alt: "الهيئة السعودية للمحامين" },
+    { src: "/assets/trust/ministry-of-commerce.webp", alt: "وزارة التجارة" },
+    { src: "/assets/trust/ministry-of-justice.webp", alt: "وزارة العدل" },
   ];
 
   return `
@@ -1085,18 +1579,18 @@ function clientsMarqueeSection() {
   // mode "invert": mark is white/near-white, must be inverted to read on a white card
   // mode "boost": faint mid-gray mark, needs extra contrast to read on a white card
   const logos = [
-    { src: "assets/clients/rawas.png", alt: "Rawas", mode: "normal" },
-    { src: "assets/clients/modern-diesel-machinery.png", alt: "Modern Diesel Machinery", mode: "invert" },
-    { src: "assets/clients/saudi-coasts.png", alt: "Saudi Coasts", mode: "normal" },
-    { src: "assets/clients/brund.png", alt: "Brund", mode: "boost" },
-    { src: "assets/clients/ithra.png", alt: "ITHRA", mode: "normal" },
-    { src: "assets/clients/hassan-hadi-abdullah.png", alt: "Hassan Hadi Abdullah Co.", mode: "normal" },
-    { src: "assets/clients/jadco-logistic.png", alt: "Jadco Logistic", mode: "invert" },
-    { src: "assets/clients/duja.png", alt: "Duja", mode: "normal" },
-    { src: "assets/clients/cold90.png", alt: "Cold90", mode: "invert" },
-    { src: "assets/clients/rakaz-industrial.png", alt: "Rakaz Industrial", mode: "invert" },
-    { src: "assets/clients/imdad-aljanoob.png", alt: "Imdad Aljanoob", mode: "invert" },
-    { src: "assets/clients/oja.png", alt: "Oja", mode: "boost" },
+    { src: "/assets/clients/rawas.webp", alt: "Rawas", mode: "normal" },
+    { src: "/assets/clients/modern-diesel-machinery.webp", alt: "Modern Diesel Machinery", mode: "invert" },
+    { src: "/assets/clients/saudi-coasts.webp", alt: "Saudi Coasts", mode: "normal" },
+    { src: "/assets/clients/brund.webp", alt: "Brund", mode: "boost" },
+    { src: "/assets/clients/ithra.webp", alt: "ITHRA", mode: "normal" },
+    { src: "/assets/clients/hassan-hadi-abdullah.webp", alt: "Hassan Hadi Abdullah Co.", mode: "normal" },
+    { src: "/assets/clients/jadco-logistic.webp", alt: "Jadco Logistic", mode: "invert" },
+    { src: "/assets/clients/duja.webp", alt: "Duja", mode: "normal" },
+    { src: "/assets/clients/cold90.webp", alt: "Cold90", mode: "invert" },
+    { src: "/assets/clients/rakaz-industrial.webp", alt: "Rakaz Industrial", mode: "invert" },
+    { src: "/assets/clients/imdad-aljanoob.webp", alt: "Imdad Aljanoob", mode: "invert" },
+    { src: "/assets/clients/oja.webp", alt: "Oja", mode: "boost" },
   ];
 
   const cards = logos
@@ -1329,7 +1823,7 @@ function legalCompassSection() {
                 <div class="icon-box">${icon(item.icon)}</div>
                 <h3>${item.title}</h3>
                 <p>${item.body}</p>
-                <a href="#/contact">${item.action}</a>
+                <a href="${routePath("contact")}">${item.action}</a>
               </article>
             `,
           )
@@ -1364,13 +1858,13 @@ function solutionShowcase() {
         <p class="eyebrow">${intro[lang].kicker}</p>
         <h2>${intro[lang].title}</h2>
         <p>${intro[lang].lead}</p>
-        <a class="dark-button" href="#/practices">${intro[lang].cta}</a>
+        <a class="dark-button" href="${routePath("practices")}">${intro[lang].cta}</a>
       </div>
       <div class="solution-list">
         ${selected
           .map(
             (item, index) => `
-              <a class="solution-row" href="#/practice/${item.id}">
+              <a class="solution-row" href="${routePath("practice", item.id)}">
                 <span>${String(index + 1).padStart(2, "0")}</span>
                 <div>
                   <strong>${local(item.title)}</strong>
@@ -1397,12 +1891,12 @@ function aboutSection() {
           <p>${t("aboutBody")}</p>
           <div class="values-grid">${content[lang].values.map((v) => `<span>${v}</span>`).join("")}</div>
           <div class="hero-actions">
-            <a class="dark-button" href="#/contact">${lang === "ar" ? "اطلب استشارة" : "Request Consultation"}</a>
+            <a class="dark-button" href="${routePath("contact")}">${lang === "ar" ? "اطلب استشارة" : "Request Consultation"}</a>
           </div>
         </div>
         <div class="founder-showcase">
           <div class="founder-frame">
-            <img src="assets/founder.png" alt="${lang === "ar" ? "المحامي جاد العبدالله" : "Jad Alabdullah"}" loading="lazy" />
+            <img src="/assets/founder.webp" alt="${lang === "ar" ? "المحامي جاد العبدالله" : "Jad Alabdullah"}" loading="lazy" />
           </div>
         </div>
       </div>
@@ -1412,9 +1906,9 @@ function aboutSection() {
 
 function officeGallerySection() {
   const images = [
-    ["assets/office/office-desk.png", lang === "ar" ? "غرفة الاستشارة" : "Consultation office"],
-    ["assets/office/office-sign.png", lang === "ar" ? "لوحة المكتب" : "Office signage"],
-    ["assets/office/office-lounge.png", lang === "ar" ? "منطقة الانتظار" : "Client lounge"],
+    ["/assets/office/office-desk.webp", lang === "ar" ? "غرفة الاستشارة" : "Consultation office"],
+    ["/assets/office/office-sign.webp", lang === "ar" ? "لوحة المكتب" : "Office signage"],
+    ["/assets/office/office-lounge.webp", lang === "ar" ? "منطقة الانتظار" : "Client lounge"],
   ];
 
   return `
@@ -1449,7 +1943,7 @@ function licenseSection() {
         <p>${lang === "ar" ? "تم الاكتفاء بعرض صفة الاعتماد المهني دون نشر صورة الرخصة أو أي بيانات تعريفية خاصة، حفاظاً على الخصوصية والسرية." : "The website highlights the professional accreditation status without displaying license imagery or sensitive identifying information."}</p>
       </div>
       <div class="license-preview license-preview-badge">
-        <img src="assets/trust/saudi-bar-association.png" alt="${lang === "ar" ? "هيئة المحامين" : "Saudi Bar Association"}" loading="lazy" />
+        <img src="/assets/trust/saudi-bar-association.webp" alt="${lang === "ar" ? "هيئة المحامين" : "Saudi Bar Association"}" loading="lazy" />
         <strong>${lang === "ar" ? "مرخص معتمد" : "Accredited License"}</strong>
       </div>
     </section>
@@ -1516,7 +2010,7 @@ function caseWinsSection(limit) {
         ${items.map((item) => caseWinCard(item)).join("")}
       </div>
       <div class="section-action">
-        <a class="dark-button" href="#/cases">${lang === "ar" ? "عرض كل القضايا" : "View All Cases"}</a>
+        <a class="dark-button" href="${routePath("cases")}">${lang === "ar" ? "عرض كل القضايا" : "View All Cases"}</a>
       </div>
     </section>
   `;
@@ -1534,7 +2028,7 @@ function caseWinCard(item) {
         <div><dt>${lang === "ar" ? "النتيجة" : "Result"}</dt><dd>${local(item.result)}</dd></div>
       </dl>
       <div class="case-card-actions">
-        <a class="glass-button" href="#/case/${item.id}">${t("viewDetails")}</a>
+        <a class="glass-button" href="${routePath("case", item.id)}">${t("viewDetails")}</a>
         <a class="file-link" href="${encodeURI(item.file)}" target="_blank" rel="noreferrer">${lang === "ar" ? "الملف المنقح" : "Redacted File"}</a>
       </div>
     </article>
@@ -1614,7 +2108,7 @@ function blogCards(limit) {
           <span class="pill">${local(post.category)}</span>
           <h3>${local(post.title)}</h3>
           <p>${local(post.summary)}</p>
-          <a class="glass-button" href="#/article/${post.id}">${t("viewDetails")}</a>
+          <a class="glass-button" href="${routePath("article", post.id)}">${t("viewDetails")}</a>
         </article>
       `,
     )
@@ -1630,16 +2124,37 @@ function contactPreview() {
         <p class="lead">${lang === "ar" ? "فريقنا مستعد لدراسة طلبك وتوجيهك للمسار القانوني الأنسب بسرية ومهنية." : "Our team is ready to review your request and guide you to the right legal route with confidentiality and professionalism."}</p>
         <div class="hero-actions">
         <a class="dark-button" href="https://wa.me/${siteConfig.whatsapp}" target="_blank" rel="noreferrer">${lang === "ar" ? "تواصل عبر واتساب" : "Contact via WhatsApp"}</a>
-          <a class="glass-button" href="#/contact">${t("bookConsultation")}</a>
+          <a class="glass-button" href="${routePath("contact")}">${t("bookConsultation")}</a>
         </div>
       </div>
     </section>
   `;
 }
 
+/** فتات الخبز المرئية - تساعد الزائر على معرفة موقعه وتدعم نتائج جوجل الغنية. */
+function breadcrumbNav() {
+  const trail = breadcrumbsFor(currentRoute, lang);
+  if (trail.length < 2) return "";
+  const items = trail
+    .map((crumb, index) => {
+      const isLast = index === trail.length - 1;
+      const label = escapeHtml(crumb.name);
+      return isLast
+        ? `<li><span aria-current="page">${label}</span></li>`
+        : `<li><a href="${crumb.path}">${label}</a></li>`;
+    })
+    .join("");
+  return `
+    <nav class="breadcrumbs" aria-label="${lang === "ar" ? "مسار التصفح" : "Breadcrumb"}">
+      <ol>${items}</ol>
+    </nav>
+  `;
+}
+
 function subPage(title, lead, body) {
   return `
     <div class="subpage">
+      ${breadcrumbNav()}
       <p class="page-kicker">${t("brand")}</p>
       <h1>${title}</h1>
       <p class="lead">${lead}</p>
@@ -1659,7 +2174,7 @@ function practiceDetail(id) {
           <div class="icon-box">${icon(item.icon)}</div>
           <h3>${local(item.subtitle)}</h3>
           <p>${t("noSensitiveInfo")}</p>
-          <a class="dark-button" href="#/contact">${t("bookConsultation")}</a>
+          <a class="dark-button" href="${routePath("contact")}">${t("bookConsultation")}</a>
         </aside>
         <div class="contact-card">
           <h2>${t("practiceAreas")}</h2>
@@ -1697,7 +2212,7 @@ function articlePage(id) {
         <span class="pill">${local(post.category)}</span>
         <p>${lang === "ar" ? "هذا المقال يقدم قراءة عامة للمخاطر القانونية الشائعة، ولا يغني عن استشارة قانونية مبنية على مستندات ووقائع الملف." : "This article offers a general view of common legal risks and does not replace legal advice based on the matter's documents and facts."}</p>
         <p>${lang === "ar" ? "تختلف المعالجة القانونية بحسب طبيعة العقد، الأطراف، المدد، والمستندات الداعمة، لذلك تبدأ الخطوة الصحيحة بمراجعة منظمة قبل اتخاذ أي إجراء." : "Legal handling varies by contract nature, parties, timelines, and supporting documents, so the right first step is an organized review before action."}</p>
-        <a class="dark-button" href="#/contact">${t("bookConsultation")}</a>
+        <a class="dark-button" href="${routePath("contact")}">${t("bookConsultation")}</a>
       </article>
     `,
   );
@@ -1732,44 +2247,229 @@ function contactPage() {
   );
 }
 
-function render() {
-  syncChrome();
-  const route = location.hash.replace(/^#\/?/, "") || "";
-  const [page, id] = route.split("/");
-  if (page === "about") app.innerHTML = subPage(t("navAbout"), t("aboutLead"), aboutSection());
-  else if (page === "practices") app.innerHTML = subPage(t("navPractices"), t("practicesLead"), `<div class="grid">${practicesGrid()}</div>`);
-  else if (page === "practice") app.innerHTML = practiceDetail(id);
-  else if (page === "consulting") app.innerHTML = consultingPage();
-  else if (page === "cases") app.innerHTML = casesPage();
-  else if (page === "case") app.innerHTML = caseDetailPage(id);
-  else if (page === "blog") app.innerHTML = blogPage();
-  else if (page === "article") app.innerHTML = articlePage(id);
-  else if (page === "contact") app.innerHTML = contactPage();
-  else if (page === "privacy") app.innerHTML = subPage(t("privacyTitle"), t("privacyBody"), `<div class="contact-card"><p>${t("privacyBody")}</p></div>`);
-  else if (page === "terms") app.innerHTML = subPage(t("termsTitle"), t("termsBody"), `<div class="contact-card"><p>${t("termsBody")}</p></div>`);
-  else app.innerHTML = homePage();
+/** المسار النشط حاليًا، يُحدَّث مع كل عملية عرض. */
+let currentRoute = parseRoute(window.location.pathname);
+
+/** صفحة الخطأ 404 - تبقى مفيدة للزائر بدل أن تكون طريقًا مسدودًا. */
+function notFoundPage() {
+  const isArabic = lang === "ar";
+  return subPage(
+    isArabic ? "الصفحة غير موجودة" : "Page Not Found",
+    isArabic
+      ? "الرابط الذي فتحته غير متاح أو تم تغييره. يمكنك المتابعة من الروابط التالية."
+      : "The link you opened is unavailable or has changed. You can continue from the links below.",
+    `
+      <div class="contact-card">
+        <div class="hero-actions">
+          <a class="dark-button" href="${routePath("")}">${isArabic ? "الصفحة الرئيسية" : "Home"}</a>
+          <a class="glass-button" href="${routePath("practices")}">${t("navPractices")}</a>
+          <a class="glass-button" href="${routePath("contact")}">${t("navContact")}</a>
+        </div>
+      </div>
+    `,
+  );
+}
+
+/** يبني محتوى الصفحة المطابق للمسار. */
+function pageMarkup(route) {
+  switch (route.page) {
+    case "about":
+      return subPage(t("navAbout"), t("aboutLead"), aboutSection());
+    case "practices":
+      return subPage(t("navPractices"), t("practicesLead"), `<div class="grid">${practicesGrid()}</div>`);
+    case "practice":
+      return practiceDetail(route.id);
+    case "consulting":
+      return consultingPage();
+    case "cases":
+      return casesPage();
+    case "case":
+      return caseDetailPage(route.id);
+    case "blog":
+      return blogPage();
+    case "article":
+      return articlePage(route.id);
+    case "contact":
+      return contactPage();
+    case "privacy":
+      return subPage(t("privacyTitle"), t("privacyBody"), `<div class="contact-card"><p>${t("privacyBody")}</p></div>`);
+    case "terms":
+      return subPage(t("termsTitle"), t("termsBody"), `<div class="contact-card"><p>${t("termsBody")}</p></div>`);
+    case "404":
+      return notFoundPage();
+    default:
+      return homePage();
+  }
+}
+
+/** يضيف أو يحدّث وسم ‎<meta>‎ واحدًا في ترويسة الصفحة. */
+function setMeta(selector, attrName, attrValue, content) {
+  let node = document.head.querySelector(selector);
+  if (!node) {
+    node = document.createElement("meta");
+    node.setAttribute(attrName, attrValue);
+    document.head.appendChild(node);
+  }
+  node.setAttribute("content", content);
+}
+
+/** يضيف أو يحدّث وسم ‎<link>‎ واحدًا في ترويسة الصفحة. */
+function setLink(selector, attributes) {
+  let node = document.head.querySelector(selector);
+  if (!node) {
+    node = document.createElement("link");
+    document.head.appendChild(node);
+  }
+  Object.entries(attributes).forEach(([key, value]) => node.setAttribute(key, value));
+  return node;
+}
+
+/**
+ * يحدّث كل بيانات السيو للصفحة الحالية: العنوان، الوصف، الرابط الأساسي،
+ * روابط اللغات البديلة، بطاقات المشاركة، والبيانات المنظمة.
+ */
+function updateSeo(route) {
+  const meta = seoFor(route, lang);
+  const canonical = routeUrl(route.page, route.id, lang);
+  const isError = route.page === "404";
+
+  document.title = meta.title;
+  setMeta('meta[name="description"]', "name", "description", meta.description);
+  setMeta('meta[name="robots"]', "name", "robots", isError ? "noindex, follow" : "index, follow, max-image-preview:large, max-snippet:-1");
+
+  // صفحة الخطأ لا تُفهرَس، فلا معنى لرابط أساسي يشير إلى مسار غير موجود.
+  const existingCanonical = document.head.querySelector('link[rel="canonical"]');
+  if (isError) {
+    if (existingCanonical) existingCanonical.remove();
+  } else {
+    setLink('link[rel="canonical"]', { rel: "canonical", href: canonical });
+  }
+
+  // روابط اللغات البديلة (hreflang) حتى يعرف جوجل أن الصفحتين نسختان للغتين.
+  document.head.querySelectorAll('link[rel="alternate"][hreflang]').forEach((node) => node.remove());
+  SUPPORTED_LANGS.forEach((code) => {
+    const node = document.createElement("link");
+    node.setAttribute("rel", "alternate");
+    node.setAttribute("hreflang", code);
+    node.setAttribute("href", routeUrl(route.page, route.id, code));
+    document.head.appendChild(node);
+  });
+  const xDefault = document.createElement("link");
+  xDefault.setAttribute("rel", "alternate");
+  xDefault.setAttribute("hreflang", "x-default");
+  xDefault.setAttribute("href", routeUrl(route.page, route.id, DEFAULT_LANG));
+  document.head.appendChild(xDefault);
+
+  const siteName = (SEO_TEXT[lang] ?? SEO_TEXT[DEFAULT_LANG]).siteName;
+  const shareImage = `${SITE_ORIGIN}/assets/og-cover.png`;
+  setMeta('meta[property="og:type"]', "property", "og:type", route.page === "article" ? "article" : "website");
+  setMeta('meta[property="og:site_name"]', "property", "og:site_name", siteName);
+  setMeta('meta[property="og:locale"]', "property", "og:locale", lang === "ar" ? "ar_SA" : "en_US");
+  setMeta('meta[property="og:locale:alternate"]', "property", "og:locale:alternate", lang === "ar" ? "en_US" : "ar_SA");
+  setMeta('meta[property="og:title"]', "property", "og:title", meta.title);
+  setMeta('meta[property="og:description"]', "property", "og:description", meta.description);
+  setMeta('meta[property="og:url"]', "property", "og:url", canonical);
+  setMeta('meta[property="og:image"]', "property", "og:image", shareImage);
+  setMeta('meta[property="og:image:alt"]', "property", "og:image:alt", siteName);
+  setMeta('meta[name="twitter:card"]', "name", "twitter:card", "summary_large_image");
+  setMeta('meta[name="twitter:title"]', "name", "twitter:title", meta.title);
+  setMeta('meta[name="twitter:description"]', "name", "twitter:description", meta.description);
+  setMeta('meta[name="twitter:image"]', "name", "twitter:image", shareImage);
+
+  let ld = document.getElementById("structuredData");
+  if (!ld) {
+    ld = document.createElement("script");
+    ld.type = "application/ld+json";
+    ld.id = "structuredData";
+    document.head.appendChild(ld);
+  }
+  ld.textContent = JSON.stringify(structuredDataFor(route, lang));
+}
+
+/** يبرز رابط الصفحة النشطة في القوائم ويهيّئه لقارئات الشاشة. */
+function markActiveNav() {
+  const activePath = routePath(currentRoute.page, "", lang);
+  document.querySelectorAll("[data-route]").forEach((link) => {
+    const isActive = link.getAttribute("href") === activePath;
+    link.classList.toggle("is-active", isActive);
+    if (isActive) link.setAttribute("aria-current", "page");
+    else link.removeAttribute("aria-current");
+  });
+}
+
+function closeMobilePanel() {
   mobilePanel.classList.remove("is-open");
   mobilePanel.setAttribute("aria-hidden", "true");
+  const toggle = document.getElementById("menuToggle");
+  if (toggle) toggle.setAttribute("aria-expanded", "false");
+}
+
+function render() {
+  currentRoute = parseRoute(window.location.pathname);
+  lang = currentRoute.lang;
+  syncChrome();
+  app.innerHTML = pageMarkup(currentRoute);
+  updateSeo(currentRoute);
+  closeMobilePanel();
+  markActiveNav();
   if (window.lucide) window.lucide.createIcons();
   window.scrollTo({ top: 0, behavior: "auto" });
   syncHeaderState();
 }
 
-langToggle.addEventListener("click", () => {
-  lang = lang === "ar" ? "en" : "ar";
-  localStorage.setItem("siteLang", lang);
+/** ينتقل إلى مسار داخلي دون إعادة تحميل الصفحة. */
+function navigate(path, { replace = false } = {}) {
+  const target = path || "/";
+  if (target === window.location.pathname) {
+    render();
+    return;
+  }
+  if (replace) window.history.replaceState({}, "", target);
+  else window.history.pushState({}, "", target);
   render();
+}
+
+// اعتراض الروابط الداخلية حتى يبقى التنقل فوريًا مع بقاء الروابط حقيقية وقابلة للفهرسة.
+document.addEventListener("click", (event) => {
+  if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+  const link = event.target.closest("a[href]");
+  if (!link) return;
+  if (link.target && link.target !== "_self") return;
+  if (link.hasAttribute("download") || link.getAttribute("rel") === "external") return;
+
+  const href = link.getAttribute("href");
+  if (!href || href.startsWith("#") || /^[a-z]+:/i.test(href)) return;
+
+  const url = new URL(href, window.location.origin);
+  if (url.origin !== window.location.origin) return;
+  if (/\.(pdf|png|jpe?g|webp|svg|zip|docx?)$/i.test(url.pathname)) return;
+
+  event.preventDefault();
+  navigate(url.pathname + url.search);
 });
 
-document.getElementById("menuToggle").addEventListener("click", () => {
+window.addEventListener("popstate", render);
+
+langToggle.addEventListener("click", () => {
+  const nextLang = lang === "ar" ? "en" : "ar";
+  localStorage.setItem("siteLang", nextLang);
+  navigate(routePath(currentRoute.page, currentRoute.id, nextLang));
+});
+
+document.getElementById("menuToggle").addEventListener("click", (event) => {
   mobilePanel.classList.add("is-open");
   mobilePanel.setAttribute("aria-hidden", "false");
+  event.currentTarget.setAttribute("aria-expanded", "true");
+  const firstLink = mobilePanel.querySelector("a");
+  if (firstLink) firstLink.focus();
 });
 
-document.getElementById("panelClose").addEventListener("click", () => {
-  mobilePanel.classList.remove("is-open");
-  mobilePanel.setAttribute("aria-hidden", "true");
+// إغلاق القائمة بمفتاح Escape - متطلب أساسي للوصولية.
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && mobilePanel.classList.contains("is-open")) closeMobilePanel();
 });
+
+document.getElementById("panelClose").addEventListener("click", closeMobilePanel);
 
 document.addEventListener("submit", (event) => {
   if (event.target.matches(".contact-form")) {
@@ -1780,7 +2480,6 @@ document.addEventListener("submit", (event) => {
   }
 });
 
-window.addEventListener("hashchange", render);
 window.addEventListener("scroll", syncHeaderState, { passive: true });
 window.addEventListener("load", syncHeaderState);
 
@@ -1865,6 +2564,25 @@ function hidePreloader() {
 }
 
 const preloaderSafetyTimer = window.setTimeout(hidePreloader, 4000);
+
+/**
+ * الروابط القديمة كانت بصيغة /#/about. نحوّلها مرة واحدة عند الإقلاع إلى
+ * المسار الجديد حتى لا تنكسر الروابط المنشورة أو المحفوظة لدى الزوار.
+ */
+function redirectLegacyHash() {
+  const mapped = legacyHashToPath(window.location.hash);
+  if (mapped) {
+    window.history.replaceState({}, "", mapped);
+    return;
+  }
+  // زائر عائد يفضّل الإنجليزية ويفتح الصفحة الرئيسية العربية.
+  if (window.location.pathname === "/" && !window.location.hash) {
+    const stored = localStorage.getItem("siteLang");
+    if (stored === "en") window.history.replaceState({}, "", routePath("", "", "en"));
+  }
+}
+
+redirectLegacyHash();
 
 loadSiteData().finally(() => {
   render();

@@ -298,6 +298,15 @@ async function uploadImage(file) {
   return result.path;
 }
 
+async function uploadCaseDoc(file) {
+  const formData = new FormData();
+  formData.append("document", file);
+  const res = await fetch("/api/upload-doc", { method: "POST", body: formData, credentials: "same-origin" });
+  const result = await res.json();
+  if (!result.ok) throw new Error(result.error || "فشل رفع الملف.");
+  return result.path;
+}
+
 async function loadCases() {
   const { data } = await api("/api/data/cases");
   const list = document.getElementById("casesList");
@@ -360,8 +369,10 @@ function openCaseModal(item) {
       <div class="lang-block"><div class="lang-tag">Action - English</div><textarea id="cs_action_en" rows="2">${escapeHtml(item?.action?.en)}</textarea></div>
     </div>
     <div class="field">
-      <label>مسار ملف القضية (PDF) — اختياري، كما هو موجود في مجلد assets</label>
-      <input type="text" id="cs_file" value="${escapeHtml(item?.file || "")}" placeholder="assets/legal-documents/cases/...pdf" />
+      <label>ملف القضية (PDF) — اختياري</label>
+      <input type="file" id="cs_file_upload" accept="application/pdf" />
+      <input type="hidden" id="cs_file" value="${escapeHtml(item?.file || "")}" />
+      <div id="cs_file_name" class="file-name-preview">${item?.file ? `📄 ${escapeHtml(item.file.split("/").pop())}` : ""}</div>
     </div>
     <div class="field">
       <label>صورة القضية (jpg, png, webp) — اختياري</label>
@@ -375,6 +386,19 @@ function openCaseModal(item) {
     </div>
   `;
   itemForm.querySelector("#itemCancelBtn").addEventListener("click", closeItemModal);
+
+  itemForm.querySelector("#cs_file_upload").addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      const uploadedPath = await uploadCaseDoc(file);
+      document.getElementById("cs_file").value = uploadedPath;
+      document.getElementById("cs_file_name").textContent = `📄 ${uploadedPath.split("/").pop()}`;
+      showSuccess("تم رفع ملف القضية، لا تنسَ حفظ القضية.");
+    } catch (err) {
+      showError(err.message);
+    }
+  });
 
   itemForm.querySelector("#cs_image_upload").addEventListener("change", async (e) => {
     const file = e.target.files[0];

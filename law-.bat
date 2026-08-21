@@ -67,7 +67,7 @@ if not exist node_modules (
   echo.
   echo   ============================================================
   echo.
-  call npm install
+  call npm install --omit=dev
   color 0A
   cls
   echo.
