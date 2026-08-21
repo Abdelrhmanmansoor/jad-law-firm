@@ -1,0 +1,32 @@
+# لا يُنشر على الاستضافة: مصدر لوحة التحكم المحلية وأدوات البناء والملفات المؤقتة.
+# الموقع المنشور هو ملفات HTML المولّدة في الجذر فقط.
+
+node_modules
+server
+tools
+.agents
+
+# قالب البناء (يحتوي على علامات {{ }} وليس صفحة صالحة)
+index.template.html
+
+# ملفات التشغيل والتوثيق المحلي
+*.bat
+ADMIN_GUIDE.md
+README.md
+
+# نسخ احتياطية وملفات مؤقتة
+data/backups
+tmp
+tmp_pdf_extract.json
+tmp_pdf_previews
+
+# خاص بـ GitHub Pages فقط
+CNAME
+.nojekyll
+
+# ملفات مشروع لا تخص الزائر
+.env.example
+.gitattributes
+.gitignore
+package.json
+package-lock.json
