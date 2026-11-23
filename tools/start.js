@@ -15,8 +15,9 @@ const path = require("path");
 const http = require("http");
 
 const ROOT = path.resolve(__dirname, "..");
-const PORT = Number(process.env.PORT) || 3000;
-const ADMIN_URL = `http://localhost:${PORT}/admin`;
+const BASE_PORT = Number(process.env.PORT) || 3000;
+let PORT = BASE_PORT;
+const adminUrl = () => `http://localhost:${PORT}/admin`;
 const LOG_DIR = path.join(ROOT, "data", "logs");
 
 const say = (msg) => process.stdout.write(`  ${msg}\n`);
@@ -65,6 +66,38 @@ function imageName(pid) {
 async function isOurPanel() {
   const res = await get("/admin");
   return Boolean(res && res.status >= 300 && res.status < 400 && /^\/admin\/(setup|login|dashboard)\.html/.test(res.location));
+}
+
+/**
+ * يختار منفذًا: لوحتنا إن كانت تعمل، وإلا أول منفذ فارغ من 3000 إلى 3009.
+ * برنامج آخر على 3000 (مثل مشروع تطوير) لا يمنع اللوحة من العمل.
+ */
+async function choosePort() {
+  for (let p = BASE_PORT; p < BASE_PORT + 10; p++) {
+    PORT = p;
+    if (!pidsOnPort().length) return true;
+    if (await isOurPanel()) return true;
+  }
+  return false;
+}
+
+/** رسالة ظاهرة — نافذة التشغيل تعمل مصغّرة فلا تُرى رسائلها. */
+function alertUser(message) {
+  say(message);
+  try {
+    const text = (message + "\n\nللدعم الفني عبر واتساب: wa.me/201007835547").replace(/'/g, "''");
+    execFileSync(
+      "powershell",
+      [
+        "-NoProfile",
+        "-Command",
+        `Add-Type -AssemblyName System.Windows.Forms; [void][System.Windows.Forms.MessageBox]::Show('${text}', 'لوحة تحكم جاد العبدالله', 'OK', 'Warning')`,
+      ],
+      { windowsHide: true, stdio: "ignore" },
+    );
+  } catch {
+    /* the console message remains */
+  }
 }
 
 async function stopOldPanel() {
@@ -118,9 +151,9 @@ function findEdge() {
 function openApp() {
   const edge = findEdge();
   if (edge) {
-    spawn(edge, [`--app=${ADMIN_URL}`, "--window-size=1440,900"], { detached: true, stdio: "ignore" }).unref();
+    spawn(edge, [`--app=${adminUrl()}`, "--window-size=1440,900"], { detached: true, stdio: "ignore" }).unref();
   } else {
-    spawn("cmd", ["/c", "start", "", ADMIN_URL], { detached: true, stdio: "ignore", windowsHide: true }).unref();
+    spawn("cmd", ["/c", "start", "", adminUrl()], { detached: true, stdio: "ignore", windowsHide: true }).unref();
   }
 }
 
@@ -156,8 +189,8 @@ function ensureShortcut() {
 
 (async () => {
   say("جارٍ تشغيل لوحة التحكم…");
-  if (!(await stopOldPanel())) {
-    say(`✗ المنفذ ${PORT} مستخدم من برنامج آخر. أغلقي البرامج المفتوحة أو أعيدي تشغيل الجهاز.`);
+  if (!(await choosePort()) || !(await stopOldPanel())) {
+    alertUser("تعذّر تشغيل لوحة التحكم: كل المنافذ من 3000 إلى 3009 مشغولة ببرامج أخرى. أعيدي تشغيل الجهاز ثم حاولي مرة أخرى.");
     process.exit(2);
   }
   startServer();
@@ -168,7 +201,7 @@ function ensureShortcut() {
     } catch {
       /* no log */
     }
-    say("✗ لم تبدأ لوحة التحكم بالعمل." + (detail ? `\n${detail}` : ""));
+    alertUser("لم تبدأ لوحة التحكم بالعمل." + (detail ? `\n\n${detail}` : ""));
     process.exit(3);
   }
   openApp();
