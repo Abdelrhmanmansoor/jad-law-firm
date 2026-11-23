@@ -2555,7 +2555,7 @@ function applySiteData(dataFile) {
 
 async function loadSiteData() {
   try {
-    const res = await fetch("data/site-data.json", { cache: "no-store" });
+    const res = await fetch("/data/site-data.json", { cache: "no-store" });
     if (!res.ok) return;
     const dataFile = await res.json();
     applySiteData(dataFile);
@@ -2566,12 +2566,17 @@ async function loadSiteData() {
 
 function hidePreloader() {
   const preloader = document.getElementById("preloader");
+  try {
+    sessionStorage.setItem("jad-seen", "1");
+  } catch (e) {
+    /* private mode */
+  }
   if (!preloader) return;
   preloader.classList.add("preloader--hidden");
   window.setTimeout(() => preloader.remove(), 600);
 }
 
-const preloaderSafetyTimer = window.setTimeout(hidePreloader, 4000);
+const preloaderSafetyTimer = window.setTimeout(hidePreloader, 2500);
 
 /**
  * الروابط القديمة كانت بصيغة /#/about. نحوّلها مرة واحدة عند الإقلاع إلى

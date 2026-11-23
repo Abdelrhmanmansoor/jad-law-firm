@@ -167,6 +167,8 @@
 
     <!-- بدون جافاسكربت: المحتوى مولّد مسبقًا، فنخفي شاشة التحميل حتى لا تحجبه. -->
     <noscript><style>#preloader{display:none !important}</style></noscript>
+    <!-- شاشة التحميل تظهر مرة واحدة فقط في الزيارة، لا مع كل انتقال بين الصفحات. -->
+    <script>try{if(sessionStorage.getItem("jad-seen"))document.documentElement.classList.add("jad-seen")}catch(e){}</script>
 
   </head>
   <body>
