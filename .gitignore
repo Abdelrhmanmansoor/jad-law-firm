@@ -12,3 +12,4 @@ data/.last-publish.json
 data/logs/
 data/.shortcut
 data/.launching
+tools/launcher.ps1

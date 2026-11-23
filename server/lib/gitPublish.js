@@ -109,7 +109,20 @@ async function ensureOnProductionBranch(log) {
 /** يحفظ كل التغييرات؛ يعيد false إن لم يتبقَّ شيء فعلي بعد add
  * (مثل فروق نهايات الأسطر فقط في ويندوز) بدل أن يفشل commit. */
 async function commitAll(message) {
-  await git(["add", "-A"]);
+  try {
+    await git(["add", "-A"]);
+  } catch (err) {
+    // ملف دخيل لا يمكن قراءته (مثل ملف حجزه برنامج الحماية) كان يوقف النشر كله.
+    // نكتفي بملفات الموقع نفسها: الملفات المتتبَّعة + المحتوى والصفحات المولَّدة.
+    await git(["add", "-u"]);
+    for (const p of ["data", "assets", "case", "article", "practice", "en", "sitemap.xml", "404.html"]) {
+      try {
+        await git(["add", "--", p]);
+      } catch {
+        /* path may not exist */
+      }
+    }
+  }
   try {
     await git(["diff", "--cached", "--quiet"]);
     return false; // لا يوجد شيء مُجهَّز للحفظ
