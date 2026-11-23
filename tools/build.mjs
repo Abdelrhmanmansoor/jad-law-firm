@@ -379,6 +379,15 @@ function main() {
     ...blogPosts.map((item) => ({ page: "article", id: item.id })),
   ];
 
+  // حذف صفحات التفاصيل القديمة قبل التوليد: بدون هذا تبقى صفحة أي قضية أو
+  // مقالة محذوفة منشورة على الموقع للأبد ويستمر جوجل بفهرستها.
+  for (const lang of site.SUPPORTED_LANGS) {
+    for (const page of ["practice", "case", "article"]) {
+      const dir = path.join(OUT_ROOT, site.routePath(page, "", lang).replace(/^\/|\/$/g, ""));
+      if (fs.existsSync(dir)) fs.rmSync(dir, { recursive: true, force: true });
+    }
+  }
+
   let written = 0;
   const metadata = [];
   for (const route of routes) {

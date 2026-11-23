@@ -11,9 +11,13 @@ function isBilingual(value, maxLen = 5000) {
   );
 }
 
+// الحقول الاختيارية: تُقبل فارغة تمامًا (كانت سابقًا ترفض {ar:"", en:""}
+// فيظهر خطأ "غير صالح" عند حفظ قضية بلا قيمة أو نتيجة).
 function isBilingualOptional(value, maxLen = 5000) {
   if (value === undefined || value === null) return true;
-  return isBilingual(value, maxLen);
+  if (typeof value !== "object") return false;
+  const ok = (v) => v === undefined || (typeof v === "string" && v.length <= maxLen);
+  return ok(value.ar) && ok(value.en);
 }
 
 function isSafeAssetPath(value) {
@@ -32,6 +36,18 @@ function isValidId(value) {
   return typeof value === "string" && /^[a-z0-9][a-z0-9-]{1,60}$/.test(value);
 }
 
+/** معرّف مقروء للرابط من العنوان الإنجليزي: "Contract Dispute" → "contract-dispute". */
+function slugify(text) {
+  return String(text || "")
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60)
+    .replace(/-+$/g, "");
+}
+
 function splitLines(text) {
   if (!text) return [];
   return String(text)
@@ -48,4 +64,5 @@ module.exports = {
   generateId,
   isValidId,
   splitLines,
+  slugify,
 };

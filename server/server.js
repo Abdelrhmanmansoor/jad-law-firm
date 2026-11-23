@@ -11,6 +11,7 @@ const { ROOT_DIR, SITE_DATA_FILE } = require("./lib/paths");
 const auth = require("./lib/auth");
 const dataStore = require("./lib/dataStore");
 const gitPublish = require("./lib/gitPublish");
+const githubAuth = require("./lib/githubAuth");
 const { upload, uploadDoc, publicPathFor, publicDocPathFor } = require("./lib/upload");
 const {
   isNonEmptyString,
@@ -20,6 +21,7 @@ const {
   generateId,
   isValidId,
   splitLines,
+  slugify,
 } = require("./lib/validate");
 
 const PORT = Number(process.env.PORT) || 3000;
@@ -95,11 +97,13 @@ const sessionMiddleware = session({
   secret: auth.getOrCreateSessionSecret(),
   resave: false,
   saveUninitialized: false,
+  // الجلسة تتجدد مع كل استخدام: لا يُطرد المستخدم أثناء الكتابة. اللوحة محلية فقط.
+  rolling: true,
   cookie: {
     httpOnly: true,
     sameSite: "lax",
     secure: false,
-    maxAge: 1000 * 60 * 60 * 8,
+    maxAge: 1000 * 60 * 60 * 24 * 7,
   },
 });
 
@@ -265,7 +269,21 @@ app.put("/api/data/texts", auth.requireAuth, (req, res) => {
 });
 
 // ---------- generic collection CRUD (practices / cases / blog) ----------
-function buildPracticeRecord(body, existingId) {
+function optionalBilingual(value) {
+  return { ar: String(value?.ar || "").trim(), en: String(value?.en || "").trim() };
+}
+
+/** معرّف جديد مقروء من العنوان الإنجليزي، فريد داخل القائمة. */
+function newIdFor(body, prefix, list) {
+  if (isValidId(body.id)) return body.id;
+  const base = slugify(body.title?.en);
+  if (!base || base.length < 2) return generateId(prefix);
+  let id = base;
+  let n = 2;
+  while (list.some((item) => item.id === id)) id = `${base}-${n++}`;
+  return id;
+}
+function buildPracticeRecord(body, existingId, list = []) {
   if (!isBilingual(body.title, 200)) throw new Error("عنوان الخدمة مطلوب باللغتين.");
   if (!isBilingual(body.subtitle, 300)) throw new Error("الوصف المختصر مطلوب باللغتين.");
   if (!isBilingual(body.desc, 2000)) throw new Error("الوصف التفصيلي مطلوب باللغتين.");
@@ -273,7 +291,7 @@ function buildPracticeRecord(body, existingId) {
   const servicesAr = splitLines(body.servicesAr);
   const servicesEn = splitLines(body.servicesEn);
   return {
-    id: existingId || (isValidId(body.id) ? body.id : generateId("service")),
+    id: existingId || newIdFor(body, "service", list),
     icon,
     title: { ar: body.title.ar.trim(), en: body.title.en.trim() },
     subtitle: { ar: body.subtitle.ar.trim(), en: body.subtitle.en.trim() },
@@ -282,7 +300,7 @@ function buildPracticeRecord(body, existingId) {
   };
 }
 
-function buildCaseRecord(body, existingId) {
+function buildCaseRecord(body, existingId, list = []) {
   if (!isBilingual(body.title, 300)) throw new Error("عنوان القضية مطلوب باللغتين.");
   if (!isBilingual(body.category, 200)) throw new Error("تصنيف القضية مطلوب باللغتين.");
   if (!isBilingual(body.summary, 3000)) throw new Error("ملخص القضية مطلوب باللغتين.");
@@ -294,25 +312,25 @@ function buildCaseRecord(body, existingId) {
   if (!isSafeAssetPath(body.image)) throw new Error("مسار الصورة غير صالح.");
 
   return {
-    id: existingId || (isValidId(body.id) ? body.id : generateId("case")),
+    id: existingId || newIdFor(body, "case", list),
     file: body.file || "",
     image: body.image || "",
     title: { ar: body.title.ar.trim(), en: body.title.en.trim() },
     category: { ar: body.category.ar.trim(), en: body.category.en.trim() },
-    amount: body.amount ? { ar: body.amount.ar.trim(), en: body.amount.en.trim() } : { ar: "", en: "" },
-    result: body.result ? { ar: body.result.ar.trim(), en: body.result.en.trim() } : { ar: "", en: "" },
+    amount: optionalBilingual(body.amount),
+    result: optionalBilingual(body.result),
     summary: { ar: body.summary.ar.trim(), en: body.summary.en.trim() },
-    challenge: body.challenge ? { ar: body.challenge.ar.trim(), en: body.challenge.en.trim() } : { ar: "", en: "" },
-    action: body.action ? { ar: body.action.ar.trim(), en: body.action.en.trim() } : { ar: "", en: "" },
+    challenge: optionalBilingual(body.challenge),
+    action: optionalBilingual(body.action),
   };
 }
 
-function buildBlogRecord(body, existingId) {
+function buildBlogRecord(body, existingId, list = []) {
   if (!isBilingual(body.title, 300)) throw new Error("عنوان المقالة مطلوب باللغتين.");
   if (!isBilingual(body.category, 100)) throw new Error("تصنيف المقالة مطلوب باللغتين.");
   if (!isBilingual(body.summary, 2000)) throw new Error("ملخص المقالة مطلوب باللغتين.");
   return {
-    id: existingId || (isValidId(body.id) ? body.id : generateId("post")),
+    id: existingId || newIdFor(body, "post", list),
     category: { ar: body.category.ar.trim(), en: body.category.en.trim() },
     title: { ar: body.title.ar.trim(), en: body.title.en.trim() },
     summary: { ar: body.summary.ar.trim(), en: body.summary.en.trim() },
@@ -339,7 +357,7 @@ Object.values(COLLECTIONS).forEach(({ key, build }) => {
     try {
       const data = dataStore.readSiteData();
       const list = data[key] || [];
-      const record = build(req.body || {});
+      const record = build(req.body || {}, null, list);
       if (list.some((item) => item.id === record.id)) {
         throw new Error("المعرّف مستخدم بالفعل، اختر معرّفًا آخر.");
       }
@@ -415,8 +433,36 @@ app.post("/api/publish", auth.requireAuth, async (req, res) => {
     const result = await gitPublish.publish();
     res.json(result);
   } catch (err) {
-    res.status(500).json({ ok: false, log: [err.message], error: err.message });
+    const message = githubAuth.redact(err.message);
+    res.status(500).json({ ok: false, log: [message], error: message });
   }
+});
+
+// حالة الربط والتعديلات غير المنشورة — تستخدمها اللوحة لعرض الشارة والتنبيهات.
+app.get("/api/status", auth.requireAuth, async (req, res) => {
+  try {
+    const [publishState, token] = await Promise.all([
+      gitPublish.status(),
+      githubAuth.checkToken({ force: req.query.force === "1" }),
+    ]);
+    res.json({ ok: true, ...publishState, token, serverTime: new Date().toISOString() });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: githubAuth.redact(err.message) });
+  }
+});
+
+app.post("/api/github-token", auth.requireAuth, async (req, res) => {
+  try {
+    const token = await githubAuth.saveToken(req.body && req.body.token);
+    res.json({ ok: true, token });
+  } catch (err) {
+    res.status(400).json({ ok: false, error: githubAuth.redact(err.message) });
+  }
+});
+
+app.delete("/api/github-token", auth.requireAuth, (req, res) => {
+  githubAuth.clearToken();
+  res.json({ ok: true });
 });
 
 app.use((req, res) => {
@@ -428,9 +474,27 @@ app.use((req, res) => {
   res.status(404).send("الصفحة غير موجودة.");
 });
 
-app.listen(PORT, HOST, () => {
+const server = app.listen(PORT, HOST, async () => {
   console.log("=".repeat(60));
-  console.log(`لوحة التحكم تعمل الآن على: http://${HOST}:${PORT}/admin`);
-  console.log(`الموقع نفسه متاح على: http://${HOST}:${PORT}/`);
+  console.log(`لوحة التحكم تعمل الآن على: http://localhost:${PORT}/admin`);
+  console.log(`الموقع نفسه متاح على: http://localhost:${PORT}/`);
   console.log("=".repeat(60));
+
+  try {
+    const migration = await githubAuth.migrateLegacyRemote();
+    if (migration.migrated) console.log("✓ تم نقل رمز GitHub القديم من رابط المستودع إلى ملف آمن.");
+  } catch (err) {
+    console.log(`تنبيه: ${githubAuth.redact(err.message)}`);
+  }
+  const sync = await gitPublish.syncOnStartup();
+  if (sync.startsWith("updated:")) console.log(`✓ تم جلب ${sync.split(":")[1]} تحديث جديد من GitHub (يسري بعد إعادة التشغيل).`);
+});
+
+server.on("error", (err) => {
+  if (err.code === "EADDRINUSE") {
+    // اللوحة مفتوحة بالفعل (ضغطت على ملف التشغيل مرتين) — ليست مشكلة.
+    console.log(`لوحة التحكم تعمل بالفعل على http://localhost:${PORT}/admin`);
+    process.exit(0);
+  }
+  throw err;
 });
