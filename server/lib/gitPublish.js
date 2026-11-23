@@ -19,7 +19,7 @@ function runBuild() {
     execFile(
       process.execPath,
       [path.join(ROOT_DIR, "tools", "build.mjs")],
-      { cwd: ROOT_DIR, timeout: 120000, maxBuffer: 5 * 1024 * 1024 },
+      { cwd: ROOT_DIR, timeout: 120000, maxBuffer: 5 * 1024 * 1024, windowsHide: true },
       (error, stdout, stderr) => {
         if (error) {
           reject(new Error((stderr && stderr.trim()) || error.message));

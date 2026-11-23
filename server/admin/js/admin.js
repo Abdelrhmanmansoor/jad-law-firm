@@ -717,7 +717,9 @@ function renderStatus() {
   $("#tokenBannerText").textContent = broken ? `${t.message} تعديلاتك محفوظة ولن تضيع.` : "جدّدي الرمز من الإعدادات قبل انتهائه حتى لا يتوقف النشر.";
 }
 
+let lastStatusAt = 0;
 async function refreshStatus(force = false) {
+  lastStatusAt = Date.now();
   try {
     const s = await api(`/api/status${force ? "?force=1" : ""}`);
     state.status = s;
@@ -945,7 +947,11 @@ async function reloadData() {
     toast(err.message, "err", 8000);
   }
   refreshStatus();
-  setInterval(refreshStatus, 60000);
+  // الفحوص التلقائية بحد أدنى 20 ثانية — التركيز على النافذة كان يطلق فحصًا مع كل نقرة.
+  const autoRefresh = () => {
+    if (Date.now() - lastStatusAt >= 20000) refreshStatus();
+  };
+  setInterval(autoRefresh, 60000);
   setInterval(renderOverview, 60000);
-  window.addEventListener("focus", () => refreshStatus());
+  window.addEventListener("focus", autoRefresh);
 })();

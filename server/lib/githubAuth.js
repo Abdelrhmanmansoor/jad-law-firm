@@ -38,7 +38,8 @@ function git(args, opts = {}) {
     execFile(
       "git",
       args,
-      { cwd: ROOT_DIR, timeout: opts.timeout || 90000, maxBuffer: 10 * 1024 * 1024, env: GIT_ENV },
+      // windowsHide: اللوحة تعمل بلا نافذة، فبدونه يفتح كل أمر git نافذة أوامر سوداء.
+      { cwd: ROOT_DIR, timeout: opts.timeout || 90000, maxBuffer: 10 * 1024 * 1024, env: GIT_ENV, windowsHide: true },
       (error, stdout, stderr) => {
         if (error) {
           const err = new Error(redact((stderr && stderr.trim()) || error.message));
