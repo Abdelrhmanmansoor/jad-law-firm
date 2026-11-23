@@ -159,6 +159,15 @@ function openApp() {
 
 function ensureShortcut() {
   try {
+    const target = path.join(ROOT, "Jad-Admin.bat");
+    const marker = path.join(ROOT, "data", ".shortcut");
+    // الاختصار موجود مسبقًا؟ نتحقق بدون تشغيل أي برنامج إضافي.
+    try {
+      const saved = JSON.parse(fs.readFileSync(marker, "utf8"));
+      if (saved.target === target && fs.existsSync(saved.lnk)) return;
+    } catch {
+      /* first time */
+    }
     const desktop = execFileSync(
       "powershell",
       ["-NoProfile", "-Command", "[Environment]::GetFolderPath('Desktop')"],
@@ -166,9 +175,6 @@ function ensureShortcut() {
     ).trim();
     if (!desktop) return;
     const lnk = path.join(desktop, "لوحة تحكم جاد العبدالله.lnk");
-    const target = path.join(ROOT, "Jad-Admin.bat");
-    const marker = path.join(ROOT, "data", ".shortcut");
-    if (fs.existsSync(lnk) && fs.existsSync(marker) && fs.readFileSync(marker, "utf8") === target) return;
     const q = (s) => `'${s.replace(/'/g, "''")}'`;
     const script = [
       "$s = (New-Object -ComObject WScript.Shell).CreateShortcut(" + q(lnk) + ")",
@@ -180,18 +186,65 @@ function ensureShortcut() {
       "$s.Save()",
     ].join("; ");
     execFileSync("powershell", ["-NoProfile", "-Command", script], { windowsHide: true, stdio: "ignore" });
-    fs.writeFileSync(marker, target, "utf8");
+    fs.writeFileSync(marker, JSON.stringify({ target, lnk }), "utf8");
     say("✓ تم إنشاء اختصار «لوحة تحكم جاد العبدالله» على سطح المكتب");
   } catch {
     /* الاختصار ميزة إضافية — لا يوقف التشغيل */
   }
 }
 
+/**
+ * قفل يمنع تشغيلين في نفس الوقت (ضغطتان متتاليتان على الاختصار كانتا تفتحان
+ * نافذتين وتعيدان تشغيل اللوحة مرتين). القفل يُعتبر قديمًا بعد دقيقة.
+ */
+const LOCK = path.join(ROOT, "data", ".launching");
+function takeLock() {
+  try {
+    const age = Date.now() - fs.statSync(LOCK).mtimeMs;
+    if (age < 60000) return false;
+  } catch {
+    /* no lock */
+  }
+  fs.mkdirSync(path.dirname(LOCK), { recursive: true });
+  fs.writeFileSync(LOCK, String(process.pid));
+  return true;
+}
+const releaseLock = () => fs.rmSync(LOCK, { force: true });
+
 (async () => {
+  if (!takeLock()) {
+    say("لوحة التحكم قيد الفتح بالفعل…");
+    return;
+  }
+  try {
+    await main();
+  } finally {
+    releaseLock();
+  }
+})();
+
+async function main() {
   say("جارٍ تشغيل لوحة التحكم…");
-  if (!(await choosePort()) || !(await stopOldPanel())) {
+  if (!(await choosePort())) {
     alertUser("تعذّر تشغيل لوحة التحكم: كل المنافذ من 3000 إلى 3009 مشغولة ببرامج أخرى. أعيدي تشغيل الجهاز ثم حاولي مرة أخرى.");
-    process.exit(2);
+    process.exitCode = 2;
+    return;
+  }
+
+  // اللوحة تعمل ولم يصل تحديث جديد: نفتح النافذة فقط — بلا إعادة تشغيل
+  // (أسرع، ولا يُطلب تسجيل الدخول من جديد).
+  const running = pidsOnPort().length > 0 && (await isOurPanel());
+  if (running && process.env.JAD_UPDATED !== "1") {
+    openApp();
+    ensureShortcut();
+    say("✓ تم فتح لوحة التحكم");
+    return;
+  }
+
+  if (!(await stopOldPanel())) {
+    alertUser("تعذّر إعادة تشغيل لوحة التحكم. أعيدي تشغيل الجهاز ثم حاولي مرة أخرى.");
+    process.exitCode = 2;
+    return;
   }
   startServer();
   if (!(await waitUntilReady())) {
@@ -202,9 +255,10 @@ function ensureShortcut() {
       /* no log */
     }
     alertUser("لم تبدأ لوحة التحكم بالعمل." + (detail ? `\n\n${detail}` : ""));
-    process.exit(3);
+    process.exitCode = 3;
+    return;
   }
   openApp();
   ensureShortcut();
   say("✓ تم فتح لوحة التحكم");
-})();
+}

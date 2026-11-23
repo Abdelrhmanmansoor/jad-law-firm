@@ -11,6 +11,7 @@ rem ======================================================================
 set "REPO=https://github.com/Abdelrhmanmansoor/jad-law-firm.git"
 if defined JAD_REPO set "REPO=%JAD_REPO%"
 set "SAVED=%APPDATA%\JadAdmin\project-path.txt"
+set "JAD_UPDATED="
 set "GIT_TERMINAL_PROMPT=0"
 set "GCM_INTERACTIVE=never"
 set "PATH=%PATH%;C:\Program Files\nodejs;C:\Program Files\Git\cmd"
@@ -66,6 +67,21 @@ git config user.email >nul 2>nul || (
   git config user.name "Jad Admin Panel"
 )
 
+rem ---------- رمز ربط جديد في ملف TOKEN.txt بجانب هذا الملف؟ يُحفظ تلقائيًا ثم يُحذف ----------
+set "NEWTOK="
+if exist "%~dp0TOKEN.txt" (
+  for /f "usebackq tokens=1" %%T in (`findstr /r /c:"github_pat_[A-Za-z0-9_]*" /c:"ghp_[A-Za-z0-9]*" "%~dp0TOKEN.txt"`) do set "NEWTOK=%%T"
+)
+if defined NEWTOK (
+  echo(!NEWTOK!| findstr /r /b /c:"github_pat_" /c:"ghp_" >nul && (
+    if not exist data mkdir data
+    >"data\.github-token" echo !NEWTOK!
+    del /q "%~dp0TOKEN.txt" >nul 2>nul
+    set "JAD_UPDATED=1"
+    echo    تم حفظ رمز الربط بنجاح.
+  )
+)
+
 rem ---------- 4) التحديث والتشغيل ----------
 rem كتلة واحدة: يقرؤها ويندوز كاملة قبل التنفيذ، فلا يتأثر إذا حدّث git هذا الملف نفسه.
 (
@@ -78,6 +94,7 @@ rem كتلة واحدة: يقرؤها ويندوز كاملة قبل التنف�
     set "BEHIND=0"
     for /f %%N in ('git rev-list --count HEAD..origin/main') do set "BEHIND=%%N"
     if not "!BEHIND!"=="0" (
+      set "JAD_UPDATED=1"
       echo    تثبيت آخر تحديث...
       git status --porcelain | findstr . >nul && (
         git add -A >nul 2>nul
@@ -101,6 +118,7 @@ rem كتلة واحدة: يقرؤها ويندوز كاملة قبل التنف�
   if not exist "node_modules\.jad-lock" set "NEED_DEPS=1"
   if exist "node_modules\.jad-lock" fc /b "package-lock.json" "node_modules\.jad-lock" >nul 2>nul || set "NEED_DEPS=1"
   if defined NEED_DEPS (
+    set "JAD_UPDATED=1"
     echo    تجهيز البرنامج - مرة واحدة فقط، قد يستغرق دقيقة...
     call npm install --omit=dev --no-save --no-audit --no-fund --loglevel=error >nul 2>nul
     if exist "node_modules\express\package.json" copy /y "package-lock.json" "node_modules\.jad-lock" >nul

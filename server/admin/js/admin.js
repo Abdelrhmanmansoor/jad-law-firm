@@ -183,10 +183,13 @@ async function go(view, { force = false } = {}) {
   }
   state.view = view;
   $$(".nav-item[data-view]").forEach((n) => n.classList.toggle("active", n.dataset.view === view));
-  $$(".view").forEach((v) => v.classList.remove("active"));
   const el = $(`#view-${view}`);
-  void el.offsetWidth; // إعادة تشغيل حركة الدخول
-  el.classList.add("active");
+  // لا نعيد حركة الدخول لصفحة ظاهرة أصلًا — كان هذا يسبب ارتعاش الشاشة عند فتح اللوحة.
+  if (!el.classList.contains("active")) {
+    $$(".view").forEach((v) => v.classList.remove("active"));
+    void el.offsetWidth;
+    el.classList.add("active");
+  }
   $("#pageTitle").textContent = el.dataset.title;
   $("#pageSub").textContent = el.dataset.sub;
   document.title = `${el.dataset.title} — لوحة التحكم`;
