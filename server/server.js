@@ -428,14 +428,14 @@ app.post("/api/upload-doc", auth.requireAuth, (req, res) => {
 });
 
 // ---------- git publish ----------
-app.post("/api/publish", auth.requireAuth, async (req, res) => {
-  try {
-    const result = await gitPublish.publish();
-    res.json(result);
-  } catch (err) {
-    const message = githubAuth.redact(err.message);
-    res.status(500).json({ ok: false, log: [message], error: message });
-  }
+// النشر يعمل في الخلفية: البدء يعود فورًا واللوحة تتابع التقدم الحقيقي.
+// (كان طلبًا واحدًا طويلًا ينقطع إذا طال الرفع على اتصال بطيء.)
+app.post("/api/publish", auth.requireAuth, (req, res) => {
+  res.json({ ok: true, job: gitPublish.startPublish() });
+});
+
+app.get("/api/publish/status", auth.requireAuth, (req, res) => {
+  res.json({ ok: true, job: gitPublish.publicJob() });
 });
 
 // حالة الربط والتعديلات غير المنشورة — تستخدمها اللوحة لعرض الشارة والتنبيهات.

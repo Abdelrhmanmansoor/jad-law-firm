@@ -704,7 +704,8 @@ function renderStatus() {
   $("#ovLast").textContent = s?.lastPublish ? relativeTime(s.lastPublish.at) : "—";
 
   const pending = s?.pending || 0;
-  $("#pendingBadge").textContent = pending > 99 ? "99+" : pending;
+  const badge = $("#pendingBadge");
+  if (badge) badge.textContent = pending > 99 ? "99+" : pending;
   $("#publishBtn").classList.toggle("has-pending", pending > 0);
   $("#statPending").textContent = pending;
 
@@ -759,41 +760,97 @@ async function publish() {
     await pageForm.save();
     if (pageForm.isDirty()) return;
   }
-  const dlg = $("#publishDialog");
-  const steps = ["check", "build", "sync", "push"];
-  steps.forEach((s) => setStep(s, ""));
+  openPublishDialog();
+  let started;
+  try {
+    started = await api("/api/publish", { method: "POST" });
+  } catch (err) {
+    finishPublish({ ok: false, code: "offline", error: err.message, failedStep: "check" });
+    return;
+  }
+  followPublish(started.job);
+}
+
+const PUBLISH_STEPS = ["check", "build", "sync", "push"];
+
+function openPublishDialog() {
+  PUBLISH_STEPS.forEach((s) => setStep(s, ""));
   $("#publishTitle").textContent = "جارٍ نشر التعديلات";
-  $("#publishText").textContent = "لا تغلقي الصفحة، يستغرق الأمر بضع ثوانٍ…";
+  $("#publishText").textContent = "يستغرق الأمر عادة بضع ثوانٍ…";
   $("#publishResult").className = "publish-result";
   $("#publishBurst").classList.remove("show");
   $("#publishFix").style.display = "none";
   $("#publishView").style.display = "none";
-  $("#publishClose").disabled = true;
+  $("#publishClose").disabled = false;
+  $("#publishClose").textContent = "إخفاء — يكمل في الخلفية";
+  setPushLabel("");
   $("#scrim").classList.add("show");
-  dlg.classList.add("show");
+  $("#publishDialog").classList.add("show");
+}
 
-  let idx = 0;
-  setStep(steps[0], "run");
-  publishTimer = setInterval(() => {
-    if (idx < steps.length - 1) {
-      setStep(steps[idx], "done");
-      idx += 1;
-      setStep(steps[idx], "run");
-    }
-  }, 1300);
-
-  let result;
-  try {
-    const res = await fetch("/api/publish", { method: "POST", credentials: "same-origin" });
-    result = await res.json();
-  } catch {
-    result = { ok: false, code: "offline", error: "تعذر الاتصال بلوحة التحكم. تأكدي أن نافذة التشغيل مفتوحة." };
+function setPushLabel(extra) {
+  const li = $('#publishSteps [data-step="push"]');
+  let small = $(".s-pct", li);
+  if (!small) {
+    small = document.createElement("small");
+    small.className = "s-pct";
+    small.style.cssText = "margin-inline-start:auto;color:var(--muted);font-variant-numeric:tabular-nums;direction:ltr";
+    li.appendChild(small);
   }
-  clearInterval(publishTimer);
+  small.textContent = extra;
+}
 
+function setPublishButton(job) {
+  const btn = $("#publishBtn");
+  if (job && job.running) {
+    btn.classList.add("is-publishing");
+    btn.disabled = true;
+    const pct = job.step === "push" && job.progress != null ? ` ${job.progress}%` : "";
+    btn.innerHTML = `<span class="spinner"></span><span>جارٍ النشر${pct}</span>`;
+  } else if (btn.classList.contains("is-publishing")) {
+    btn.classList.remove("is-publishing");
+    btn.disabled = false;
+    btn.innerHTML = `${icon("upload")}<span>نشر<span class="label-long"> التعديلات</span></span><span class="badge" id="pendingBadge">0</span>`;
+    renderStatus();
+  }
+}
+
+function renderJob(job) {
+  const idx = Math.max(0, PUBLISH_STEPS.indexOf(job.step));
+  PUBLISH_STEPS.forEach((s, i) => setStep(s, i < idx ? "done" : i === idx ? "run" : ""));
+  if (job.step === "push" && job.progress != null) setPushLabel(`${job.progress}%${job.size ? " · " + job.size : ""}`);
+  if (job.elapsed > 20) {
+    $("#publishText").textContent =
+      job.step === "push"
+        ? "الرفع يأخذ وقتًا بسبب حجم الملفات أو سرعة الإنترنت — اتركيه يكمل. يمكنك إخفاء النافذة ومتابعة عملك."
+        : "ما زال النشر يعمل… يمكنك إخفاء النافذة ومتابعة عملك.";
+  }
+}
+
+async function followPublish(job) {
+  clearTimeout(publishTimer);
+  if (!job) return;
+  setPublishButton(job);
+  if ($("#publishDialog").classList.contains("show")) renderJob(job);
+  if (!job.running) return finishPublish(job.result || { ok: false, error: "حدث خطأ غير متوقع." });
+  publishTimer = setTimeout(async () => {
+    try {
+      const { job: next } = await api("/api/publish/status");
+      followPublish(next);
+    } catch {
+      followPublish(job); // انقطاع مؤقت — نعيد المحاولة
+    }
+  }, 900);
+}
+
+function finishPublish(result) {
+  setPublishButton(null);
+  const visible = $("#publishDialog").classList.contains("show");
   const box = $("#publishResult");
+  $("#publishClose").textContent = "إغلاق";
   if (result.ok) {
-    steps.forEach((s) => setStep(s, "done"));
+    PUBLISH_STEPS.forEach((s) => setStep(s, "done"));
+    setPushLabel("");
     $("#publishBurst").classList.add("show");
     if (result.noChanges) {
       $("#publishTitle").textContent = "الموقع محدَّث بالفعل";
@@ -803,17 +860,21 @@ async function publish() {
       $("#publishText").textContent = "ستظهر التعديلات على الموقع خلال دقيقة تقريبًا.";
       $("#publishView").style.display = "";
     }
+    if (!visible) toast(result.noChanges ? "الموقع محدَّث بالفعل" : "تم النشر بنجاح ✓");
   } else {
-    const failAt = { token: "check", offline: "check", busy: "check", git: idx >= 2 ? steps[idx] : "sync" }[result.code] || steps[idx];
-    const failIdx = steps.indexOf(failAt);
-    steps.forEach((s, i) => setStep(s, i < failIdx ? "done" : i === failIdx ? "fail" : ""));
+    const failIdx = Math.max(0, PUBLISH_STEPS.indexOf(result.failedStep || "check"));
+    PUBLISH_STEPS.forEach((s, i) => setStep(s, i < failIdx ? "done" : i === failIdx ? "fail" : ""));
     $("#publishTitle").textContent = "لم يكتمل النشر";
     $("#publishText").textContent = "تعديلاتك محفوظة على هذا الجهاز ولن تضيع.";
     box.className = "publish-result err show";
     box.textContent = result.error || "حدث خطأ غير متوقع.";
     if (result.code === "token") $("#publishFix").style.display = "";
+    if (!visible) {
+      openPublishDialog();
+      finishPublish(result);
+      return;
+    }
   }
-  $("#publishClose").disabled = false;
   $("#publishClose").focus();
   refreshStatus(true);
 }
@@ -947,6 +1008,8 @@ async function reloadData() {
     toast(err.message, "err", 8000);
   }
   refreshStatus();
+  // نشر جارٍ من قبل (أُعيد تحميل الصفحة أثناءه)؟ نكمل متابعته.
+  api("/api/publish/status").then(({ job }) => job && job.running && followPublish(job)).catch(() => {});
   // الفحوص التلقائية بحد أدنى 20 ثانية — التركيز على النافذة كان يطلق فحصًا مع كل نقرة.
   const autoRefresh = () => {
     if (Date.now() - lastStatusAt >= 20000) refreshStatus();

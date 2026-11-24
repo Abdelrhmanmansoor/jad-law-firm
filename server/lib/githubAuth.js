@@ -39,11 +39,25 @@ function git(args, opts = {}) {
       "git",
       args,
       // windowsHide: اللوحة تعمل بلا نافذة، فبدونه يفتح كل أمر git نافذة أوامر سوداء.
-      { cwd: ROOT_DIR, timeout: opts.timeout || 90000, maxBuffer: 10 * 1024 * 1024, env: GIT_ENV, windowsHide: true },
+      {
+        cwd: ROOT_DIR,
+        timeout: opts.timeout || 90000,
+        maxBuffer: 20 * 1024 * 1024,
+        env: { ...GIT_ENV, ...(opts.env || {}) },
+        windowsHide: true,
+      },
       (error, stdout, stderr) => {
         if (error) {
-          const err = new Error(redact((stderr && stderr.trim()) || error.message));
+          // لا نستخدم error.message أبدًا: يحتوي نص الأمر كاملًا (وقد كان يكشف الرمز).
+          let message = (stderr || "").trim();
+          if (!message) {
+            message = error.killed || error.signal
+              ? "TIMEOUT: انتهت المهلة قبل اكتمال العملية."
+              : `git exited with code ${error.code}`;
+          }
+          const err = new Error(redact(message));
           err.code = error.code;
+          err.timedOut = Boolean(error.killed || error.signal);
           reject(err);
           return;
         }
@@ -53,10 +67,13 @@ function git(args, opts = {}) {
   });
 }
 
-/** يخفي أي رمز قد يظهر في رسائل الأخطاء أو السجلات. */
+/** يخفي أي رمز قد يظهر في رسائل الأخطاء أو السجلات — بكل صيغه. */
 function redact(text) {
   return String(text || "")
     .replace(/(gh[pousr]_[A-Za-z0-9_]{10,}|github_pat_[A-Za-z0-9_]{20,})/g, "••••")
+    .replace(/AUTHORIZATION:\s*\S+\s+\S+/gi, "AUTHORIZATION: ••••")
+    .replace(/\b(basic|bearer)\s+[A-Za-z0-9+/=_-]{16,}/gi, "$1 ••••")
+    .replace(/extraheader=\S+/gi, "extraheader=••••")
     .replace(/(https?:\/\/)[^@\s/]+@/g, "$1");
 }
 
@@ -124,14 +141,46 @@ async function migrateLegacyRemote() {
   return { migrated: true };
 }
 
-function authHeaderArgs(token) {
-  const basic = Buffer.from(`x-access-token:${token}`).toString("base64");
-  return [
-    "-c",
-    "credential.helper=",
-    "-c",
-    `http.https://github.com/.extraheader=AUTHORIZATION: basic ${basic}`,
+let gitVersionCache = null;
+async function gitSupportsEnvConfig() {
+  if (gitVersionCache === null) {
+    try {
+      const v = (await git(["--version"])).match(/(\d+)\.(\d+)/);
+      gitVersionCache = v ? Number(v[1]) * 100 + Number(v[2]) : 0;
+    } catch {
+      gitVersionCache = 0;
+    }
+  }
+  return gitVersionCache >= 231; // GIT_CONFIG_COUNT متاح منذ Git 2.31
+}
+
+/**
+ * إعدادات الاتصال بـ GitHub لعملية واحدة (fetch/push).
+ * الرمز يُمرَّر عبر متغيرات البيئة لا عبر سطر الأوامر، فلا يظهر في أي رسالة
+ * خطأ ولا في قائمة العمليات. مع إعدادات تجعل الرفع الكبير أسرع وأثبت.
+ */
+async function connectionOptions(token) {
+  const settings = [
+    ["credential.helper", ""],
+    ["http.postBuffer", "524288000"], // رفع الملفات الكبيرة دفعة واحدة
+    ["http.version", "HTTP/1.1"], // يتجنب انقطاعات HTTP/2 في بعض الشبكات
+    ["http.lowSpeedLimit", "1000"],
+    ["http.lowSpeedTime", "120"], // يفشل بوضوح بدل التعليق إن توقف الاتصال تمامًا
   ];
+  if (token) {
+    const basic = Buffer.from(`x-access-token:${token}`).toString("base64");
+    settings.push(["http.https://github.com/.extraheader", `AUTHORIZATION: basic ${basic}`]);
+  }
+  if (await gitSupportsEnvConfig()) {
+    const env = { GIT_CONFIG_COUNT: String(settings.length) };
+    settings.forEach(([k, v], i) => {
+      env[`GIT_CONFIG_KEY_${i}`] = k;
+      env[`GIT_CONFIG_VALUE_${i}`] = v;
+    });
+    return { args: [], env };
+  }
+  // Git قديم جدًا: نرجع لسطر الأوامر (الرسائل منقّحة على أي حال).
+  return { args: settings.flatMap(([k, v]) => ["-c", `${k}=${v}`]), env: {} };
 }
 
 /** "2026-12-31 00:00:00 UTC" أو "2026-12-31 12:00:00 -0700" → ISO */
@@ -238,7 +287,7 @@ module.exports = {
   clearToken,
   checkToken,
   repoSlug,
-  authHeaderArgs,
+  connectionOptions,
   migrateLegacyRemote,
   TOKEN_FILE,
 };

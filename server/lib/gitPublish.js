@@ -1,4 +1,4 @@
-const { execFile } = require("child_process");
+const { execFile, spawn } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 const { ROOT_DIR, DATA_DIR } = require("./paths");
@@ -6,23 +6,34 @@ const gh = require("./githubAuth");
 
 const PRODUCTION_BRANCH = "main";
 const LAST_PUBLISH_FILE = path.join(DATA_DIR, ".last-publish.json");
-
-let publishing = false;
+const LOG_DIR = path.join(DATA_DIR, "logs");
+const PUBLISH_LOG = path.join(LOG_DIR, "publish.log");
+const PUSH_TIMEOUT = 30 * 60 * 1000; // رفع كبير على اتصال بطيء — التوقف التام يُكتشف أسرع عبر lowSpeedTime
 
 /**
- * إعادة توليد صفحات الموقع الثابتة.
- * أي تعديل على data/site-data.json يجب أن يُتبَع بإعادة بناء، وإلا نُشرت صفحات
- * قديمة لا تطابق المحتوى الجديد.
+ * حالة عملية النشر الحالية. النشر يعمل في الخلفية واللوحة تتابعه عبر
+ * /api/publish/status — فلا ينقطع طلب المتصفح مهما طال الرفع.
  */
+let job = null;
+
+function logToFile(line) {
+  try {
+    fs.mkdirSync(LOG_DIR, { recursive: true });
+    fs.appendFileSync(PUBLISH_LOG, `[${new Date().toISOString()}] ${gh.redact(line)}\n`, "utf8");
+  } catch {
+    /* not critical */
+  }
+}
+
 function runBuild() {
   return new Promise((resolve, reject) => {
     execFile(
       process.execPath,
       [path.join(ROOT_DIR, "tools", "build.mjs")],
-      { cwd: ROOT_DIR, timeout: 120000, maxBuffer: 5 * 1024 * 1024, windowsHide: true },
+      { cwd: ROOT_DIR, timeout: 180000, maxBuffer: 5 * 1024 * 1024, windowsHide: true },
       (error, stdout, stderr) => {
         if (error) {
-          reject(new Error((stderr && stderr.trim()) || error.message));
+          reject(new Error((stderr && stderr.trim()) || "تعذر توليد صفحات الموقع."));
           return;
         }
         resolve((stdout || "").trim());
@@ -59,28 +70,69 @@ async function countCommits(range) {
   }
 }
 
-async function authArgs() {
-  const token = gh.readToken();
-  return token ? gh.authHeaderArgs(token) : [];
+async function fetchRemote() {
+  const conn = await gh.connectionOptions(gh.readToken());
+  await git([...conn.args, "fetch", "--quiet", "origin", PRODUCTION_BRANCH], { timeout: 5 * 60 * 1000, env: conn.env });
 }
 
-async function fetchRemote() {
-  await git([...(await authArgs()), "fetch", "--quiet", "origin", PRODUCTION_BRANCH], { timeout: 120000 });
+/**
+ * الرفع مع متابعة النسبة المئوية الحقيقية (Writing objects: 45%).
+ * لا يظهر نص الأمر في أي رسالة — فقط مخرجات git نفسها بعد التنقيح.
+ */
+async function pushWithProgress(onProgress) {
+  const conn = await gh.connectionOptions(gh.readToken());
+  return new Promise((resolve, reject) => {
+    const child = spawn("git", [...conn.args, "push", "--progress", "origin", `HEAD:${PRODUCTION_BRANCH}`], {
+      cwd: ROOT_DIR,
+      env: { ...process.env, GIT_TERMINAL_PROMPT: "0", GCM_INTERACTIVE: "never", ...conn.env },
+      windowsHide: true,
+    });
+    let stderr = "";
+    const timer = setTimeout(() => {
+      child.kill();
+      reject(Object.assign(new Error("TIMEOUT"), { timedOut: true }));
+    }, PUSH_TIMEOUT);
+    child.stderr.on("data", (chunk) => {
+      const text = chunk.toString();
+      stderr = (stderr + text).slice(-8000);
+      const m = text.match(/Writing objects:\s+(\d+)%[^\r\n]*?(?:,\s*([\d.]+\s*[KMG]iB))?/g);
+      if (m) {
+        const last = m[m.length - 1].match(/(\d+)%(?:.*?,\s*([\d.]+\s*[KMG]iB))?/);
+        if (last) onProgress(Number(last[1]), last[2] || "");
+      }
+    });
+    child.on("error", (err) => {
+      clearTimeout(timer);
+      reject(new Error(gh.redact(err.message)));
+    });
+    child.on("close", (code) => {
+      clearTimeout(timer);
+      if (code === 0) return resolve();
+      const lines = gh.redact(stderr).split(/[\r\n]+/).filter((l) => l && !/^(Enumerating|Counting|Delta|Compressing|Writing|Total)/.test(l));
+      reject(new Error(lines.slice(-6).join("\n") || `git push exited with code ${code}`));
+    });
+  });
 }
 
 /** يترجم أخطاء Git الشائعة إلى رسالة مفهومة وخطوة واضحة. */
-function explainGitError(message) {
-  const text = String(message || "");
-  if (/could not resolve host|unable to access|timed out|network|connection/i.test(text) && !/40[13]/.test(text)) {
-    return { code: "offline", message: "لا يوجد اتصال بالإنترنت أو GitHub غير متاح الآن. تأكد من الإنترنت ثم أعد المحاولة — تعديلاتك محفوظة ولن تضيع." };
+function explainGitError(err) {
+  const text = String((err && err.message) || err || "");
+  if ((err && err.timedOut) || /TIMEOUT|low speed|too slow|timed out/i.test(text)) {
+    return { code: "slow", message: "الرفع توقف لأن الاتصال بطيء جدًا أو انقطع. تأكدي من الإنترنت ثم اضغطي «نشر التعديلات» مرة أخرى — سيكمل من حيث توقف وتعديلاتك محفوظة." };
+  }
+  if (/could not resolve host|unable to access|network|connection|reset by peer|RPC failed|early EOF/i.test(text) && !/40[13]/.test(text)) {
+    return { code: "offline", message: "انقطع الاتصال بـ GitHub أثناء النشر. تأكدي من الإنترنت ثم أعيدي المحاولة — تعديلاتك محفوظة ولن تضيع." };
+  }
+  if (/exceeds GitHub's file size limit|large files detected|GH001/i.test(text)) {
+    return { code: "large", message: "أحد الملفات المرفوعة أكبر من الحد المسموح في GitHub (100 ميجابايت). احذفي الملف الكبير من اللوحة ثم أعيدي النشر." };
   }
   if (/403|permission|denied|not allowed|write access/i.test(text)) {
-    return { code: "token", message: "رمز الربط لا يملك صلاحية الكتابة على المستودع. افتح الإعدادات والصق رمزًا جديدًا بصلاحية Contents: Read and write." };
+    return { code: "token", message: "رمز الربط لا يملك صلاحية الكتابة على المستودع. افتحي الإعدادات والصقي رمزًا جديدًا بصلاحية Contents: Read and write." };
   }
   if (/401|authentication failed|invalid username|could not read username|bad credentials/i.test(text)) {
-    return { code: "token", message: "رمز الربط منتهي أو غير صحيح. افتح الإعدادات والصق رمزًا جديدًا — تعديلاتك محفوظة ولن تضيع." };
+    return { code: "token", message: "رمز الربط منتهي أو غير صحيح. افتحي الإعدادات والصقي رمزًا جديدًا — تعديلاتك محفوظة ولن تضيع." };
   }
-  return { code: "git", message: gh.redact(text) };
+  return { code: "git", message: gh.redact(text).slice(0, 600) };
 }
 
 function readLastPublish() {
@@ -99,21 +151,17 @@ function writeLastPublish(record) {
   }
 }
 
-async function ensureOnProductionBranch(log) {
+async function ensureOnProductionBranch() {
   const branch = await git(["rev-parse", "--abbrev-ref", "HEAD"]);
-  if (branch === PRODUCTION_BRANCH) return;
-  log.push(`الانتقال من الفرع "${branch}" إلى فرع النشر "${PRODUCTION_BRANCH}"...`);
-  await git(["checkout", PRODUCTION_BRANCH]);
+  if (branch !== PRODUCTION_BRANCH) await git(["checkout", PRODUCTION_BRANCH]);
 }
 
-/** يحفظ كل التغييرات؛ يعيد false إن لم يتبقَّ شيء فعلي بعد add
- * (مثل فروق نهايات الأسطر فقط في ويندوز) بدل أن يفشل commit. */
+/** يحفظ كل التغييرات؛ يعيد false إن لم يتبقَّ شيء فعلي بعد add. */
 async function commitAll(message) {
   try {
     await git(["add", "-A"]);
-  } catch (err) {
-    // ملف دخيل لا يمكن قراءته (مثل ملف حجزه برنامج الحماية) كان يوقف النشر كله.
-    // نكتفي بملفات الموقع نفسها: الملفات المتتبَّعة + المحتوى والصفحات المولَّدة.
+  } catch {
+    // ملف دخيل لا يمكن قراءته (مثل ملف حجزه برنامج الحماية) لا يوقف النشر.
     await git(["add", "-u"]);
     for (const p of ["data", "assets", "case", "article", "practice", "en", "sitemap.xml", "404.html"]) {
       try {
@@ -125,7 +173,7 @@ async function commitAll(message) {
   }
   try {
     await git(["diff", "--cached", "--quiet"]);
-    return false; // لا يوجد شيء مُجهَّز للحفظ
+    return false;
   } catch {
     await git(["commit", "--quiet", "-m", message]);
     return true;
@@ -136,18 +184,13 @@ function stamp() {
   return new Date().toLocaleString("ar-SA", { timeZone: "Asia/Riyadh" });
 }
 
-/**
- * يدمج أي تحديثات على GitHub (مثل تحديثات المطور على الكود) مع تعديلات المحامية.
- * عند التعارض في نفس الملف تُعتمد نسخة المحامية (-X theirs في rebase تعني
- * التعديل الذي يُعاد تطبيقه، أي التعديل المحلي).
- */
-async function syncWithRemote(log) {
+/** يدمج تحديثات GitHub مع التعديلات المحلية (تُعتمد النسخة المحلية عند التعارض). */
+async function syncWithRemote() {
   await fetchRemote();
   const behind = await countCommits(`HEAD..origin/${PRODUCTION_BRANCH}`);
   if (behind === 0) return false;
-  log.push(`يوجد ${behind} تحديث جديد على GitHub، جارٍ دمجه مع تعديلاتك...`);
   try {
-    await git(["-c", "user.name=Jad Admin", "-c", "user.email=admin@localhost", "rebase", "-X", "theirs", `origin/${PRODUCTION_BRANCH}`], { timeout: 120000 });
+    await git(["rebase", "-X", "theirs", `origin/${PRODUCTION_BRANCH}`], { timeout: 5 * 60 * 1000 });
   } catch (err) {
     try {
       await git(["rebase", "--abort"]);
@@ -156,12 +199,10 @@ async function syncWithRemote(log) {
     }
     throw new Error(`تعذر دمج التحديثات تلقائيًا: ${err.message}`);
   }
-  log.push("تم دمج التحديثات بنجاح.");
   return true;
 }
 
 async function ensureIdentity() {
-  // جهاز جديد بلا اسم/بريد في Git يجعل commit يفشل برسالة غامضة.
   try {
     await git(["config", "user.email"]);
   } catch {
@@ -170,83 +211,101 @@ async function ensureIdentity() {
   }
 }
 
-async function publish() {
-  if (publishing) {
-    return { ok: false, code: "busy", log: [], error: "عملية نشر جارية بالفعل، انتظر انتهاءها." };
+async function runPublish(j) {
+  const step = (name) => {
+    j.step = name;
+    j.updatedAt = Date.now();
+  };
+  const note = (line) => {
+    j.log.push(line);
+    j.updatedAt = Date.now();
+  };
+
+  if (!(await isGitRepo())) throw Object.assign(new Error("مجلد الموقع ليس مستودع Git. تواصلي مع الدعم."), { code: "git" });
+
+  step("check");
+  const tokenState = await gh.checkToken({ force: true });
+  if (tokenState.reason === "offline") throw Object.assign(new Error(tokenState.message), { code: "offline" });
+  if (!tokenState.valid) throw Object.assign(new Error(tokenState.message), { code: "token" });
+  note("تم التحقق من ربط GitHub.");
+
+  await ensureIdentity();
+  await ensureOnProductionBranch();
+
+  step("build");
+  await runBuild();
+  note("تم تحديث صفحات الموقع وخريطة الموقع.");
+  if ((await hasChanges()) && (await commitAll(`تحديث محتوى الموقع عبر لوحة التحكم - ${stamp()}`))) {
+    note("تم حفظ نسخة من التعديلات.");
   }
-  publishing = true;
-  const log = [];
-  try {
-    if (!(await isGitRepo())) {
-      return { ok: false, code: "git", log, error: "مجلد الموقع ليس مستودع Git. تواصل مع المطور." };
+
+  for (let attempt = 1; attempt <= 2; attempt += 1) {
+    step("sync");
+    if (await syncWithRemote()) {
+      note("تم دمج تحديثات GitHub مع تعديلاتك.");
+      await runBuild();
+      if (await hasChanges()) await commitAll(`إعادة توليد الصفحات بعد الدمج - ${stamp()}`);
     }
 
-    // 1) فحص الربط قبل أي شيء — حتى لا نبني ونحفظ ثم نفشل في آخر خطوة.
-    const tokenState = await gh.checkToken({ force: true });
-    if (tokenState.reason === "offline") {
-      return { ok: false, code: "offline", log, error: tokenState.message };
-    }
-    if (!tokenState.valid) {
-      return { ok: false, code: "token", log, error: tokenState.message, token: tokenState };
-    }
-    log.push("تم التحقق من ربط GitHub.");
+    const ahead = await countCommits(`origin/${PRODUCTION_BRANCH}..HEAD`);
+    if (ahead === 0) return { noChanges: true };
 
-    await ensureIdentity();
-    await ensureOnProductionBranch(log);
-
-    // 2) توليد الصفحات بالمحتوى الجديد.
-    await runBuild();
-    log.push("تم تحديث صفحات الموقع وخريطة الموقع.");
-
-    // 3) حفظ نسخة محلية.
-    if ((await hasChanges()) && (await commitAll(`تحديث محتوى الموقع عبر لوحة التحكم - ${stamp()}`))) {
-      log.push("تم حفظ نسخة من التعديلات.");
-    }
-
-    // 4) الدمج مع GitHub ثم الرفع (مع محاولة ثانية إن سبقنا تحديث آخر).
-    for (let attempt = 1; attempt <= 2; attempt += 1) {
-      const merged = await syncWithRemote(log);
-      if (merged) {
-        // الكود قد تغيّر — نعيد البناء ليتطابق القالب الجديد مع المحتوى.
-        await runBuild();
-        if (await hasChanges()) await commitAll(`إعادة توليد الصفحات بعد الدمج - ${stamp()}`);
+    step("push");
+    j.progress = 0;
+    try {
+      await pushWithProgress((pct, size) => {
+        j.progress = pct;
+        j.size = size;
+        j.updatedAt = Date.now();
+      });
+      const record = { at: new Date().toISOString(), commits: ahead };
+      writeLastPublish(record);
+      note("تم رفع التعديلات إلى GitHub — سيتحدّث الموقع خلال دقيقة تقريبًا.");
+      return { lastPublish: record };
+    } catch (pushError) {
+      if (/rejected|non-fast-forward|fetch first/i.test(pushError.message) && attempt === 1) {
+        note("تم تحديث GitHub أثناء النشر، إعادة المحاولة...");
+        continue;
       }
-
-      const ahead = await countCommits(`origin/${PRODUCTION_BRANCH}..HEAD`);
-      if (ahead === 0) {
-        return { ok: true, noChanges: true, log: [...log, "لا توجد تعديلات جديدة لنشرها — الموقع محدَّث."] };
-      }
-
-      try {
-        await git([...(await authArgs()), "push", "--quiet", "origin", `HEAD:${PRODUCTION_BRANCH}`], { timeout: 180000 });
-        const record = { at: new Date().toISOString(), commits: ahead };
-        writeLastPublish(record);
-        log.push("تم رفع التعديلات إلى GitHub — سيتحدّث الموقع خلال دقيقة تقريبًا.");
-        return { ok: true, log, lastPublish: record };
-      } catch (pushError) {
-        const rejected = /rejected|non-fast-forward|fetch first/i.test(pushError.message);
-        if (rejected && attempt === 1) {
-          log.push("تم تحديث GitHub أثناء النشر، إعادة المحاولة...");
-          continue;
-        }
-        const info = explainGitError(pushError.message);
-        return { ok: false, code: info.code, log, error: info.message };
-      }
+      throw pushError;
     }
-    return { ok: false, code: "git", log, error: "تعذر إكمال النشر بعد محاولتين." };
-  } catch (err) {
-    const info = explainGitError(err.message);
-    return { ok: false, code: info.code, log, error: info.message };
-  } finally {
-    publishing = false;
   }
+  throw new Error("تعذر إكمال النشر بعد محاولتين.");
+}
+
+/** يبدأ النشر في الخلفية ويعيد حالته فورًا (أو العملية الجارية إن وُجدت). */
+function startPublish() {
+  if (job && job.running) return publicJob();
+  job = { id: Date.now().toString(36), running: true, step: "check", progress: null, size: "", log: [], startedAt: Date.now(), updatedAt: Date.now(), result: null };
+  const j = job;
+  logToFile("publish started");
+  runPublish(j)
+    .then((res) => {
+      j.result = { ok: true, ...res };
+      logToFile(res.noChanges ? "no changes" : "published OK");
+    })
+    .catch((err) => {
+      const info = err.code === "token" || err.code === "offline" || err.code === "git" ? { code: err.code, message: err.message } : explainGitError(err);
+      j.result = { ok: false, code: info.code, error: info.message, failedStep: j.step };
+      logToFile(`FAILED at ${j.step}: ${err.message}`);
+    })
+    .finally(() => {
+      j.running = false;
+      j.updatedAt = Date.now();
+    });
+  return publicJob();
+}
+
+function publicJob() {
+  if (!job) return { running: false, step: null, result: null };
+  const { id, running, step, progress, size, log, startedAt, updatedAt, result } = job;
+  return { id, running, step, progress, size, log, startedAt, updatedAt, elapsed: Math.round((Date.now() - startedAt) / 1000), result };
 }
 
 /** حالة النشر للوحة: عدد التعديلات غير المنشورة وآخر نشر. */
 async function status() {
   if (!(await isGitRepo())) return { gitRepo: false, pending: 0, lastPublish: readLastPublish() };
   const files = await changedFiles();
-  // نتجاهل الصفحات المولَّدة: المهم ما عدّلته المحامية (البيانات والمرفقات).
   const contentChanges = files.filter((line) => /(data\/site-data\.json|assets\/)/.test(line));
   const ahead = await countCommits(`origin/${PRODUCTION_BRANCH}..HEAD`);
   return {
@@ -254,15 +313,11 @@ async function status() {
     pending: contentChanges.length + ahead,
     unpushedCommits: ahead,
     lastPublish: readLastPublish(),
-    publishing,
+    publishing: Boolean(job && job.running),
   };
 }
 
-/**
- * عند تشغيل اللوحة: إن كانت النسخة المحلية نظيفة ومتأخرة عن GitHub نجلب
- * التحديثات تلقائيًا (fast-forward فقط) — فتصل إصلاحات المطور لجهاز المحامية
- * بدون أي تدخل يدوي.
- */
+/** عند تشغيل اللوحة: جلب تحديثات المطور تلقائيًا إن كانت النسخة نظيفة. */
 async function syncOnStartup() {
   try {
     if (!(await isGitRepo())) return "not-a-repo";
@@ -271,9 +326,7 @@ async function syncOnStartup() {
     await fetchRemote();
     const behind = await countCommits(`HEAD..origin/${PRODUCTION_BRANCH}`);
     if (behind === 0) return "up-to-date";
-    if ((await hasChanges()) || (await countCommits(`origin/${PRODUCTION_BRANCH}..HEAD`)) > 0) {
-      return "pending-local"; // سيُدمج تلقائيًا عند الضغط على نشر
-    }
+    if ((await hasChanges()) || (await countCommits(`origin/${PRODUCTION_BRANCH}..HEAD`)) > 0) return "pending-local";
     await git(["merge", "--ff-only", "--quiet", `origin/${PRODUCTION_BRANCH}`]);
     return `updated:${behind}`;
   } catch (err) {
@@ -281,4 +334,4 @@ async function syncOnStartup() {
   }
 }
 
-module.exports = { publish, status, syncOnStartup, isGitRepo, hasChanges, runBuild };
+module.exports = { startPublish, publicJob, status, syncOnStartup, isGitRepo, hasChanges, runBuild };
