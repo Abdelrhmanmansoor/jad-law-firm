@@ -126,6 +126,9 @@ function explainGitError(err) {
   if (/exceeds GitHub's file size limit|large files detected|GH001/i.test(text)) {
     return { code: "large", message: "أحد الملفات المرفوعة أكبر من الحد المسموح في GitHub (100 ميجابايت). احذفي الملف الكبير من اللوحة ثم أعيدي النشر." };
   }
+  if (/secret|push protection|GH013|remove secret/i.test(text)) {
+    return { code: "git", message: "رفض GitHub النشر لأنه وجد ملفًا خاصًا (رمز الربط) داخل التعديلات. أغلقي اللوحة وافتحيها من جديد ثم أعيدي النشر — تُستبعد الملفات الخاصة تلقائيًا." };
+  }
   if (/403|permission|denied|not allowed|write access/i.test(text)) {
     return { code: "token", message: "رمز الربط لا يملك صلاحية الكتابة على المستودع. افتحي الإعدادات والصقي رمزًا جديدًا بصلاحية Contents: Read and write." };
   }
@@ -202,6 +205,72 @@ async function syncWithRemote() {
   return true;
 }
 
+/** ملفات محلية خاصة لا يجوز أن تُرفع أبدًا (الرمز، كلمة المرور، السجلات...). */
+const SENSITIVE = [
+  "data/.github-token",
+  "data/admin-user.json",
+  "data/.session-secret",
+  "data/panel-settings.json",
+  "data/logs/",
+  "data/.last-publish.json",
+  "data/.shortcut",
+  "data/.launching",
+  "data/backups/",
+  "data/screensaver/",
+  ".env",
+  "TOKEN.txt",
+];
+
+/**
+ * يكتب قائمة التجاهل في .git/info/exclude — تعمل مهما كانت نسخة .gitignore
+ * الموجودة، فلا يدخل الرمز في أي حفظ حتى قبل وصول التحديث.
+ */
+async function ensureLocalExcludes() {
+  try {
+    const rel = await git(["rev-parse", "--git-path", "info/exclude"]);
+    const file = path.isAbsolute(rel) ? rel : path.join(ROOT_DIR, rel);
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    const current = fs.existsSync(file) ? fs.readFileSync(file, "utf8") : "";
+    const have = new Set(current.split(/\r?\n/).map((l) => l.trim()));
+    const missing = SENSITIVE.filter((p) => !have.has(p));
+    if (missing.length) {
+      const sep = current && !current.endsWith("\n") ? "\n" : "";
+      fs.appendFileSync(file, `${sep}${missing.join("\n")}\n`, "utf8");
+    }
+  } catch {
+    /* not critical */
+  }
+}
+
+function isSensitive(file) {
+  return SENSITIVE.some((p) => (p.endsWith("/") ? file.startsWith(p) : file === p));
+}
+
+/**
+ * إن دخل ملف خاص (مثل الرمز) في حفظ لم يُرفع بعد، يعيد بناء الحفظ بدونه —
+ * فلا يرفض GitHub الرفع (push protection) ولا يتسرب الرمز. التعديلات نفسها تبقى.
+ */
+async function scrubSecrets() {
+  const base = `origin/${PRODUCTION_BRANCH}`;
+  let files = [];
+  try {
+    files = (await git(["diff", "--name-only", `${base}..HEAD`])).split("\n").filter(Boolean);
+  } catch {
+    return false;
+  }
+  const bad = files.filter(isSensitive);
+  if (!bad.length) return false;
+  await git(["reset", "--soft", base]);
+  await git(["rm", "-r", "--cached", "--ignore-unmatch", "--quiet", "--", ...bad]);
+  try {
+    await git(["diff", "--cached", "--quiet"]);
+  } catch {
+    await git(["commit", "--quiet", "-m", `تحديث محتوى الموقع عبر لوحة التحكم - ${stamp()}`]);
+  }
+  logToFile(`scrubbed private files from unpublished commits: ${bad.join(", ")}`);
+  return true;
+}
+
 async function ensureIdentity() {
   try {
     await git(["config", "user.email"]);
@@ -222,6 +291,8 @@ async function runPublish(j) {
   };
 
   if (!(await isGitRepo())) throw Object.assign(new Error("مجلد الموقع ليس مستودع Git. تواصلي مع الدعم."), { code: "git" });
+
+  await ensureLocalExcludes();
 
   step("check");
   const tokenState = await gh.checkToken({ force: true });
@@ -247,6 +318,8 @@ async function runPublish(j) {
       if (await hasChanges()) await commitAll(`إعادة توليد الصفحات بعد الدمج - ${stamp()}`);
     }
 
+    if (await scrubSecrets()) note("تم استبعاد الملفات الخاصة (رمز الربط) من النشر.");
+
     const ahead = await countCommits(`origin/${PRODUCTION_BRANCH}..HEAD`);
     if (ahead === 0) return { noChanges: true };
 
@@ -265,6 +338,10 @@ async function runPublish(j) {
     } catch (pushError) {
       if (/rejected|non-fast-forward|fetch first/i.test(pushError.message) && attempt === 1) {
         note("تم تحديث GitHub أثناء النشر، إعادة المحاولة...");
+        continue;
+      }
+      if (/secret|push protection|GH013|GH009|remove secret/i.test(pushError.message) && attempt === 1 && (await scrubSecrets())) {
+        note("تم استبعاد ملف خاص رفضه GitHub، إعادة المحاولة...");
         continue;
       }
       throw pushError;
@@ -321,6 +398,7 @@ async function status() {
 async function syncOnStartup() {
   try {
     if (!(await isGitRepo())) return "not-a-repo";
+    await ensureLocalExcludes();
     const branch = await git(["rev-parse", "--abbrev-ref", "HEAD"]);
     if (branch !== PRODUCTION_BRANCH) return "other-branch";
     await fetchRemote();
@@ -334,4 +412,4 @@ async function syncOnStartup() {
   }
 }
 
-module.exports = { startPublish, publicJob, status, syncOnStartup, isGitRepo, hasChanges, runBuild };
+module.exports = { ensureLocalExcludes, scrubSecrets, startPublish, publicJob, status, syncOnStartup, isGitRepo, hasChanges, runBuild };

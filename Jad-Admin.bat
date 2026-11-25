@@ -48,6 +48,13 @@ if not exist "%APPDATA%\JadAdmin" mkdir "%APPDATA%\JadAdmin"
 >"%SAVED%" echo !ROOT!
 cd /d "!ROOT!"
 
+rem ---------- قائمة تجاهل محلية: الرمز والملفات الخاصة لا تدخل أي حفظ أبدًا ----------
+if exist ".git\info" (
+  for %%P in (data/.github-token data/admin-user.json data/.session-secret data/panel-settings.json data/logs/ data/.last-publish.json data/.shortcut data/.launching data/backups/ data/screensaver/ .env TOKEN.txt) do (
+    findstr /x /c:"%%P" ".git\info\exclude" >nul 2>nul || >>".git\info\exclude" echo %%P
+  )
+)
+
 rem ---------- 3) نقل رمز GitHub القديم من رابط المستودع إلى ملف آمن ----------
 set "RURL="
 for /f "delims=" %%U in ('git remote get-url origin 2^>nul') do set "RURL=%%U"
@@ -96,6 +103,7 @@ rem كتلة واحدة: يقرؤها ويندوز كاملة قبل التنف�
     if not "!BEHIND!"=="0" (
       set "JAD_UPDATED=1"
       echo    تثبيت آخر تحديث...
+      git rm -r --cached --ignore-unmatch -q data/.github-token data/admin-user.json data/.session-secret data/logs TOKEN.txt >nul 2>nul
       git status --porcelain | findstr . >nul && (
         git add -A >nul 2>nul
         git commit --quiet -m "حفظ تلقائي لتعديلات غير منشورة قبل التحديث" >nul 2>nul
